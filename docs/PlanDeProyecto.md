@@ -137,6 +137,87 @@ $$~~~~~$$
 
 ### Alejandro Soto
 
+- 27 de abril: Se asigna el proyecto y se discuten observaciones iniciales. Se
+  definen los primeros puntos del plan de proyecto. Creo la cuenta de Azure que
+  utilizaremos para deployment en la nube, utilizando la suscripción de
+  estudiante. Observo los servicios ("recursos") que Azure tiene disponibles.
+  Creo una máquina virtual simple y una base de datos (con su servidor) de tipo
+  Microsoft SQL Server.
+
+  También consideré si se debe tener una máquina virtual aparte para la
+  instancia de Mongo o no. De momento parece que sí, ya que el recurso "Cosmos
+  DB" no es Mongo exactamente, sino solo compatible con ello.
+
+- 29 de abril: Creo una cuenta de MongoDB Atlas. Luego de un rato me doy cuenta
+  de que, aunque se aloja en Azure, esto no es realmente lo que buscamos, ya
+  que Atlas no es controlado ni desplegado desde Azure. Además, implica un
+  costo adicional que no podemos presupuestar.
+
+  Solicito los correos `@estudiantec.cr` de mis compañeros de equip para
+  agregarlos al grupo de recursos que creé el pasado 27 de abril. Ellos lo
+  hacen y acceden a Azure, con lo cual ya todos podemos observar y manipular
+  los recursos del proyecto.
+
+  Noto que, en las últimas 48 horas, se han consumido ~$12 de los $100
+  disponibles en las cuentas para estudiantes. Esto es inaceptable, por lo que
+  investigo y encuentro que esto se debe a una configuración predeterminada del
+  servidor de base de datos que creé entonces. Específicamente, el tamaño de
+  nodo (una métrica de CPU y RAM para la máquina virtual compartida que hostea
+  el servidor) era demasiado alto y no se considera dentro de los recursos de
+  consumo gratuito. Luego de arreglar esto me comprometo a revisar el consumo
+  de budget con más regularidad.
+
+- 30 de abril: Tras encontrar más características costosas que se activan por
+  defecto, reduje el costo estimado a $5 por mes, lo cual ya es aceptable.
+
+  Creo un recurso simple de app web, accesible desde
+  <https://straviatec.azurewebsites.net>. En el repositorio agrego una
+  plantilla para aplicaciones ASP.NET en C# con uso de frontend en Angular,
+  justamente lo necesario para este proyecto. Le comento a mis compañeros sobre
+  esto. Además, creo una regla de CI/CD en GitHub Workflows para que el
+  deployment de esta última parte se realice automáticamente al hacer push a la
+  rama de deployment.
+
+  Luego de varias horas de estudiar la situación necesaria para la parte de
+  SSIS que requiere la especificación, encuentro que esta es una característica
+  destinada a fines empresariales y resulta imposible reducir su costo. Tras
+  verificar este hecho, lo cual tomó mucho tiempo por sí solo debido a la poca
+  documentación preemptiva, le comunico este hecho al profesor, explicando la
+  distribución particular de recursos de Azure que lleva a esta situación. El
+  profesor me indica que estudiará el problema.
+
+  Encuentro que las máquinas virtuales gratuitas dentro de la suscripción para
+  estudiantes son las B1S, pero este tipo de máquinas solo están disponibles en
+  Australia por alguna razón. Encontrar este hecho también tomó una cantidad
+  importante de tiempo ya que no está documentado. Parece ser (según un hilo de
+  foro de abril) que Azure recientemente ha agotado la disponibilidad para
+  máquinas gratuitas en Estados Unidos.
+
+  Adicional a lo que ya escribí sobre SSIS, resulta ser que hay que crear un
+  tipo de recurso llamado "data factory" e instalar el Studio respectivo solo
+  para crear un paquete que luego sería importado en la ADF. Esto también tiene
+  un costo.  Decidimos no tomarlo y comentarlo también al profesor. Además, no
+  hubiera resultado en exactamente el mismo flujo de trabajo que SSIS
+  on-premise. El profesor referenció un blog post, el cual comenta sobre el
+  montado de SSIS, al final de la especificación. No obstante, esto es para SQL
+  Server on-premise y no es útil para la situación actual. Encontramos una
+  tabla en la documentación de Microsoft que describe las diferencias con
+  respecto a SSIS entre bases de datos manejadas por Azure y SQL Server
+  on-premise.
+
+  El mismo truco de pasar de Estados Unidos a Australia no sirvió para mejorar
+  los costos de ADF como sí ocurrió con máquinas virtuales.
+
+- 2 de mayo: Durante una porción de la defensa del proyecto anterior, el
+  profesor nos comenta que probablemente se descartará la parte de SSIS de la
+  especifcación debido a los comentarios resaltados.
+
+- 3 de mayo: Nos reunimos en grupo para realizar el anexo. Terminamos el plan
+  de proyecto y documentación administrativa relacionada.
+
+- 4 de mayo: El profesor confirma en clase que SSIS se eliminará del proyecto.
+  Realizo una propuesta de diagrama conceptual para el anexo.
+
 ### José Morales
 
 - 27 ABR
