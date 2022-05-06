@@ -1,87 +1,125 @@
 graph ER {
 	fontname="Helvetica,Arial,sans-serif"
-	node [fontname="Helvetica,Arial,sans-serif"]
-	edge [fontname="Helvetica,Arial,sans-serif"]
-	node [shape=box]; maleta; promo; usuario; vuelo; aeropuerto; aeronave;
-	node [shape=box]; { node[peripheries=2]; segmento; }
-	node [shape=ellipse]; {node [label=<<u>número</u>>] n0; n1;}
-	node [shape=ellipse]; {node [label=<<u>código</u>>] c0; c1; c2;}
+	fontsize=20;
+	overlap=false;
+	splines=true;
+	concentrate=false;
+
+	node [shape=box]; usuario; actividad; reto; carrera; grupo; patrocinador; categoría;
+	node [shape=box]; { node[peripheries=2]; "cuentas bancarias"; }
+	node [shape=ellipse]; {node [label=<día>] dia0; dia1;}
+	node [shape=ellipse]; {node [label=<mes>] mes0; mes1;}
+	node [shape=ellipse]; {node [label=<año>] anno0; anno1;}
+	node [shape=ellipse]; {node [label=<inicio>] inicio0; inicio1;}
 	node [shape=ellipse]; {node [label=<<u>username</u>>] username;}
-	node [shape=ellipse]; {node [label=<identidad estudiantil>] "identidad estudiantil";}
-	node [shape=ellipse]; "¿es pax?"; peso; color; "nombre completo"; correo; clave; "teléfono"; nombre; apellido; "carné"; universidad; descuento; imagen; "período"; inicio; fin; precio; estado; asientos; orden; tiquete; salida; llegada; asiento; millas;
-	node [shape=ellipse]; { node[style=dashed]; "¿reservando?"; "¿abierto?"; "¿cerrado?"; }
-	node [shape=diamond]; reserva; recorre; origen; destino; "vuela con"; chequea; aplica; usa; asigna;
+	node [shape=ellipse]; {node [label=<<u>nombre</u>>] nombre0 nombre1 nombre2 nombre3; nombre4; nombre5; }
+	node [shape=ellipse]; "nombre completo"; clave; nombre; "primer apellido"; "segundo apellido"; "días"; "meses"; "años"; edad; usuario; nacimiento; nacionalidad; foto; fecha; "duración"; tipo; kilometraje; recorrido; minutos; segundos; comentario; costo; "¿privada?"; hora; "representante legal"; "teléfono"; logo; "descripción"; "¿fondo o altitud?"; "¿privado?"; "¿administrador?"; objetivo; "período"; fin;
+	node [shape=ellipse]; { node[style=dashed]; "edad"; avance; }
+	node [shape=diamond]; "sigue a"; comenta; realiza; "completada con"; "completado con"; "asociado a"; incluye;
+	node [shape=diamond]; { node [label=<patrocina>] patrocina0; patrocina1; }
+	node [shape=diamond]; { node [label=<inscrito en>] inscrit0; inscrito1; }
+	node [shape=diamond]; { node [label=<visible por>] visible0; visible1; }
 
 	"nombre completo" -- nombre;
-	"nombre completo" -- apellido;
+	"nombre completo" -- "primer apellido";
+	"nombre completo" -- "segundo apellido";
 
-	"identidad estudiantil" -- universidad;
-	"identidad estudiantil" -- "carné";
+	nacimiento -- dia0;
+	nacimiento -- mes0;
+	nacimiento -- anno0;
 
-	"período" -- inicio;
-	"período" -- fin;
-
-	maleta -- n0;
-	maleta -- peso;
-	maleta -- color;
-
-	promo -- c0;
-	promo -- "período";
-	promo -- descuento;
-	promo -- imagen;
+	edad -- "días";
+	edad -- "meses";
+	edad -- "años";
 
 	usuario -- "nombre completo";
 	usuario -- username;
-	usuario -- correo;
 	usuario -- clave;
-	usuario -- millas;
-	usuario -- "¿es pax?";
-	usuario -- "teléfono";
-	usuario -- "identidad estudiantil";
+	usuario -- nacimiento;
+	usuario -- edad;
+	usuario -- nacionalidad;
+	usuario -- foto;
 
-	vuelo -- n1;
-	vuelo -- precio;
-	vuelo -- estado;
-	vuelo -- "¿reservando?";
-	vuelo -- "¿abierto?";
-	vuelo -- "¿cerrado?";
+	usuario -- comenta [label="1"];
+	actividad -- comenta [label="n"];
+	comenta -- comentario;
 
-	aeropuerto -- c1;
+	usuario -- realiza [label="m"];
+	actividad -- realiza [label="n"];
+	realiza -- "duración";
+	realiza -- inicio0;
 
-	aeronave -- c2;
-	aeronave -- asientos;
+	inicio0 -- fecha;
+	inicio0  -- hora;
 
-	usuario -- reserva [label="m",len=1.00];
-	vuelo -- reserva [label="n",len=1.00];
+	fecha -- mes1;
+	fecha -- dia1;
+	fecha -- anno1;
 
-	recorre -- segmento [label="n",len=1.00,color="black:white:black"];
-	recorre -- vuelo [label="1",len=1.00,color="black:white:black"];
+	"duración" -- minutos;
+	"duración" -- segundos;
 
-	segmento -- salida;
-	segmento -- llegada;
-	segmento -- orden;
+	actividad -- nombre1;
+	actividad -- tipo;
+	actividad -- kilometraje;
+	actividad -- recorrido;
 
-	usuario -- chequea [label="m",len=1.00];
-	segmento -- chequea [label="n",len=1.00];
-	chequea -- asiento;
+	usuario -- "sigue a" [label="1"];
+	usuario -- "sigue a" [label="n"];
 
-	aplica -- promo [label="n",len=1.00,color="black:white:black"];
-	aplica -- vuelo [label="1",len=1.00];
+	carrera -- nombre0;
+	carrera -- costo;
+	carrera -- "¿privada?";
+	carrera -- "cuentas bancarias";
 
-	usuario -- usa [label="m",len=1.00];
-	promo -- usa [label="n",len=1.00];
-	usa -- tiquete;
+	carrera -- incluye [label="1",color="black:white:black"];
+	"categoría" -- incluye [label="n"];
 
-	usuario -- asigna [label="1",len=1.00];
-	maleta -- asigna [label="n",len=1.00,color="black:white:black"];
-	vuelo -- asigna [label="1",len=1.00];
+	carrera -- patrocina0 [label="1"];
+	patrocinador -- patrocina0 [label="n"];
 
-	segmento -- origen [label="n",len=1.00,color="black:white:black"];
-	aeropuerto -- origen [label="1"];
-	segmento -- destino [label="n",len=1.00,color="black:white:black"];
-	aeropuerto -- destino [label="1",len=1.00];
-	segmento -- "vuela con" [label="n",len=1.00,color="black:white:black"];
-	aeronave -- "vuela con" [label="1",len=1.00];
+	reto -- patrocina1 [label="1"];
+	patrocinador -- patrocina1 [label="n"];
 
-	fontsize=20;
+	carrera -- "completada con" [label="n",color="black:white:black"];
+	actividad -- "completada con" [label="1"];
+
+	reto -- "completado con" [label="m",color="black:white:black"];
+	actividad -- "completado con" [label="n"];
+
+	grupo -- nombre2;
+
+	usuario -- "asociado a" [label="m"];
+	grupo -- "asociado a" [label="n"];
+	"asociado a" -- "¿administrador?";
+
+	carrera -- visible0 [label="1"];
+	grupo -- visible0 [label="n"];
+
+	usuario -- inscrito0 [label="m"];
+	carrera -- inscrito0 [label="n"];
+
+	reto -- nombre5;
+	reto -- "¿fondo o altitud?"
+	reto -- "¿privado?";
+	reto -- objetivo;
+	reto -- "período";
+
+	"período" -- inicio1;
+	"período" -- fin;
+
+	reto -- visible1 [label="1"];
+	grupo -- visible1 [label="n"];
+
+	usuario -- inscrito1 [label="m"];
+	reto -- inscrito1 [label="n"];
+	inscrito1 -- avance;
+
+	patrocinador -- nombre3;
+	patrocinador -- "representante legal";
+	patrocinador -- "teléfono";
+	patrocinador -- logo;
+
+	"categoría" -- nombre4;
+	"categoría" -- "descripción";
 }
