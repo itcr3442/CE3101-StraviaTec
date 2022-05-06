@@ -178,6 +178,15 @@ $$~~~~~$$
 
 ### Ignacio vargas
 
+- 29/04/2022
+    + Se toma una hora para leer y analizar la especificación del proyecto y formular posibles dudas al respecto.
+- 30/04/2022
+    + Reunión grupal para organización inicial del proyecto. Se escoge Azure para el despliegue del proyecto. Se discute la organización y rendimiento del proyecto pasado y cómo mejorar en este siguiente proyecto.
+- 02/05/2022
+    + Se coordina el plan de proyecto, cronograma, roles. Se crean documentos y repositorios de colaboración. Se escoge el modelo conceptual a utilizar en la DB.
+- 06/05/2022
+    + Se inicializó el proyecto para la aplicación web y se creó bastante del código boilerplate que ocupará la aplicación más tarde para el funcionamiento del login y las diferentes vistas.
+
 # Aprendizaje continuo
 
 ## Conocimiento Actual:
