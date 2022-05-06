@@ -43,6 +43,8 @@ En la aplicación móvil los deportistas podrán registrar actividades, mostrar 
 Para el servidor se utilizará para motor de bases de datos SQL Server y también MongoDB. Para la aplicación móvil se utilizará Android Studio y el lenguaje Kotlin. En la aplicación móvil se utilizará el framework de Angular, para los componentes se utilizará Bootstrap.
 Además, se desplegará la aplicación en la nube utilizando Azure-AWS.
 
+\pagebreak
+
 # Análisis de problema
 
 ## Propuesta de modelo conceptual 1
@@ -51,15 +53,17 @@ $$~~~~~$$
 
 ![](imgs/anexo_conceptual1.png)
 
+\pagebreak
+
 ## Propuesta de modelo conceptual 2
 
 $$~~~~~$$
 
 ![](imgs/anexo_conceptual2.png)
 
-## Justificación de escogencia
+## Justificación de elección de modelo conceptual
 
-Se escogió el modelo conceptual 2 porque aunque los modelos tienen muchas similitudes entre sí, se decidió que el segundo modelo era el idoneo principalmente porque nos pareció más sencillo y que se apega mejor al modelo de la aplicación a desarrollar. Otro motivo por el cual se prefirió es porque hay varios atributos que deben de ser multivalores que en el primer modelo no lo son y sí en el segundo, como por ejemplo los nombres completos y las fechas. Una tercera razón es que al parecer del grupo, faltan algunos atributos o relaciones importantes en el modelo 1, como por ejemplo un atributo para saber si una carrera es privada o no.
+Se escogió el modelo conceptual 2 porque aunque los modelos tienen muchas similitudes entre sí, se decidió que el segundo modelo era el idóneo principalmente porque nos pareció más sencillo y que se apega mejor al modelo de la aplicación a desarrollar. Otro motivo por el cual se prefirió es porque hay varios atributos que deben de ser multivalores que en el primer modelo no lo son y sí en el segundo, como por ejemplo los nombres completos y las fechas. Una tercera razón es que al parecer del grupo, faltan algunos atributos o relaciones importantes en el modelo 1, como por ejemplo un atributo para saber si una carrera es privada o no.
 
 # Trabajo individual y en equipo
 
@@ -99,11 +103,13 @@ Jose Retana e Ignacio Vargas desarrollarán la vista para organizadores del app 
 
 ### 5. Crear app móvil para clientes (Vista Aeropuerto Móvil): 
 
-José Morales desarrollará la app móvil, la cual tendrá la funcionalidad del registro de actividades de los deportistas y que los datos se almacenen en SQL lite para que se registren y sincronicem con la app web.
+José Morales desarrollará la app móvil, la cual tendrá la funcionalidad del registro de actividades de los deportistas y que los datos se almacenen en SQL lite para que se registren y sincronicen con la app web.
 
 - Criterio de entrega: Desarrollo 100% completado de la app móvil y su conexión/sincronización con la base de datos principal.
 
 - Fecha estimada de entrega: Mayo 27, 2022
+
+\pagebreak
 
 ## Roles y Reglas
 
@@ -112,6 +118,8 @@ $$~~~~~$$
 ![](imgs/roles.png)
 
 ![](imgs/reglas.png)
+
+\pagebreak
 
 ## Cronograma
 
@@ -125,6 +133,8 @@ $$~~~~~$$
 
 ![](imgs/cronograma4.png)
 
+\pagebreak
+
 ## Minutas de sesiones de trabajo
 
 $$~~~~~$$
@@ -133,7 +143,9 @@ $$~~~~~$$
 
 ![](imgs/minuta2.png)
 
-## Bitácora
+\pagebreak
+
+## Bitácoras
 
 ### Alejandro Soto
 
@@ -210,7 +222,7 @@ $$~~~~~$$
 
 - 2 de mayo: Durante una porción de la defensa del proyecto anterior, el
   profesor nos comenta que probablemente se descartará la parte de SSIS de la
-  especifcación debido a los comentarios resaltados.
+  especificación debido a los comentarios resaltados.
 
 - 3 de mayo: Nos reunimos en grupo para realizar el anexo. Terminamos el plan
   de proyecto y documentación administrativa relacionada.
@@ -234,7 +246,7 @@ $$~~~~~$$
 - 3 MAY
     + Se transcriben secciones de introducciones y metas de proyecto.
 - 4 MAY
-    + Se transcribe justificación de la escogencia de modelo conceptual para la implementación de proyecto.
+    + Se transcribe justificación de elección de modelo conceptual para la implementación de proyecto.
 - 5 MAY 
     + Se crea el proyecto base para el desarrollo de la app móvil.
 
@@ -243,7 +255,7 @@ $$~~~~~$$
 - 27 de abril
     + Es asignado en clase el segundo proyecto
 - 28 de abril
-    + Se revisa el modelo conceptual creado para el examen, y se compara cpn la versión nueva del proyecto, para así agregarle y modificarle las entidades y relaciones para que sean juzgadas por los demás en futuro.
+    + Se revisa el modelo conceptual creado para el examen, y se compara con la versión nueva del proyecto, para así agregarle y modificar las entidades y relaciones para que sean juzgadas por los demás en futuro.
 - 30 de abril
     + Se realiza una reunión grupal donde se discute principalmente los problemas y errores cometidos en el proyecto pasado, especialmente con respecto al manejo de tiempo y a la división de trabajo, esto para así idear nuevos métodos que ayuden a mejorar la experiencia y calidad del segundo proyecto.
 - 31 de abril
@@ -273,12 +285,13 @@ $$~~~~~$$
 ## Conocimiento Actual:
 
 - Se logran aplicar los conceptos y habilidades necesarias para crear y aplicar los modelos conceptuales y relacionales vistos en clase, así como el mapeo del modelo conceptual al relacional.
-- El equipo es capaz de crear una base de datos en Postgresql para el almacenamiento y relación de datos.
+- El equipo es capaz de crear una base de datos en PostgreSQL para el almacenamiento y relación de datos.
 - Se sabe crear un servicio API para que las apps web y móvil puedan obtener información de la base de datos de SQL, ya sea utilizando o no el Entity framework.
 - Se conoce la forma de crear aplicaciones web utilizando las herramientas de Angular, HTML5, Bootstrap y CSS, de tal manera que se logre obtener información clave a través del API de la base de datos, y que se utilice la información para que esta aparezca en tablas, carruseles, listas y PDFs (utilizando herramientas para generación de este tipo de reportes)
 - Se sabe cómo crear una app móvil utilizando Android Studio, así como se sabe utilizar SQL Lite para crear bases de datos empotrados en este, para que este se pueda sincronizar con la base de datos principal.
 
 ## Conocimiento a Adquirir:
+
 - Se requiere aprender a crear bases de datos en SQL Server y en MongoDB, para así poder almacenar los datos de StraviaTec, de tal manera de que se puedan mapear los datos de los modelos conceptuales y relacionales del proyecto.
 - Se debe aprender a desarrollar toda la lógica de las bases de datos a implementar por medio de _store procedures_, _vistas_ y _triggers_
 - Es necesario aprender a configurar un API para que las apps web y móvil puedan acezar a la información almacenada en la base de datos, esto tanto para SQL Server como para MongoDB.
@@ -287,7 +300,8 @@ $$~~~~~$$
 - Para el app web, será necesario aprender a cómo desplegar el archivo .gpx para que se pueda mostrar los recorridos tomados por los deportistas en cada actividad o carrera.
 
 ## Estrategias de Aprendizaje:
-- Utilizando los recursos disponibles en el internet (libros, páginas web, blogs, videos, páginas web de documentación oficial), por medio de autoaprendizaje, se quiere aprender a utilizar los sistemas de gestión de bases de datos SQL Server y Mongo DB, así como la configuración de los servicios API de estos. De esta misma manera se espera aprender a desplegar los servicios por medio de Azure, así como la funcionalidad para el guardado y despliegue de las rutas en archivos .gpx para el app móvil y web respectivamente.
+
+- Utilizando los recursos disponibles en el internet (libros, páginas web, blogs, videos, páginas web de documentación oficial), por medio de auto-aprendizaje, se quiere aprender a utilizar los sistemas de gestión de bases de datos SQL Server y Mongo DB, así como la configuración de los servicios API de estos. De esta misma manera se espera aprender a desplegar los servicios por medio de Azure, así como la funcionalidad para el guardado y despliegue de las rutas en archivos .gpx para el app móvil y web respectivamente.
 - Utilizar el conocimiento que será visto en clase, así como las presentaciones de estas para obtener las bases importantes para implementar la lógica de las bases de datos utilizando los _store procedures_, _vistas_ y _triggers_ (Procedimientos Almacenados). Una vez hecho esto, se puede investigar en internet sobre estos por separado y su implementación en los respectivos sistemas de SQL Server y MongoDB, para así poder empezar con el desarrollo del backend del proyecto.
 - Se espera hacer siempre consulta con los demás compañeros de trabajo antes de empezar a investigar o desarrollar alguna parte crítica con la que no se tiene suficiente conocimiento previo, para así lograr agilizar el proceso aclarando dudas y dificultades iniciales que se puedan sobrepasar con explicaciones y consejos útiles.
 - Si se encuentra alguna dificultad de un nivel muy alto, es posible realizar un aprendizaje colaborativo donde se realice una reunión grupal para escuchar opiniones y soluciones de los otros compañeros para así lograr llegar a alguna conclusión o camino viable para la solución de este problema, ya sea tomando un enfoque distinto sugerido por algún otro compañero o por algún descubrimiento realizado en conjunto sobre la naturaleza del problema.
