@@ -189,5 +189,16 @@ $$~~~~~$$
 - Se sabe cómo crear una app móvil utilizando Android Studio, así como se sabe utilizar SQL Lite para crear bases de datos empotrados en este, para que este se pueda sincronizar con la base de datos principal.
 
 ## Conocimiento a Adquirir:
+- Se requiere aprender a crear bases de datos en SQL Server y en MongoDB, para así poder almacenar los datos de StraviaTec, de tal manera de que se puedan mapear los datos de los modelos conceptuales y relacionales del proyecto.
+- Se debe aprender a desarrollar toda la lógica de las bases de datos a implementar por medio de _store procedures_, _vistas_ y _triggers_
+- Es necesario aprender a configurar un API para que las apps web y móvil puedan acezar a la información almacenada en la base de datos, esto tanto para SQL Server como para MongoDB.
+- Se debe aprender a desplegar en la nube la capa de servicios utilizando Azure o Amazon Web Services (AWS)
+- Para el desarrollo de la app móvil, será necesario aprender a cómo obtener la ubicación del usuario para guardar la ruta GPS por donde transita, de tal manera que este se almacene en un archivo .gpx y que este sea guardado en la base de datos.
+- Para el app web, será necesario aprender a cómo desplegar el archivo .gpx para que se pueda mostrar los recorridos tomados por los deportistas en cada actividad o carrera.
 
-## Estrategias de aprendizaje:
+## Estrategias de Aprendizaje:
+- Utilizando los recursos disponibles en el internet (libros, páginas web, blogs, videos, páginas web de documentación oficial), por medio de autoaprendizaje, se quiere aprender a utilizar los sistemas de gestión de bases de datos SQL Server y Mongo DB, así como la configuración de los servicios API de estos. De esta misma manera se espera aprender a desplegar los servicios por medio de Azure, así como la funcionalidad para el guardado y despliegue de las rutas en archivos .gpx para el app móvil y web respectivamente.
+- Utilizar el conocimiento que será visto en clase, así como las presentaciones de estas para obtener las bases importantes para implementar la lógica de las bases de datos utilizando los _store procedures_, _vistas_ y _triggers_ (Procedimientos Almacenados). Una vez hecho esto, se puede investigar en internet sobre estos por separado y su implementación en los respectivos sistemas de SQL Server y MongoDB, para así poder empezar con el desarrollo del backend del proyecto.
+- Se espera hacer siempre consulta con los demás compañeros de trabajo antes de empezar a investigar o desarrollar alguna parte crítica con la que no se tiene suficiente conocimiento previo, para así lograr agilizar el proceso aclarando dudas y dificultades iniciales que se puedan sobrepasar con explicaciones y consejos útiles.
+- Si se encuentra alguna dificultad de un nivel muy alto, es posible realizar un aprendizaje colaborativo donde se realice una reunión grupal para escuchar opiniones y soluciones de los otros compañeros para así lograr llegar a alguna conclusión o camino viable para la solución de este problema, ya sea tomando un enfoque distinto sugerido por algún otro compañero o por algún descubrimiento realizado en conjunto sobre la naturaleza del problema.
+
