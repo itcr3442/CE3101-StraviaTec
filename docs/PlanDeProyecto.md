@@ -159,6 +159,35 @@ $$~~~~~$$
 
 ### Jose Retana
 
+- 27 de abril
+    + Es asignado en clase el segundo proyecto
+- 28 de abril
+    + Se revisa el modelo conceptual creado para el examen, y se compara cpn la versión nueva del proyecto, para así agregarle y modificarle las entidades y relaciones para que sean juzgadas por los demás en futuro.
+- 30 de abril
+    + Se realiza una reunión grupal donde se discute principalmente los problemas y errores cometidos en el proyecto pasado, especialmente con respecto al manejo de tiempo y a la división de trabajo, esto para así idear nuevos métodos que ayuden a mejorar la experiencia y calidad del segundo proyecto.
+- 31 de abril
+    + Se termina la propuesta de modelo conceptual basada en la creada del examen. 
+- 2 de mayo
+    + Se realiza una segunda reunión de equipo para empezar con la creación del trabajo escrito del anexo/plan de proyecto, como el cronograma de actividades, los roles y las reglas.
+    + Se revisan los modelos conceptuales de cada uno, de los cuales se escogieron los dos mejores para compararlos en el anexo (el de Alejandro y el de José Morales).
+    + Se divide el resto de las partes del anexo, de tal forma que a mí me toca establecer las metas y la parte del aprendizaje continuo, según lo conversado en la reunión con los demás.
+- 3 de mayo
+    + Se crean las metas de proyecto según la metodología dada por el profesor para el proyecto anterior y se incluyen en el archivo.
+- 5 de mayo 
+    + Se desarrolla la parte de aprendizaje continuo del anexo, donde se expone los conocimientos actuales de los integrantes, lo que se requiere aprender para llevar a cabo el proyecto, y por último la estrategia utilizada para obtener dichos conocimientos y habilidades.
+
 ### Ignacio vargas
 
 # Aprendizaje continuo
+
+## Conocimiento Actual:
+
+- Se logran aplicar los conceptos y habilidades necesarias para crear y aplicar los modelos conceptuales y relacionales vistos en clase, así como el mapeo del modelo conceptual al relacional.
+- El equipo es capaz de crear una base de datos en Postgresql para el almacenamiento y relación de datos.
+- Se sabe crear un servicio API para que las apps web y móvil puedan obtener información de la base de datos de SQL, ya sea utilizando o no el Entity framework.
+- Se conoce la forma de crear aplicaciones web utilizando las herramientas de Angular, HTML5, Bootstrap y CSS, de tal manera que se logre obtener información clave a través del API de la base de datos, y que se utilice la información para que esta aparezca en tablas, carruseles, listas y PDFs (utilizando herramientas para generación de este tipo de reportes)
+- Se sabe cómo crear una app móvil utilizando Android Studio, así como se sabe utilizar SQL Lite para crear bases de datos empotrados en este, para que este se pueda sincronizar con la base de datos principal.
+
+## Conocimiento a Adquirir:
+
+## Estrategias de aprendizaje:
