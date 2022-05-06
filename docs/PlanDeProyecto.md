@@ -59,7 +59,7 @@ $$~~~~~$$
 
 ## Justificación de escogencia
 
-Lorem ipsum
+Se escogió el modelo conceptual 2 porque aunque los modelos tienen muchas similitudes entre sí, se decidió que el segundo modelo era el idoneo principalmente porque nos pareció más sencillo y que se apega mejor al modelo de la aplicación a desarrollar. Otro motivo por el cual se prefirió es porque hay varios atributos que deben de ser multivalores que en el primer modelo no lo son y sí en el segundo, como por ejemplo los nombres completos y las fechas. Una tercera razón es que al parecer del grupo, faltan algunos atributos o relaciones importantes en el modelo 1, como por ejemplo un atributo para saber si una carrera es privada o no.
 
 # Trabajo individual y en equipo
 
