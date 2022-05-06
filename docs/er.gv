@@ -1,0 +1,87 @@
+graph ER {
+	fontname="Helvetica,Arial,sans-serif"
+	node [fontname="Helvetica,Arial,sans-serif"]
+	edge [fontname="Helvetica,Arial,sans-serif"]
+	node [shape=box]; maleta; promo; usuario; vuelo; aeropuerto; aeronave;
+	node [shape=box]; { node[peripheries=2]; segmento; }
+	node [shape=ellipse]; {node [label=<<u>número</u>>] n0; n1;}
+	node [shape=ellipse]; {node [label=<<u>código</u>>] c0; c1; c2;}
+	node [shape=ellipse]; {node [label=<<u>username</u>>] username;}
+	node [shape=ellipse]; {node [label=<identidad estudiantil>] "identidad estudiantil";}
+	node [shape=ellipse]; "¿es pax?"; peso; color; "nombre completo"; correo; clave; "teléfono"; nombre; apellido; "carné"; universidad; descuento; imagen; "período"; inicio; fin; precio; estado; asientos; orden; tiquete; salida; llegada; asiento; millas;
+	node [shape=ellipse]; { node[style=dashed]; "¿reservando?"; "¿abierto?"; "¿cerrado?"; }
+	node [shape=diamond]; reserva; recorre; origen; destino; "vuela con"; chequea; aplica; usa; asigna;
+
+	"nombre completo" -- nombre;
+	"nombre completo" -- apellido;
+
+	"identidad estudiantil" -- universidad;
+	"identidad estudiantil" -- "carné";
+
+	"período" -- inicio;
+	"período" -- fin;
+
+	maleta -- n0;
+	maleta -- peso;
+	maleta -- color;
+
+	promo -- c0;
+	promo -- "período";
+	promo -- descuento;
+	promo -- imagen;
+
+	usuario -- "nombre completo";
+	usuario -- username;
+	usuario -- correo;
+	usuario -- clave;
+	usuario -- millas;
+	usuario -- "¿es pax?";
+	usuario -- "teléfono";
+	usuario -- "identidad estudiantil";
+
+	vuelo -- n1;
+	vuelo -- precio;
+	vuelo -- estado;
+	vuelo -- "¿reservando?";
+	vuelo -- "¿abierto?";
+	vuelo -- "¿cerrado?";
+
+	aeropuerto -- c1;
+
+	aeronave -- c2;
+	aeronave -- asientos;
+
+	usuario -- reserva [label="m",len=1.00];
+	vuelo -- reserva [label="n",len=1.00];
+
+	recorre -- segmento [label="n",len=1.00,color="black:white:black"];
+	recorre -- vuelo [label="1",len=1.00,color="black:white:black"];
+
+	segmento -- salida;
+	segmento -- llegada;
+	segmento -- orden;
+
+	usuario -- chequea [label="m",len=1.00];
+	segmento -- chequea [label="n",len=1.00];
+	chequea -- asiento;
+
+	aplica -- promo [label="n",len=1.00,color="black:white:black"];
+	aplica -- vuelo [label="1",len=1.00];
+
+	usuario -- usa [label="m",len=1.00];
+	promo -- usa [label="n",len=1.00];
+	usa -- tiquete;
+
+	usuario -- asigna [label="1",len=1.00];
+	maleta -- asigna [label="n",len=1.00,color="black:white:black"];
+	vuelo -- asigna [label="1",len=1.00];
+
+	segmento -- origen [label="n",len=1.00,color="black:white:black"];
+	aeropuerto -- origen [label="1"];
+	segmento -- destino [label="n",len=1.00,color="black:white:black"];
+	aeropuerto -- destino [label="1",len=1.00];
+	segmento -- "vuela con" [label="n",len=1.00,color="black:white:black"];
+	aeronave -- "vuela con" [label="1",len=1.00];
+
+	fontsize=20;
+}
