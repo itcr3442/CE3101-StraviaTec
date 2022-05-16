@@ -17,7 +17,7 @@ graph ER {
 	node [shape=ellipse]; { node[style=dashed]; "edad"; avance; }
 	node [shape=diamond]; "sigue a"; comenta; realiza; "completada con"; "completado con"; "asociado a"; incluye;
 	node [shape=diamond]; { node [label=<patrocina>] patrocina0; patrocina1; }
-	node [shape=diamond]; { node [label=<inscrito en>] inscrit0; inscrito1; }
+	node [shape=diamond]; { node [label=<inscrito en>] inscrito0; inscrito1; }
 	node [shape=diamond]; { node [label=<visible por>] visible0; visible1; }
 
 	"nombre completo" -- nombre;
