@@ -230,6 +230,15 @@ $$~~~~~$$
 - 4 de mayo: El profesor confirma en clase que SSIS se eliminará del proyecto.
   Realizo una propuesta de diagrama conceptual para el anexo.
 
+- 15 de mayo: Trato de crear una vnet para la API y las bases de datos, pero
+  resulta ser que esto requiere un tier de App Service que está fuera del
+  presupuesto. Por tanto, escojo comunicación por direcciones públicas
+  utilizando reglas de firewall que solo permitan acceso a las direcciones
+  salientes del App Service.
+
+  Encuentro que la B1s gratuita es insostenible en términos de rendimiento,
+  por lo que la actualizo a B2s (~$40/mes, suficiente de aquí a la defensa).
+
 ### José Morales
 
 - 27 ABR
