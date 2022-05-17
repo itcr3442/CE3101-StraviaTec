@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.tasks.Task
-import cr.ac.tec.ce3101.tecair.simpleDialog
+import cr.ac.tec.ce3101.straviatec.simpleDialog
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.format.DateTimeFormatter

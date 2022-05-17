@@ -3,7 +3,6 @@ package cr.ac.tec.ce3101.straviatec
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.GsonBuilder
-import cr.ac.tec.ce3101.tecair.simpleDialog
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,4 +1,4 @@
-package cr.ac.tec.ce3101.tecair
+package cr.ac.tec.ce3101.straviatec
 
 import android.content.Context
 import android.content.DialogInterface
