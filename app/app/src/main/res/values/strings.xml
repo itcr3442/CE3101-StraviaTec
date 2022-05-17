@@ -1,3 +1,26 @@
 <resources>
-    <string name="app_name">StraviaTEC</string>
+    <string name="app_name">StraviaTec</string>
+    <string name="sync">Sync</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="time">Time</string>
+    <string name="time_val">0:00:00</string>
+    <string name="distance">Distance</string>
+    <string name="distance_val">00,00 km</string>
+    <string name="avg_speed">Average Speed</string>
+    <string name="avg_speed_val">00,00 km/h</string>
+    <string name="firstname_hint">First Name</string>
+    <string name="lastname_hint">Last Name</string>
+    <string name="password_hint">Password</string>
+    <string name="login_hint">User</string>
+    <string name="login_button">Login</string>
+    <string name="credentials_error">Incorrect Credentials or Sync error. Try syncing without login.</string>
+    <string name="empty_error">Field must have a value</string>
+    <string name="url_entry">Custom airline address</string>
+    <string name="default_url">http://192.168.0.115:5000</string>
+    <string name="url_button">Server Settings</string>
+    <string name="offline_switch">Offline Mode</string>
+    <string name="info">Info</string>
+    <string name="maps_name">Maps</string>
+
 </resources>

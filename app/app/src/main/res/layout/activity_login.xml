@@ -6,13 +6,120 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+    <EditText
+        android:id="@+id/loginUsernameText"
+        android:layout_width="250dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="@string/login_hint"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:autofillHints="" />
+
+    <EditText
+        android:id="@+id/loginPasswordText"
+        android:layout_width="255dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="@string/password_hint"
+        android:inputType="textPassword"
+        android:textColorHint="#757575"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginUsernameText"
+        android:autofillHints="" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="234dp"
+        android:layout_height="95dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:onClick="login"
+        android:text="@string/login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/credentialsErrorText" />
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:id="@+id/credentialsErrorText"
+        android:layout_width="248dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/credentials_error"
+        android:textColor="@color/design_default_color_error"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/loginButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginPasswordText" />
+
+    <EditText
+        android:id="@+id/serverSettingsText"
+        android:layout_width="309dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="6dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/url_entry"
+        android:inputType="textPersonName"
+        android:text="@string/default_url"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/button4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.628"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/serverSettingsButton"
+        android:layout_width="175dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="109dp"
+        android:layout_marginEnd="109dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/url_button"
+        app:layout_constraintBottom_toTopOf="@+id/serverSettingsText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Switch
+        android:id="@+id/offlineSwitch"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="108dp"
+        android:layout_marginEnd="108dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="offlineCheck"
+        android:text="@string/offline_switch"
+        app:layout_constraintBottom_toTopOf="@+id/serverSettingsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginButton"
+        tools:checked="false" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="278dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="noLoginSync"
+        android:text="@string/sync"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
