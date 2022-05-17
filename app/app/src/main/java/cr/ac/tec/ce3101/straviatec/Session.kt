@@ -8,6 +8,7 @@ import android.content.Context
 
 interface Session {
     fun changeContext(cx: Context)
+    fun getUser(): User
     /**
      * Retrieves the username used in the session
      */
@@ -22,4 +23,6 @@ interface Session {
      * Authenticates the current user
      */
     fun login(auth: (Boolean) -> Unit)
+
+    fun saveActivity(activity: Activity, afterOp: (Boolean) -> Unit)
 }

@@ -1,7 +1,6 @@
 package cr.ac.tec.ce3101.straviatec
 import retrofit2.Call
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 
 interface StraviaService {
@@ -13,5 +12,8 @@ interface StraviaService {
         @Query("username") username: String,
         @Query("password") password: String
     ): Call<String>
+
+    @POST("activity")
+    fun addUser(@Body activity: Activity): Call<Unit>
 
 }

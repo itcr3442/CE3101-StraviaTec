@@ -1,36 +1,45 @@
 package cr.ac.tec.ce3101.straviatec
 
 import android.content.Context
+import androidx.room.Room
 
 /**
  * Session type for user session without connection to the main server
  * Look into [Session] for documentation on the overriden functions
  */
 class OfflineSession(
-    private val username: String,
-    private val password: String,
+    private val user: User,
     var cx: Context,
-    //private val cache: LocalDB =
-    //    Room.databaseBuilder(cx.applicationContext, LocalDB::class.java, "cache")
-    //        .allowMainThreadQueries().build(),
-    //private val pendingOps: PendingOpDB =
-    //    Room.databaseBuilder(cx.applicationContext, PendingOpDB::class.java, "pending-ops")
-    //        .allowMainThreadQueries().build()
+    private val cache: LocalDB =
+        Room.databaseBuilder(cx.applicationContext, LocalDB::class.java, "cache")
+            .allowMainThreadQueries().build(),
 ) : Session {
     override fun changeContext(cx: Context) {
-        TODO("Not yet implemented")
+        this.cx = cx
+    }
+
+    override fun getUser(): User {
+        return user
     }
 
     override fun getUsername(): String {
-        TODO("Not yet implemented")
+        return user.username
     }
 
     override fun getPassword(): String {
-        TODO("Not yet implemented")
+        return user.password
     }
 
     override fun login(auth: (Boolean) -> Unit) {
-        auth(true)
-        //TODO("Not yet implemented")
+        val credentials = cache.userDao().findCredentials(user.username, user.password)
+        if (credentials != null) {
+            auth(true)
+        } else {
+            auth(false)
+        }
+    }
+
+    override fun saveActivity(activity: Activity, afterOp: (Boolean) -> Unit) {
+        cache.activityDao().insertAll(activity)
     }
 }
