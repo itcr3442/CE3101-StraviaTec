@@ -30,14 +30,15 @@ class LoginActivity : AppCompatActivity() {
     fun login(view: View) {
         val username = findViewById<EditText>(R.id.loginUsernameText).text.toString()
         val password = findViewById<EditText>(R.id.loginPasswordText).text.toString()
+        val user = User(username, password)
         val session: Session = if (findViewById<Switch>(R.id.offlineSwitch).isChecked) {
             OfflineSession(
-                username, password, this
+                user, this
             )
         } else {
             OnlineSession(
                 findViewById<EditText>(R.id.serverSettingsText).text.toString(),
-                username, password,
+                user,
                 this
             )
         }
@@ -79,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
     fun noLoginSync(view: View) {
         OnlineSession(
             findViewById<EditText>(R.id.serverSettingsText).text.toString(),
-            "", "",
+            User("Empty ", ""),
             this
         ).synchronize()
     }
