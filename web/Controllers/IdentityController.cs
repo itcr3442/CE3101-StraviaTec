@@ -11,5 +11,5 @@ public class IdentityController : ControllerBase
     {
         var ok = username == "foo" && password == "bar";
         return ok ? Results.Ok(new { id = 69 }) : Results.Unauthorized();
-	}
+    }
 }
