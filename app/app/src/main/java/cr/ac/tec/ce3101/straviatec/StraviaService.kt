@@ -14,6 +14,6 @@ interface StraviaService {
     ): Call<String>
 
     @POST("activity")
-    fun addUser(@Body activity: Activity): Call<Unit>
+    fun addActivity(@Body activity: Activity): Call<Unit>
 
 }

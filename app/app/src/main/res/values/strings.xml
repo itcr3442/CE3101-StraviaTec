@@ -16,6 +16,7 @@
     <string name="login_button">Login</string>
     <string name="credentials_error">Incorrect Credentials or Sync error. Try syncing without login.</string>
     <string name="empty_error">Field must have a value</string>
+    <string name="sync_error">Synchronization error</string>
     <string name="url_entry">Custom airline address</string>
     <string name="default_url">http://192.168.0.115:5000</string>
     <string name="url_button">Server Settings</string>

@@ -31,7 +31,44 @@ class OnlineSession(
     }
 
     fun synchronize(): Boolean {
-        TODO()
+        val localUsers = cache.userDao().getAll()
+        val activities = cache.activityDao().getAll()
+
+        //we'll repopulate them after user checks
+        cache.clearAllTables()
+
+        //re-validate saved credentials
+        localUsers.forEach { user ->
+            run {
+                service.checkLogin(user.username, user.password).enqueue(
+                    object : Cb<String>() {
+                        override fun onResponse(call: Call<String>, response: Response<String>) {
+                            if (response.code() == 200) {
+                                val currentUser = User(
+                                    user.username,
+                                    user.password,
+                                )
+                                cache.userDao().insertAll(currentUser)
+                            }
+                        }
+                    }
+                )
+            }
+        }
+
+        // sync activities
+        activities.forEach { activity ->
+            service.addActivity(activity).enqueue(
+                object : Cb<Unit>() {
+                    override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                        if (response.code() != 200) {
+                            simpleDialog(cx, cx.getString(R.string.sync_error))
+                        }
+                    }
+                }
+            )
+        };
+        return true
     }
 
     override fun changeContext(cx: Context) {
