@@ -178,11 +178,14 @@ Se identificaron en la investigación las principales ventajas de las bases de d
 
 # Recomendaciones
 
-- Se recomienda establecer un sistema de bases de datos distribuidas si ya se tiene múltiples bases de datos distintas y autónomas que deben ser consolidadas en una sola, ya esto permite que cada una mantenga su autonomía y al mismo tiempo se consoliden los datos en una sola interfaz.
+
+- Si se ve la necesidad de distribuir una base de datos en áreas geográficas muy grandes para el desarrollo y mantenimiento de aplicaciones, la implementación de un sistema de bases de datos distribuida es recomendada, ya que existe una mejor transparencia de la distribución y control de los datos.
+
+- Se recomienda establecer un sistema de bases de datos distribuidas si ya se tiene múltiples bases de datos distintas y autónomas que deben ser consolidadas en una sola, ya que esto permite que cada una mantenga su autonomía y al mismo tiempo se consoliden los datos en una sola interfaz.
 
 - Los sistemas de bases de datos distribuidas son modulares y escalables, lo cual permite agregar o eliminar nodos del sistema sin que sean afectados los demás, por lo que se recomienda estos si se va a tener en el futuro estas necesidades de expandir o reducir el tamaño de un sistema.
 
-- Estos sistemas de bases de datos distribuidos son ideales para el procesamiento y análisis de datos, la minería de datos y algoritmos de machine learning, y para tecnología de big data, esto debido a que las bases de datos distribuidas fueron desarrolladas para lidiar con el almacenamiento, análisis t minería de grandes cantidades de datos e información.
+- Estos sistemas de bases de datos distribuidos son ideales para el procesamiento y análisis de datos, la minería de datos y algoritmos de machine learning, y para tecnología de big data, esto debido a que las bases de datos distribuidas fueron desarrolladas para lidiar con el almacenamiento, análisis y minería de grandes cantidades de datos e información.
 
 - Si se desea tener un sistema de bases de datos con un nivel más bajo de complejidad, se recomienda utilizar un sistema distribuido homogéneo, ya que al tener todos los nodos siendo idénticos o iguales, se facilita el manejo de sintaxis y de comunicación entre ellos, simplificando substancialmente el trabajo necesario para su manejo y desarrollo.
 
@@ -191,8 +194,6 @@ Se identificaron en la investigación las principales ventajas de las bases de d
 - Se recomienda utiliza un sistema de bases de datos distribuida si se ve la necesidad en el futuro de poder expandir las capacidades de almacenamiento y procesamiento del sistema, ya que las bases de datos distribuidas tienen escalabilidad vertical, ya que se pueden agregar más nodos que cumplan la misma función y que se agrupen en una sola sub-red con la que interactúe el sistema distribuido.
 
 - Debido a la capacidad de los sistemas de bases de datos distribuidas de localizar los datos en ciertos nodos o sub-redes de nodos específicos, se puede permitir una mejora en el desempeño o rendimiento, ya que las transacciones y queries locales pueden accesar a la información más fácil y rápidamente en su base de datos local.
-
-- Si se ve la necesidad de distribuir una base de datos en áreas geográficas muy grandes para el desarrollo y mantenimiento de aplicaciones, la implementación de un sistema de bases de datos distribuida es recomendada, ya que existe una mejor transparencia de la distribución y control de los datos.
 
 
 \pagebreak
