@@ -37,7 +37,15 @@ nocite: |
 
 # Introducción
 
-A partir de los años 80’s y 90’s, se empezó a experimentar problemas de distribución de datos, replicación de datos, procesamiento de distribuciones de queries y transacciones y de manejo de la distribución de la metadata en las bases de datos. Esto problemas llevaron al desarrollo de un nuevo tipo de bases de datos y de manejo de estos, de donde originaron las bases de datos distribuidas (DDBs) y los sistemas de manejo de bases de datos distribuidas (DDBMSs). En general, estos tienen como principal objetivo la partición de problemas grandes y muy difíciles de manejar en pequeñas partes para que sea resuelta coordinada y eficientemente. Con este trabajo de investigación se pretende explicar y describir el funcionamiento de este tipo de bases de datos, para así lograr implementar y desarrollar este tipo de bases de datos en práctica.
+A partir de los años 80’s y 90’s, se empezó a experimentar problemas de distribución de datos, replicación de datos, procesamiento de distribuciones de queries y transacciones y de manejo de la distribución de la metadata en las bases de datos. Esto problemas llevaron al desarrollo de un nuevo tipo de bases de datos y de manejo de estos, de donde originaron las bases de datos distribuidas (DDBs) y los sistemas de manejo de bases de datos distribuidas (DDBMSs). En general, estos tienen como principal objetivo la partición de problemas grandes y muy difíciles de manejar en pequeñas partes para que sea resuelta coordinada y eficientemente. 
+
+Con este trabajo de investigación se pretende explicar y describir el funcionamiento de este tipo de bases de datos, para así lograr implementar y desarrollar este tipo de bases de datos en práctica. Aparte de esto, se pretende describir qué exactamente constituye una base de datos distribuida, y las condiciones mínimas que hacen que estas sean clasificadas de esta manera. Para esto, se desea explicar primeramente las definiciones básicas de bases de datos y de los sistemas de manejo de bases de datos regulares, así como las definiciones de fragmentación, replicación, concurrencia, atomicidad, consistencia, aislamiento y persistencia.
+
+Una vez definidos estos conceptos, se describirán los tipos de bases de datos distribuidas, así como ver el origen y las dificultades que provienen de realizar una base de datos distribuida heterogénea, especialmente en términos de la concurrencia y de la serializabilidad global, para los cuales se quiere determinar los principales métodos para solucionar y enforzar estas cualidades necesarias para las bases de datos distribuidas.
+
+Por último, se pretende describir las principales ventajas que ofrecen las bases de datos distribuidas, especialmente en términos de la flexibilidad la fiabilidad, el fácil aumento de la velocidad y escalabilidad del sistema,  la geo-distribución de los nodos, la autonomía que brinda el sistema para cada nodo, el manejo de tráfico y disponibilidad.
+
+\pagebreak
 
 # Marco Teórico
 
@@ -145,11 +153,47 @@ Se identificaron en la investigación las principales ventajas de las bases de d
 
 # Conclusiones
 
-- Se definió puntualmenmte la definición de las bases de datos distribuidas y los sistemas administradores de bases de dados distribuidas y cóm o estas se comparan 1
+- Se explicó puntualmente la definición del término base de datos y de sistema administrador de bases de datos, así como las propiedades necesarias de estas para ser consideradas de esta manera. Esto se realiza para tenerlos como conceptos base a la hora de describir más detalladamente las definiciones de las bases de datos distribuidas (DDBs) y de los sistemas administradores de bases de datos distribuidas (DDBMSs).
+
+- Se describió los conceptos básicos de fragmentación y replicación en el contexto del diseño de sistemas de bases de datos, ya que estos son conceptos claves a la hora de entender los sistemas de bases de datos distribuidas.
+
+- Se definieron los fundamentos teóricos para comprender el control de concurrencia, esto para el estudio de las bases de datos distribuidas, donde se vuelve más complejo su manejo al no tener los datos centralizados.
+
+- Se describen las principales propiedades de los sistemas de control de concurrencia en las bases de datos, los cuales son las propiedades de atomicidad, consistencia, aislamiento y durabilidad. Estas se describen ya que son términos y conceptos clave para entender los problemas que los sistemas de bases de datos distribuidas llegan a tener al ser implementadas con los datos descentralizados.
+
+- Se definió puntualmente qué exactamente es un sistema de bases de datos distribuido, así como sus diferencias comparado con un sistema de bases de datos centralizada regular.
+
+- Se determinaron las condiciones que debe tener un sistema de bases de datos para que sea considerada como “distribuida”, esto según la distribución y conexión de nodos, la interrelación lógica de estos y la posible ausencia de homogeneidad entre estos.
+
+- Se definió qué exactamente son los sistemas administradores de bases de dados distribuidas y cómo estas se comparan con los sistemas de administración bases de datos centralizadas, especialmente en términos del complejo manejo de los datos distribuidos en distintos nodos.
+
+- Se determinó la clasificación de las bases de datos distribuidas entre las homogéneas y heterogéneas, en términos de la composición y naturaleza de los nodos que componen a las bases de datos distribuidas.
+
+- Se identificó el principal problema de control de concurrencia y de serialización global para las bases de datos distribuidas heterogéneas, y las formas disponibles para la solución de estos retos.
+
+- Se detallaron las principales ventajas que se tiene al utilizar las bases de datos distribuidas, en términos de su flexibilidad, fiabilidad, su fácil aumento de velocidad y su geo-distribución.
 
 \pagebreak
 
+
 # Recomendaciones
+
+- Se recomienda establecer un sistema de bases de datos distribuidas si ya se tiene múltiples bases de datos distintas y autónomas que deben ser consolidadas en una sola, ya esto permite que cada una mantenga su autonomía y al mismo tiempo se consoliden los datos en una sola interfaz.
+
+- Los sistemas de bases de datos distribuidas son modulares y escalables, lo cual permite agregar o eliminar nodos del sistema sin que sean afectados los demás, por lo que se recomienda estos si se va a tener en el futuro estas necesidades de expandir o reducir el tamaño de un sistema.
+
+- Estos sistemas de bases de datos distribuidos son ideales para el procesamiento y análisis de datos, la minería de datos y algoritmos de machine learning, y para tecnología de big data, esto debido a que las bases de datos distribuidas fueron desarrolladas para lidiar con el almacenamiento, análisis t minería de grandes cantidades de datos e información.
+
+- Si se desea tener un sistema de bases de datos con un nivel más bajo de complejidad, se recomienda utilizar un sistema distribuido homogéneo, ya que al tener todos los nodos siendo idénticos o iguales, se facilita el manejo de sintaxis y de comunicación entre ellos, simplificando substancialmente el trabajo necesario para su manejo y desarrollo.
+
+- Si se desean desarrollar múltiples bases de datos de tipos distintos con funciones muy específicas, o con sistemas operativos distintos, se recomienda utilizar un sistema de bases de datos distribuido para el manejo y consolidación de todos estos y tener acceso a todos los datos manejados por cada uno de los nodos especializados.
+
+- Se recomienda utiliza un sistema de bases de datos distribuida si se ve la necesidad en el futuro de poder expandir las capacidades de almacenamiento y procesamiento del sistema, ya que las bases de datos distribuidas tienen escalabilidad vertical, ya que se pueden agregar más nodos que cumplan la misma función y que se agrupen en una sola sub-red con la que interactúe el sistema distribuido.
+
+- Debido a la capacidad de los sistemas de bases de datos distribuidas de localizar los datos en ciertos nodos o sub-redes de nodos específicos, se puede permitir una mejora en el desempeño o rendimiento, ya que las transacciones y queries locales pueden accesar a la información más fácil y rápidamente en su base de datos local.
+
+- Si se ve la necesidad de distribuir una base de datos en áreas geográficas muy grandes para el desarrollo y mantenimiento de aplicaciones, la implementación de un sistema de bases de datos distribuida es recomendada, ya que existe una mejor transparencia de la distribución y control de los datos.
+
 
 \pagebreak
 
