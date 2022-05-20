@@ -12,6 +12,7 @@ header-includes:
   - \setlength\parindent{24pt}
   - \usepackage{url}
   - \usepackage{float}
+  - \usepackage{caption}
   - \floatplacement{figure}{H}
 lang: es-ES
 papersize: letter
@@ -48,10 +49,23 @@ Finalmente, un sistema distribuido es un ambiente computacionalen en que varios 
 
 Respecto a sistemas distribuidos en específico se deben considerar los fundamentos relacionados al diseño de sistemas que tratan con datos distribuídos: fragmentación y replicación.
 
+![Ejemplo de fragmentación y replicación [@elmasri-2016, p. 844].](./replifrag.png)
+
 La fragmentación se refiere al como se puede partir la información para almacenarla en lugares distintos. Asumiendo que se trabaja con un modelo relacional. Se dice entonces que existen dos tipos de fragmentación: horizontal y vertical. La fragmentación horizontal se refiere a dividir los registros por tuplas, es decir, distintos equipos contienen cada uno una cierta cantidad de tuplas de una relación. En el caso de la fragmentación vertical, el término se refiere a un esquema más complejo en que se divide una relación por atributos. Cada subdivisión debe contener la llave primaria de la relación de forma que se pueda reconsuír cada tupla completa [@tupper-2011, pp. 387-388].
 
 La replicación se refiere a la creación de datos redundantes que permiten a los procesos que necesitan acceder a la información el proceder de forma suave y efectivamente. Maximiza la disponibilidad pero hay desventajas asociadas, por ejemplo, se puede llegar a un caso en que haya redundancia en cada equipo, de manera que al momento de refrescar los datos se incurre en un gran costo computacional. Antes de aplicar la técnica de replicación se debe considerar cuidadosamente los tiempos de refrescamiento y formas de mantener la integridad referencial en la base de datos [@tupper-2011, p. 388]
 
+Otro fundamento teórico importante a tomar en cuenta para el estudio de las bases de datos distribuídas es el control de concurrencia, problema que se vuelve más complejo cuando los datos están descentralizados. Harrington [-@harrington-2016, pp. 450-451] menciona que el objetivo de todo sistema de control de concurrencia es la ejecución de transacciones ACID, que se refiere a las propiedades de atomicidad, consistencia, aislamiento (isolation) y durabilidad. 
+
+Atomicidad significa que la transacción es una sola unidad, falla o es exitosa como un todo, pero no puede finalizar en un estado intermedio. 
+
+Consistencia se refiere a que toda transacción debe resultar en un base de datos con un estado consistente, es decir, que cumple todas las restricciones. 
+
+Aislamiento se refiere a la propiedad de las transacciones de ser serializables. El efecto de correr ambas transacciones al mismo tiempo debería ser el mismo que si se ejecutaran en serie.
+
+Finalmente, una transacción debe tener durabilidad, es decir, una vez que se ejecuta, sus resultados son persistentes y no se les puede hacer un rollback.
+
+\pagebreak
 
 # Sistemas de Bases de Datos Distribuidas
 
@@ -67,18 +81,54 @@ Elmasri y Navathe [-@elmasri-2016, p. 873] señalan que para poder clasificar a 
 
 La última condición es particularmente importante. No necesariamente una base de datos distribuída es de una arquitectura uniforme. Incluso la estructura de los datos puede variar de un sitio que almacena los datos en un modo relacional y otro que almacena datos en una estructura llave-valor.
 
-El grado de homogeneidad de una base de datos es uno de los primeros factores al clasificar este tipo de sistemas. Se tienen entonces dos variaciones en base a este criterio: bases de datos con un modelo distribuido homogéneo, y bases de datos con un modelo distribuido defederado o  heterogéneo. 
+Algunos ejemplos de bases de datos distribuidas incluyen opciones de bases de datos NoSQL distribuidas como Cassandra, ScyllaDB y mongoDB. también hay ejemplos SQL como Google Spanner, crateDB, CockroachDB, Yugabyte y Amazon Aurora [@scylla-2022].
 
+En la implementación de sistemas de bases de datos distribuídas pueden haber una variedad de sistemas operativos en uso, desde sistemas 
+de uso general como Windows y Linux, hasta sistemas especializados como IBM i.
 
+El grado de homogeneidad de una base de datos es uno de los primeros factores al clasificar este tipo de sistemas. Se tienen entonces dos variaciones en base a este criterio: bases de datos con un modelo distribuido homogéneo, y bases de datos con un modelo distribuido federado o  heterogéneo. 
 
+Cuando un modelo de datos distribuido se refiere a datos fragmentados en dispositivos similares en diferentes localidades, es llamado modelo homogéneo [@tupper-2011]. Lo anterior significa que el sistema es consistente en plataformas, protocolos e interfaces de comunicación, lo que también simplifica sustancialmente la implementación de este tipo de sistema. Una de las ventajas que presenta este tipo de sistema es que no hay necesidad de traducción o reformateo de datos, lo que puede ser una tarea sumamente complicada. 
 
-- Sistemas operativos 
+![Modelo de una base de datos distribuida homogénea. Obtenido de Tupper, [-@tupper-2011].](./homogeneo.png)
 
+El acercamiento contrario a un modelo homogéneo es el modelo heterogéneo o federado, en el que hay una distribución diversa de datos entre sistemas sustancialmente distintos en términos de software, estructura de datos, entre otras. Encontrar modelos relacionales, jerárquicos o de red no es algo poco común en un modelo heterogéneo. 
+
+![Modelo de una base de datos distribuida federada/heterogénea.Obtenido de Tupper, [-@tupper-2011].](./heterogeneo.png)
+
+Uno de los retos de los modelos heterogéneos es la heterogeneidad semántica. La misma ocurre cuando hay diferencias en significado, interpretación y uso estipulado de los datos. Este tipo de heterogeneidad impone la mayor dificultad en el diseño de esquemas globales [@elmasri-2016, p. 898].
+
+En un modelo heterogéneo se busca optimizar tanto autonomía de cada componente así como transparencia de la arquitectura general. Lo anterior se debe a que usualmente un modelo heterogéneo surge a partir de querer unificar varios sistemas distintos que han surgido por su propia cuenta, y debido a los requisitos funcionales de cada sistema, mantener su autonomía local es una priodidad y la forma en la que se trate de unificar a los distintos sistemas debe tratar de adaptarse a este requisito pero sin comprometer su objetivo original de ser una interfaz simple a los datos de todos los sistemas en conjunto.
+
+Uno de los retos más complejos de los sistemas de bases de datos distribuídos es el control de concurrencia. La propiedad de serialización solo se cumple para un grupo de transacciones cuando este es serializable en cada sitio, y el orden de la serialización es el mismo para todos los sitios. A esto último se le llama serializabilidad global [@ozsu-2003]. Existen tres formas de enforzar esta propiedad: lock centralizado, lock de copia primaria, y algoritmo de locking distribuido. 
+
+Para el caso del lock centralizado, consiste en que una base de datos contiene una sola tabla de locks para todo el sistema. Es la solución más simple pero tiene el problema de que presenta un único punto de falla y provoca un efecto de cuello de botella. 
+
+El lock de copia primaria consiste en designar uno de los registros replicados como el primario, de forma que ese es el único que se necesita proteger para realizar una transacción. 
+
+El último acercamiento a control de concurrencia son los algoritmos de locking distribuido, los cuales no tienen el problema de causar un problema de cuello de botella, pero lo que se ahorra en poder computacional se paga en complejidad de operación. 
+
+Hasta este punto se ha discutido los retos que caracterizan a los sistemas de bases de datos distribuídas, por lo que se debe plantear cuales son las ventajas de estos sistemas.
+
+Según Splunk [-@splunk-2022], Los sistemas de bases de datos distribuídas ofrecen las siguientes ventajas:
+
+- Mayor flexibilidad: Es más fácil agregar mayor poder computacional al sistema según las necesidades.
+- Fiabilidad: Un sistema distribuido bien diseñado soportar daños en uno o varios nodos sin ver su desempeño impactado con severidad.
+- Rapidez aumentada: Mientras que en sistemas centralizados hay un efecto de cuello de botella entre más tráfico de datos se tenga, en el caso de los sistemas distribuidos escalar la capacidad de trafico es más fácil
+- Geo-distribución: La entrega de contenido distribuído es esencial tanto para los usuarios finales como las organizaciones. 
 
 ## Análisis de resultados
 
+\pagebreak
+
 # Conclusiones
+
+\pagebreak
 
 # Recomendaciones
 
-# Bibliografía 
+\pagebreak
+
+# Referencias
+
+
