@@ -46,7 +46,6 @@ class LoginActivity : AppCompatActivity() {
             run {
                 if (success) {
                     (application as StraviaTECApp).session = session
-                    //val intent = Intent(this, MainMenuActivity::class.java)
                     val intent = Intent(this, TrackingActivity::class.java)
                     startActivity(intent)
                 } else {
