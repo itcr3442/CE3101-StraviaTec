@@ -35,20 +35,20 @@ public class AvailableController : ControllerBase
 }
 
 [ApiController]
-[Route("Api/[action]/Progress")]
+[Route("Api/[action]/{id}/Progress")]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 [ProducesResponseType(StatusCodes.Status409Conflict)]
 public class ProgressController : ControllerBase
 {
     [HttpPost]
-    public ActionResult Races(int activity)
+    public ActionResult Races(int id, int activity)
     {
         return Ok();
     }
 
     [HttpPost]
-    public ActionResult Challenges(int activity)
+    public ActionResult Challenges(int id, int activity)
     {
         return Ok();
     }

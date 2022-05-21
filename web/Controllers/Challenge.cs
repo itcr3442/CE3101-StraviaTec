@@ -10,7 +10,7 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Route("Api/Challenges/{id?}")]
+[Route("Api/Challenges")]
 public class ChallengeController : ControllerBase
 {
     [HttpPost]
@@ -28,7 +28,7 @@ public class ChallengeController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetChallenge))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -48,7 +48,7 @@ public class ChallengeController : ControllerBase
         });
     }
 
-    [HttpPatch]
+    [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,7 +58,7 @@ public class ChallengeController : ControllerBase
         return Random.Shared.Next(2) == 0 ? Ok() : BadRequest();
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)

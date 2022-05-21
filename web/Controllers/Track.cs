@@ -11,7 +11,7 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Route("Api/[action]/{id}/Path")]
+[Route("Api/[action]/{id}/Track")]
 [RequestSizeLimit(4194304)] // 4MiB
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]

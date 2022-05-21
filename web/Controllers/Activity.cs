@@ -10,7 +10,7 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Route("Api/Activities/{id?}")]
+[Route("Api/Activities")]
 public class ActivityController : ControllerBase
 {
     [HttpPost]
@@ -28,7 +28,7 @@ public class ActivityController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetActivity))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -43,7 +43,7 @@ public class ActivityController : ControllerBase
         });
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)

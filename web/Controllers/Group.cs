@@ -10,7 +10,7 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Route("Api/Groups/{id?}")]
+[Route("Api/Groups")]
 public class GroupController : ControllerBase
 {
     [HttpPost]
@@ -28,7 +28,7 @@ public class GroupController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
     }
 
-    [HttpPatch]
+    [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -38,7 +38,7 @@ public class GroupController : ControllerBase
         return Random.Shared.Next(2) == 0 ? Ok() : BadRequest();
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetGroup))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,7 +52,7 @@ public class GroupController : ControllerBase
         });
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)

@@ -10,7 +10,7 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Route("Api/Races/{id?}")]
+[Route("Api/Races")]
 public class RaceController : ControllerBase
 {
     [HttpPost]
@@ -28,7 +28,7 @@ public class RaceController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetRace))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -46,7 +46,7 @@ public class RaceController : ControllerBase
         });
     }
 
-    [HttpGet("Leaderboard")]
+    [HttpGet("{id}/Leaderboard")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.LeaderboardRow[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -59,7 +59,7 @@ public class RaceController : ControllerBase
                 }});
     }
 
-    [HttpGet("Participants")]
+    [HttpGet("{id}/Participants")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.RaceParticipants[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -74,7 +74,7 @@ public class RaceController : ControllerBase
                 }});
     }
 
-    [HttpGet("Positions")]
+    [HttpGet("{id}/Positions")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.RacePositions[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -89,7 +89,7 @@ public class RaceController : ControllerBase
                 }});
     }
 
-    [HttpPatch]
+    [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,7 +99,7 @@ public class RaceController : ControllerBase
         return Random.Shared.Next(2) == 0 ? Ok() : BadRequest();
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)

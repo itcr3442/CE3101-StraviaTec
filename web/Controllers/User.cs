@@ -26,7 +26,7 @@ public class IdentityController : ControllerBase
 }
 
 [ApiController]
-[Route("Api/Users/{id?}")]
+[Route("Api/Users")]
 public class UserController : ControllerBase
 {
     [HttpPost]
@@ -50,7 +50,7 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetUser))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -67,7 +67,7 @@ public class UserController : ControllerBase
         });
     }
 
-    [HttpPatch]
+    [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -88,7 +88,7 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)
@@ -96,7 +96,7 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("Password")]
+    [HttpPut("{id}/Password")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
