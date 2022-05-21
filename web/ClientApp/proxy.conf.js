@@ -7,6 +7,7 @@ const PROXY_CONFIG = [
   {
     context: [
       "/api",
+      "/Api",
       "/swagger",
     ],
     target: target,
