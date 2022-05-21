@@ -19,7 +19,7 @@ public class CommentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult Comment(int activityId, Req.NewComment req)
     {
-        return Ok();
+        return Random.Shared.Next(2) == 0 ? Ok() : BadRequest();
     }
 
     [HttpGet("{page}")]

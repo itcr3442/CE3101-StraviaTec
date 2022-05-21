@@ -43,14 +43,6 @@ public record PatchUser
     public string? Nationality { get; set; }
 }
 
-public record Search
-{
-    [Required]
-    public string Query { get; set; } = null!;
-    [Required]
-    public int Page { get; set; }
-}
-
 public record NewComment
 {
     [Required]
@@ -69,3 +61,65 @@ public record NewActivity
     public decimal Length { get; set; }
 }
 
+public record NewGroup
+{
+    [Required]
+    public string Name { get; set; } = null!;
+    [Required]
+    public int Admin { get; set; }
+}
+
+public record PatchGroup
+{
+    public string? Name { get; set; }
+    public int? Admin { get; set; }
+}
+
+public record NewRace
+{
+    [Required]
+    public string Name { get; set; } = null!;
+    [Required]
+    public DateTime Day { get; set; }
+    [Required]
+    public ActivityType Type { get; set; }
+    [Required]
+    public int[] PrivateGroups { get; set; } = null!;
+    [Required]
+    public Category[] Categories { get; set; } = null!;
+    [Required]
+    public decimal Price { get; set; }
+}
+
+public record PatchRace
+{
+    public string? Name { get; set; }
+    public DateTime? Day { get; set; }
+    public ActivityType? Type { get; set; }
+    public int[]? PrivateGroups { get; set; }
+    public Category[]? Categories { get; set; }
+    public decimal? Price { get; set; }
+}
+
+public record NewChallenge
+{
+    [Required]
+    public string Name { get; set; } = null!;
+    [Required]
+    public DateTime Start { get; set; }
+    [Required]
+    public DateTime End { get; set; }
+    [Required]
+    public ActivityType Type { get; set; }
+    [Required]
+    public int[] PrivateGroups { get; set; } = null!;
+}
+
+public record PatchChallenge
+{
+    public string? Name { get; set; }
+    public DateTime? Start { get; set; }
+    public DateTime? End { get; set; }
+    public ActivityType? Type { get; set; }
+    public int[]? PrivateGroups { get; set; }
+}

@@ -6,6 +6,29 @@ public enum UserType
     Organizer,
 }
 
+public enum UserRelationship
+{
+    Self,
+    Following,
+    FollowedBy,
+    BothFollowing,
+}
+
+public enum RaceStatus
+{
+    NotRegistered,
+    WaitingConfirmation,
+    Registered,
+    Completed,
+}
+
+public enum ChallengeStatus
+{
+    NotRegistered,
+    Registered,
+    Completed,
+}
+
 public enum ActivityType
 {
     Running,
@@ -14,4 +37,15 @@ public enum ActivityType
     Hiking,
     Kayaking,
     Walking,
+}
+
+public enum Category
+{
+    Junior,
+    Sub23,
+    Open,
+    Elite,
+    MasterA,
+    MasterB,
+    MasterC,
 }

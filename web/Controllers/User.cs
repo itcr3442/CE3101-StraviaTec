@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using web.Body.Common;
 
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
@@ -31,7 +32,7 @@ public class UserController : ControllerBase
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Ref))]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Resp.Ref))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public ActionResult New(Req.NewUser req)
@@ -39,7 +40,7 @@ public class UserController : ControllerBase
         switch (Random.Shared.Next(3))
         {
             case 0:
-                return Ok(new Resp.Ref(69));
+                return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
 
             case 1:
                 return BadRequest();
@@ -62,6 +63,7 @@ public class UserController : ControllerBase
             LastName = "baz",
             BirthDate = DateTime.Today,
             Nationality = "cr",
+            Relationship = UserRelationship.Self,
         });
     }
 

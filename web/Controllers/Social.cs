@@ -12,19 +12,6 @@ namespace web.Controllers;
 [Route("Api/[action]")]
 public class DashboardController : ControllerBase
 {
-    [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
-    [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Paged))]
-    public ActionResult Search(Req.Search req)
-    {
-        return Ok(new Resp.Paged
-        {
-            Pages = 10,
-            Page = new int[] { 69, 420 },
-        });
-    }
-
     [HttpGet("{page}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -43,8 +30,8 @@ public class DashboardController : ControllerBase
 [Route("Api/Following/{followeeId}")]
 public class FriendsController : ControllerBase
 {
-    [HttpPut]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,7 +40,7 @@ public class FriendsController : ControllerBase
         switch (Random.Shared.Next(3))
         {
             case 0:
-                return Ok();
+                return CreatedAtAction(nameof(Follow), new { followeeId = followeeId });
 
             case 1:
                 return Conflict();
