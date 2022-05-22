@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">TABAS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ng-container
+                    *ngTemplateOutlet="this.logged ?  (this.role === RoleLevels.User ? userBlock  : adminBlock) : unloggedBlock">
+                </ng-container>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<ng-template #unloggedBlock>
+
+</ng-template>
+
+<ng-template #userBlock>
+    <li class="nav-item">
+        <a class="nav-link" href="flight_search">Búsqueda de Vuelos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="promos_page">Promociones</a>
+    </li>
+</ng-template>
+
+<ng-template #adminBlock>
+    <li class="nav-item">
+        <a class="nav-link" href="worker_register">Gestión de Funcionarios</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="user_register">Gestión de Usuarios</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="flight_register">Gestión de Vuelos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="flight_open">Apertura de Vuelos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="flight_close">Cierre de Vuelos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="flight_search">Búsqueda de Vuelos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="check-in">Chequeo de pasajeros</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="bags_register">Asignar maletas</a>
+    </li>
+</ng-template>
