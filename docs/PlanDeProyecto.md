@@ -239,6 +239,24 @@ $$~~~~~$$
   Encuentro que la B1s gratuita es insostenible en términos de rendimiento,
   por lo que la actualizo a B2s (~$40/mes, suficiente de aquí a la defensa).
 
+- 20 de mayo: Escribo stubs para aproximadamente mitad de los endpoints que
+  serán necesarios. Estos endpoints retornan valores hard-coded de momento.
+
+- 21 de mayo: Escribo el resto de stubs. La API web está tentativamente lista
+  en diseño para este punto y sigue implementarla propiamente. Informo a mis
+  compañeros de equipo que pueden iniciar a conectar los demás componentes de
+  la solución con la API. Este trabajo termina lo iniciado el día anterior.
+  Duurante estos dos días, investigué varios detalles misceláneos sobre APIs
+  web en ASP.NET Core, principalmente en documentación oficial de Microsoft.
+
+  Agrego una connection string en la configuración del App Service. Esto
+  permitirá iniciar la interacción entre el App Service y el Azure SQL Server
+  que creé hace un tiempo.
+
+  Agrego código para hacer dependency injection de la conexión a la base de
+  datos SQL. Verifico que puedo extraer la connection string a partir del
+  entorno de dotnet core.
+
 ### José Morales
 
 - 27 ABR
