@@ -1,3 +1,4 @@
+using web;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,8 +9,10 @@ builder.Services.AddControllersWithViews()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
     .AddXmlSerializerFormatters();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer()
+    .AddSwaggerGen()
+    .AddSingleton<IConnectionStrings, ConnectionStrings>()
+    .AddScoped<ISqlConn, SqlConn>();
 
 var app = builder.Build();
 
@@ -28,7 +31,6 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 
 app.MapControllerRoute(
     name: "default",
