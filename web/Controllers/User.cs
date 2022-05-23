@@ -13,6 +13,8 @@ namespace web.Controllers;
 [Route("Api/Users")]
 public class IdentityController : ControllerBase
 {
+    public IdentityController(ISqlConn conn) => _conn = conn;
+
     [HttpPost("[action]")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -20,8 +22,35 @@ public class IdentityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult Login(Req.Login req)
     {
-        return Random.Shared.Next(2) == 0 ? Ok(new Resp.Ref(69)) : Unauthorized();
+        using (var cmd = _conn.Cmd("SELECT id, hash, salt FROM users WHERE username=@username"))
+        {
+            cmd.Param("username", req.Username);
+
+            var result = cmd.Tuple<(int id, byte[] hash, byte[] salt1)>();
+            if (result == null)
+            {
+                return Unauthorized();
+            }
+
+            var row = result.Value;
+
+            HttpContext.Session.SetInt32("uid", row.id);
+            return Ok(new Resp.Ref(row.id));
+        }
     }
+
+    [HttpPut("{id}/Password")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public ActionResult UpdatePassword(Req.UpdatePassword req)
+    {
+        return Random.Shared.Next(2) == 0 ? Ok() : Unauthorized();
+    }
+
+    private ISqlConn _conn;
 }
 
 [ApiController]
@@ -93,17 +122,6 @@ public class UserController : ControllerBase
     public ActionResult Delete(int id)
     {
         return Ok();
-    }
-
-    [HttpPut("{id}/Password")]
-    [Consumes(MediaTypeNames.Application.Json)]
-    [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult UpdatePassword(Req.UpdatePassword req)
-    {
-        return Random.Shared.Next(2) == 0 ? Ok() : Unauthorized();
     }
 }
 

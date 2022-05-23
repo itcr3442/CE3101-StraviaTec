@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Runtime.CompilerServices;
 using Microsoft.Data.SqlClient;
 
 namespace web;
@@ -44,11 +45,32 @@ public class SqlCmd : IDisposable
         return this;
     }
 
-    public T? Scalar<T>()
+    public T? Tuple<T>() where T : struct, ITuple
     {
+        var ty = typeof(T);
+        var args = ty.GetGenericArguments();
+        var columns = new object?[args.Length];
+
         _exec.Bind(_cmd);
-        var single = _cmd.ExecuteScalar();
-        return single != DBNull.Value ? (T)single : default(T?);
+        using (var reader = _cmd.ExecuteReader())
+        {
+            if (!reader.Read())
+            {
+                return null;
+            }
+
+            reader.GetValues(columns);
+        }
+
+        for (int i = 0; i < args.Length; ++i)
+        {
+            if (Nullable.GetUnderlyingType(args[i]) != null && columns[i] == DBNull.Value)
+            {
+                columns[i] = null;
+            }
+        }
+
+        return (T?)Activator.CreateInstance(ty, columns);
     }
 
     public SqlStream Stream()
