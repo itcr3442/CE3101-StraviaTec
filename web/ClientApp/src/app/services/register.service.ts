@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -28,31 +29,11 @@ export class RegisterService {
     console.log("New user: " + JSON.stringify(new_user))
 
 
-    return this.repositoryService.create(
-      "users", new_user)
-
-  }
-
-  // TODO: cambiar los parámetros al modelo de trabajador cuando soto termine la base 
-  public register_worker(username: string, password: string, firstName: string, lastName: string, phoneNumber: number, email: string) {
-
-    let new_worker = {
-      "type": 1,
-      username,
-      password,
-      firstName,
-      lastName,
-      phoneNumber,
-      email,
-      university: null,
-      studentId: null
-    }
-
-    console.log("New worker: " + JSON.stringify(new_worker))
-
-
-    return this.repositoryService.create(
-      "users", new_worker)
+    return of({
+      "id": 69
+    })
+    // return this.repositoryService.create(
+    //   "users", new_user)
 
   }
 
