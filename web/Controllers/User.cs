@@ -119,7 +119,7 @@ public class PhotoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
-        using (var cmd = _conn.Cmd("SELECT photo FROM users WHERE id=@id"))
+        using (var cmd = _conn.Cmd("SELECT photo FROM photos WHERE user=@id"))
         {
             using (var stream = cmd.Param("id", id).Stream())
             {
