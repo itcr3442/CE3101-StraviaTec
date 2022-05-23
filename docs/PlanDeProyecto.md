@@ -257,6 +257,12 @@ $$~~~~~$$
   datos SQL. Verifico que puedo extraer la connection string a partir del
   entorno de dotnet core.
 
+  Empaqueté mssql-tools (cliente propietario para SQL Server) para el manejador
+  de paquetes Nix que utilizo. Sin esto no hubiera sido posible usar la
+  herramienta fuera de Windows, Mac, Ubuntu, SUSE o Red Hat. Nix es universal,
+  así que esto mismo funciona en cualquier otro sistema Linux donde se haya
+  instalado Nix.
+
 ### José Morales
 
 - 27 ABR
