@@ -112,13 +112,29 @@ public class UserController : ControllerBase
 [Route("Api/Users/{id}/Photo")]
 public class PhotoController : ControllerBase
 {
+    public PhotoController(ISqlConn conn) => _conn = conn;
+
     [HttpGet]
     [Produces(MediaTypeNames.Image.Jpeg)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
-        return Random.Shared.Next(2) == 0 ? File(Stream.Null, MediaTypeNames.Image.Jpeg) : NotFound();
+        using (var cmd = _conn.Cmd("SELECT photo FROM users WHERE id=@id"))
+        {
+            using (var stream = cmd.Param("id", id).Stream())
+            {
+                if (stream.Stream == null)
+                {
+                    return NotFound();
+                }
+
+                using (var photo = stream.Stream)
+                {
+                    return File(photo, MediaTypeNames.Image.Jpeg);
+                }
+            }
+        }
     }
 
     [HttpPut]
@@ -138,4 +154,6 @@ public class PhotoController : ControllerBase
     {
         return Random.Shared.Next(2) == 0 ? Ok() : NotFound();
     }
+
+    private ISqlConn _conn;
 }

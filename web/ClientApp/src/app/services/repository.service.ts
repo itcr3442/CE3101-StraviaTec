@@ -52,7 +52,7 @@ export class RepositoryService {
 
   // Junta el url base del API con la ruta relative de los
   private createCompleteRoute = (route: string, envAddress: string) => {
-    return `${envAddress}/${route}`;
+    return `${envAddress}API/${route}`;
   }
 
   private generateHeaders = (contentType: string | undefined = undefined) => {

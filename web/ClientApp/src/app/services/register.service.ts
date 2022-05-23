@@ -1,10 +1,17 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { User } from '../interfaces/user';
+import { RoleLevels } from '../constants/user.constants';
+import { HttpResponse } from '@angular/common/http';
+
+export interface RegisterResp {
+  id: number
+}
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +20,7 @@ export class RegisterService {
 
   constructor(private repositoryService: RepositoryService, private authService: AuthService) { }
 
-  public register_user(user: User) {
+  public register_user(user: User): Observable<HttpResponse<RegisterResp>> {
 
     let new_user = {
       "username": user.username,
@@ -21,14 +28,14 @@ export class RegisterService {
       "lastName": user.lastName,
       "birthDate": user.birthDate.toISOString(),
       "nationality": user.country,
-      "type": user.type
+      "type": RoleLevels[user.type]
     }
 
 
     console.log("New user: " + JSON.stringify(new_user))
 
-
-    return this.repositoryService.create(
+    // return of({ id: 69 })
+    return this.repositoryService.create<RegisterResp>(
       "Users", new_user)
 
   }
@@ -75,7 +82,10 @@ export class RegisterService {
    * @param formGroup un formgroup a resetear
    */
   public resetForm = (formGroup: FormGroup) => {
-    Object.values(formGroup.controls).forEach((control) => control.reset())
+    if (environment.production) {
+      Object.values(formGroup.controls).forEach((control) => control.reset())
+    }
+
   }
 
   public registerBags = (id: string, owner: string, weight: number, color: string) => {

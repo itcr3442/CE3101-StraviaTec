@@ -12,7 +12,8 @@ builder.Services.AddControllersWithViews()
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddSingleton<IConnectionStrings, ConnectionStrings>()
-    .AddScoped<ISqlConn, SqlConn>();
+    .AddScoped<ISqlConn, SqlConn>()
+    .AddScoped<ISqlTxn, SqlTxn>();
 
 var app = builder.Build();
 

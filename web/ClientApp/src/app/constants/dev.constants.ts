@@ -1,1 +1,1 @@
-export const devUrl = "https://straviatec.azurewebsites.net"
+export const devUrl = "http://localhost:5289"
