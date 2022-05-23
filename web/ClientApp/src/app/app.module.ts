@@ -14,6 +14,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterUserComponent } from './components/register-user/register-user.component';
 // import { WorkerAdminComponent } from './components/worker-admin/worker-admin.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
+import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 
 
 
@@ -26,6 +27,7 @@ import { RegisterFormComponent } from './components/register-form/register-form.
     LoginComponent,
     RegisterUserComponent,
     RegisterFormComponent,
+    UnauthorizedComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

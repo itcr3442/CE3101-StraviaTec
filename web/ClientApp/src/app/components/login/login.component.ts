@@ -25,20 +25,20 @@ export class LoginComponent implements OnInit {
   // para errores más que todo
   message: string = ""
   // estado del usuario
-  logged: boolean;
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private repo: RepositoryService
   ) {
-    this.logged = false //authService.isLoggedIn()
-    console.log("Is logged:", this.logged)
+    if (authService.isLoggedIn()) {
+      this.router.navigate(['/'])
+    }
   }
 
   refresh(): void {
     if (this.router.url === "/login/redirect") {
-      this.router.navigate(['/'])
+      this.router.navigate(['/login'])
     }
     else {
       window.location.reload()
@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // this.logged = this.authService.isLoggedIn()
+
     if (this.router.url === "/login/redirect") {
       this.message = "Debe ingresar al sistema para poder acceder a esa página"
     }
@@ -82,10 +83,12 @@ export class LoginComponent implements OnInit {
 
           if (res.body?.id) {
             localStorage.setItem('id', res.body?.id + "")
+            localStorage.setItem('isLoggedIn', 'true');
           }
           else {
             this.loginMsg = "Estamos experimentando dificultades, vuelva a intentar más tarde.\n(Error: No id in response body)";
           }
+          this.router.navigate(['/'])
           // this.logged = true
           // this.loginMsg = ""
           // this.repo.getData("users/" + res)
