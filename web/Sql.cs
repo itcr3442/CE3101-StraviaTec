@@ -22,7 +22,7 @@ public interface ISqlTxn : ISqlExec
 
 public static class SqlOps
 {
-    public static SqlCmd Command(this ISqlExec exec, string query)
+    public static SqlCmd Cmd(this ISqlExec exec, string query)
     {
         return new SqlCmd(query, exec);
     }
@@ -30,23 +30,62 @@ public static class SqlOps
 
 public class SqlCmd : IDisposable
 {
-    public SqlCmd(string query, ISqlExec exec) => _cmd = new SqlCommand(query, exec.Connection);
+    public SqlCmd(string query, ISqlExec exec)
+    {
+        _exec = exec;
+        _cmd = new SqlCommand(query, exec.Connection);
+    }
 
     public void Dispose() => _cmd.Dispose();
 
-    public SqlCmd Param(string name, SqlDbType ty, object? val)
+    public SqlCmd Param(string name, object? val)
     {
-        _cmd.Parameters.Add("@" + name, ty).Value = val ?? DBNull.Value;
+        _cmd.Parameters.AddWithValue("@" + name, val ?? DBNull.Value);
         return this;
     }
 
     public T? Scalar<T>()
     {
+        _exec.Bind(_cmd);
         var single = _cmd.ExecuteScalar();
         return single != DBNull.Value ? (T)single : default(T?);
     }
 
-    private SqlCommand _cmd;
+    public SqlStream Stream()
+    {
+        _exec.Bind(_cmd);
+        return new SqlStream(_cmd.ExecuteReader());
+    }
+
+    private ISqlExec _exec;
+    private SqlCommand? _cmd;
+}
+
+public class SqlStream : IDisposable
+{
+    public Stream? Stream => _stream;
+
+    public SqlStream(SqlDataReader reader)
+    {
+        _reader = reader;
+        if (_reader.Read())
+        {
+            _stream = _reader.GetStream(0);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_stream != null)
+        {
+            _stream.Dispose();
+        }
+
+        _reader.Dispose();
+    }
+
+    private SqlDataReader _reader;
+    private Stream? _stream;
 }
 
 public class SqlConn : ISqlConn, IDisposable
