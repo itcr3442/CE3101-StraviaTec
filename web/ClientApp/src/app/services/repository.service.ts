@@ -18,7 +18,7 @@ export class RepositoryService {
    * @returns Observable con datos retornados por el server
    */
   public getData<T>(route: string): Observable<HttpResponse<T>> {
-    return this.http.get<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), { observe: 'response' });
+    return this.http.get<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), { headers: this.generateHeaders(), observe: 'response' });
   }
 
   /**
@@ -27,8 +27,8 @@ export class RepositoryService {
    * @param body contenidos JSON requeridos por endpoint
    * @returns Observable con datos retornados por el server
    */
-  public create<T>(route: string, body: any): Observable<HttpResponse<T>> {
-    return this.http.post<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), body, { headers: this.generateHeaders().headers, observe: 'response' });
+  public create<T>(route: string, body: any, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
+    return this.http.post<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), body, { headers: this.generateHeaders(contentType), observe: 'response' });
   }
 
   /**
@@ -37,7 +37,7 @@ export class RepositoryService {
    * @returns Observable con datos retornados por el server
    */
   public delete<T>(route: string): Observable<HttpResponse<T>> {
-    return this.http.delete<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), { headers: this.generateHeaders().headers, observe: 'response' });
+    return this.http.delete<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), { headers: this.generateHeaders(), observe: 'response' });
   }
 
   /**
@@ -46,8 +46,8 @@ export class RepositoryService {
  * @param body contenidos JSON requeridos por endpoint
  * @returns Observable con datos retornados por el server
  */
-  public edit<T>(route: string, body: any): Observable<HttpResponse<T>> {
-    return this.http.put<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), body, { headers: this.generateHeaders().headers, observe: 'response' });
+  public edit<T>(route: string, body: any, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
+    return this.http.put<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), body, { headers: this.generateHeaders(contentType), observe: 'response' });
   }
 
   // Junta el url base del API con la ruta relative de los
@@ -55,12 +55,11 @@ export class RepositoryService {
     return `${envAddress}/${route}`;
   }
 
-  private generateHeaders = () => {
-    return {
-      headers: new HttpHeaders({
-        // "Access-Control-Allow-Origin": "*", // este header es para permitir todos los CORS necesarios de los requests
-        'Content-Type': 'application/json'
-      })
-    }
+  private generateHeaders = (contentType: string | undefined = undefined) => {
+    return new HttpHeaders({
+      // "Access-Control-Allow-Origin": "*", // este header es para permitir todos los CORS necesarios de los requests
+      ...(contentType ? { 'Content-Type': contentType } : {})
+    })
+
   }
 }

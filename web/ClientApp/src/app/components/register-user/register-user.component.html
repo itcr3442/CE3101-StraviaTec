@@ -5,7 +5,7 @@
             <h3>Regístrese</h3>
         </div>
         <div class="row mb-5">
-            <app-register-form ($formSubmit)=onSubmit($event)></app-register-form>
+            <app-register-form (formSubmit)=onSubmit($event) (userRole)="athlete"></app-register-form>
         </div>
     </div>
 </div>

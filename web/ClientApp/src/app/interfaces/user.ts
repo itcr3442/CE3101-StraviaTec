@@ -1,4 +1,6 @@
+import { RoleLevels } from '../constants/user.constants'
 import { Country } from './country'
+
 
 export interface User {
     name: string,
@@ -7,4 +9,5 @@ export interface User {
     country: Country,
     password: string,
     imageURL: string | null,
+    type: RoleLevels
 }

@@ -12,6 +12,8 @@ import { RegisterService } from 'src/app/services/register.service';
 })
 export class RegisterUserComponent implements OnInit {
 
+  athlete = RoleLevels.Athlete;
+
   constructor(
     private registerService: RegisterService,
   ) {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { RoleLevels } from 'src/app/constants/user.constants';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
@@ -28,7 +28,8 @@ export class RegisterFormComponent implements OnInit {
   maxDate: string;
   imageURL: string | null = null;
 
-  @Output() $formSubmit = new EventEmitter<User>();
+  @Output() formSubmit = new EventEmitter<User>();
+  @Input() userRole: RoleLevels = RoleLevels.Athlete;
 
   constructor(
   ) {
@@ -90,9 +91,10 @@ export class RegisterFormComponent implements OnInit {
         country: this.country,
         password: this.password,
         imageURL: this.imageURL,
+        type: this.userRole,
       }
 
-      this.$formSubmit.emit(user)
+      this.formSubmit.emit(user)
 
       // this.registerService.register_user(this.username, this.password, this.firstName, this.lastName, this.phone, this.email, this.isStudent, this.university, this.studentId).subscribe(
       //   (resp: any) => {
