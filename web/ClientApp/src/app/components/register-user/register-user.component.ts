@@ -30,6 +30,7 @@ export class RegisterUserComponent implements OnInit {
     console.log("Submitted user:", user)
     this.registerService.register_user(user).subscribe(
       (resp: any) => {
+        console.log(resp)
         this.registerService.resetForm(this.registerFormComponent.registerForm)
         this.registerFormComponent.message = "Felicitaciones! Se ha registrado correctamente";
       },
@@ -39,6 +40,8 @@ export class RegisterUserComponent implements OnInit {
         } else if (err.status == 400) {
           this.registerFormComponent.message = "Bad Request 400";
 
+        } else if (err.status == 404) {
+          console.log("404:", err)
         }
       })
 

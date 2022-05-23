@@ -29,7 +29,7 @@ export class RegisterService {
 
 
     return this.repositoryService.create(
-      "Api/Users", new_user)
+      "Users", new_user)
 
   }
 
