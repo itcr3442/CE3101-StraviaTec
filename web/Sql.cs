@@ -58,7 +58,7 @@ public class SqlCmd : IDisposable
     }
 
     private ISqlExec _exec;
-    private SqlCommand? _cmd;
+    private SqlCommand _cmd;
 }
 
 public class SqlStream : IDisposable
@@ -82,6 +82,13 @@ public class SqlStream : IDisposable
         }
 
         _reader.Dispose();
+    }
+
+    public Stream? Take()
+    {
+        var stream = _stream;
+        _stream = null;
+        return stream;
     }
 
     private SqlDataReader _reader;

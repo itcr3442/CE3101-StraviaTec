@@ -124,15 +124,13 @@ public class PhotoController : ControllerBase
         {
             using (var stream = cmd.Param("id", id).Stream())
             {
-                if (stream.Stream == null)
+                var photo = stream.Take();
+                if (photo == null)
                 {
                     return NotFound();
                 }
 
-                using (var photo = stream.Stream)
-                {
-                    return File(photo, MediaTypeNames.Image.Jpeg);
-                }
+                return File(photo, MediaTypeNames.Image.Jpeg);
             }
         }
     }
