@@ -32,10 +32,10 @@ export class RegisterFormComponent implements OnInit {
   countryList: Country[];
   imageURL: string | null = null;
 
-  @Output() formSubmit = new EventEmitter<User>();
   @Input() userRole: RoleLevels = RoleLevels.Athlete;
+  @Input() successMsg: string = "";
 
-  constructor(
+  constructor(private registerService: RegisterService
   ) {
     let countryObject = countries.getNames("es", { select: "official" })
     this.countryList = Object.entries(countryObject).map(([key, val]) => { return { alpha2: key, official: <string>val, flag: getUnicodeFlagIcon(key) } })
@@ -98,9 +98,6 @@ export class RegisterFormComponent implements OnInit {
   onSubmit() {
     if (this.validateForm()) {
       this.message = ""
-      let arrivalTime: Date = new Date(this.birthDate)
-      console.log(arrivalTime.toISOString())
-
       let user: User = {
         username: this.username,
         firstName: this.firstName,
@@ -112,32 +109,31 @@ export class RegisterFormComponent implements OnInit {
         type: this.userRole,
       }
 
-      this.formSubmit.emit(user)
+      console.log("User submitted:", user)
 
+
+      this.registerService.register_user(user).subscribe(
+        (resp: any) => {
+          console.log(resp)
+          this.registerService.resetForm(this.registerForm)
+          this.message = this.successMsg;
+          if (this.imageURL != null) {
+            //TODO: submit image to server
+            URL.revokeObjectURL(this.imageURL)
+          }
+        },
+        err => {
+          if (err.status == 409) {
+            this.message = "Nombre de usuario ya está tomado.";
+          } else if (err.status == 400) {
+            this.message = "Bad Request 400: Por favor verifique que los datos ingresados son válidos.";
+
+          } else if (err.status == 404) {
+            console.log("404:", err)
+            this.message = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
+
+          }
+        })
     }
-  }
-
-  handleResponse(resetHandler: (formGroup: FormGroup) => void, resp: Observable<HttpResponse<RegisterResp>>, successMsg: string = "") {
-    resp.subscribe(
-      (resp: any) => {
-        console.log(resp)
-        resetHandler(this.registerForm)
-        this.message = successMsg;
-        if (this.imageURL != null) {
-          URL.revokeObjectURL(this.imageURL)
-        }
-      },
-      err => {
-        if (err.status == 409) {
-          this.message = "Nombre de usuario ya está tomado.";
-        } else if (err.status == 400) {
-          this.message = "Bad Request 400: Por favor verifique que los datos ingresados son válidos.";
-
-        } else if (err.status == 404) {
-          console.log("404:", err)
-          this.message = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
-
-        }
-      })
   }
 }

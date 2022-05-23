@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { RepositoryService } from './repository.service';
@@ -81,7 +82,10 @@ export class RegisterService {
    * @param formGroup un formgroup a resetear
    */
   public resetForm = (formGroup: FormGroup) => {
-    Object.values(formGroup.controls).forEach((control) => control.reset())
+    if (environment.production) {
+      Object.values(formGroup.controls).forEach((control) => control.reset())
+    }
+
   }
 
   public registerBags = (id: string, owner: string, weight: number, color: string) => {
