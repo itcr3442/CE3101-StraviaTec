@@ -4,6 +4,9 @@ import { RoleLevels } from 'src/app/constants/user.constants';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 import { User } from 'src/app/interfaces/user'
 import { Country } from 'src/app/interfaces/country'
+import { Observable } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
+import { RegisterResp, RegisterService } from 'src/app/services/register.service'
 
 const countries = require("i18n-iso-countries");
 countries.registerLocale(require("i18n-iso-countries/langs/es.json"));
@@ -112,6 +115,29 @@ export class RegisterFormComponent implements OnInit {
       this.formSubmit.emit(user)
 
     }
+  }
 
+  handleResponse(resetHandler: (formGroup: FormGroup) => void, resp: Observable<HttpResponse<RegisterResp>>, successMsg: string = "") {
+    resp.subscribe(
+      (resp: any) => {
+        console.log(resp)
+        resetHandler(this.registerForm)
+        this.message = successMsg;
+        if (this.imageURL != null) {
+          URL.revokeObjectURL(this.imageURL)
+        }
+      },
+      err => {
+        if (err.status == 409) {
+          this.message = "Nombre de usuario ya está tomado.";
+        } else if (err.status == 400) {
+          this.message = "Bad Request 400: Por favor verifique que los datos ingresados son válidos.";
+
+        } else if (err.status == 404) {
+          console.log("404:", err)
+          this.message = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
+
+        }
+      })
   }
 }

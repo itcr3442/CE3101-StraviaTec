@@ -28,25 +28,7 @@ export class RegisterUserComponent implements OnInit {
   onSubmit(user: User) {
 
     console.log("Submitted user:", user)
-    this.registerService.register_user(user).subscribe(
-      (resp: any) => {
-        console.log(resp)
-        this.registerService.resetForm(this.registerFormComponent.registerForm)
-        this.registerFormComponent.message = "Felicidades! Se ha registrado correctamente";
-        if (this.registerFormComponent.imageURL != null) {
-          URL.revokeObjectURL(this.registerFormComponent.imageURL)
-        }
-      },
-      err => {
-        if (err.status == 409) {
-          this.registerFormComponent.message = "Nombre de usuario ya está tomado";
-        } else if (err.status == 400) {
-          this.registerFormComponent.message = "Bad Request 400";
-
-        } else if (err.status == 404) {
-          console.log("404:", err)
-        }
-      })
+    this.registerFormComponent.handleResponse(this.registerService.resetForm, this.registerService.register_user(user), "Felicidades! Se ha registrado correctamente.")
 
   }
 }
