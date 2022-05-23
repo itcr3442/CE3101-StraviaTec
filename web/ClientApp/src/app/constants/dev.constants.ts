@@ -1,1 +1,0 @@
-export const devUrl = "http://localhost:5289"

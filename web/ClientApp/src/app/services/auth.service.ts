@@ -1,6 +1,9 @@
 import { Injectable, ɵisObservable } from '@angular/core';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
+import { Id } from '../interfaces/id';
+import { HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -58,25 +61,13 @@ export class AuthService {
    * @param password contraseña
    * @returns retorna los datos del usuario
    */
-  public login(username: string, password: string) {
+  public login(username: string, password: string): Observable<HttpResponse<Id>> {
 
-    let loginUrl = "check_login?username=" + username.trim() + "&password=" + password
+    let credentials = {
+      username,
+      password
+    }
 
-    return this.repo.create(
-      loginUrl, {})
-      .pipe(map((res: any) => {
-        if (res.status == 200) {
-
-          console.log("Login successful");
-          localStorage.setItem('isLoggedIn', "true");
-          localStorage.setItem('token', JSON.stringify({ username, "password": password, "uuid": res.body }));
-
-          return res.body
-        }
-        else {
-          return null
-        }
-      })
-      )
+    return this.repo.create<Id>("Users/Login", credentials)
   }
 }

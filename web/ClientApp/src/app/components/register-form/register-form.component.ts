@@ -5,8 +5,9 @@ import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 import { User } from 'src/app/interfaces/user'
 import { Country } from 'src/app/interfaces/country'
 import { Observable } from 'rxjs';
-import { HttpResponse } from '@angular/common/http';
-import { RegisterResp, RegisterService } from 'src/app/services/register.service'
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { RegisterService } from 'src/app/services/register.service'
+import { Id } from "src/app/interfaces/id";
 
 const countries = require("i18n-iso-countries");
 countries.registerLocale(require("i18n-iso-countries/langs/es.json"));
@@ -113,7 +114,7 @@ export class RegisterFormComponent implements OnInit {
 
 
       this.registerService.register_user(user).subscribe(
-        (resp: any) => {
+        (resp: HttpResponse<Id>) => {
           console.log(resp)
           this.registerService.resetForm(this.registerForm)
           this.message = this.successMsg;
@@ -122,7 +123,7 @@ export class RegisterFormComponent implements OnInit {
             URL.revokeObjectURL(this.imageURL)
           }
         },
-        err => {
+        (err: HttpErrorResponse) => {
           if (err.status == 409) {
             this.message = "Nombre de usuario ya está tomado.";
           } else if (err.status == 400) {

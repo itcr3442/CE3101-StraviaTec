@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { EnvironmentUrlService } from './environment-url.service';
+import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 
 // Service for handling server requests
@@ -10,7 +10,11 @@ import { Observable } from 'rxjs';
 })
 export class RepositoryService {
 
-  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
+  envAdress: string;
+
+  constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
+    this.envAdress = baseUrl
+  }
 
   /**
    * GET request
@@ -18,7 +22,7 @@ export class RepositoryService {
    * @returns Observable con datos retornados por el server
    */
   public getData<T>(route: string): Observable<HttpResponse<T>> {
-    return this.http.get<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), { headers: this.generateHeaders(), observe: 'response' });
+    return this.http.get<T>(this.createCompleteRoute(route), { headers: this.generateHeaders(), observe: 'response' });
   }
 
   /**
@@ -28,7 +32,9 @@ export class RepositoryService {
    * @returns Observable con datos retornados por el server
    */
   public create<T>(route: string, body: any, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
-    return this.http.post<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), body, { headers: this.generateHeaders(contentType), observe: 'response' });
+    let url = this.createCompleteRoute(route)
+    console.log("route:", url)
+    return this.http.post<T>(url, body, { headers: this.generateHeaders(contentType), observe: 'response' });
   }
 
   /**
@@ -37,7 +43,7 @@ export class RepositoryService {
    * @returns Observable con datos retornados por el server
    */
   public delete<T>(route: string): Observable<HttpResponse<T>> {
-    return this.http.delete<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), { headers: this.generateHeaders(), observe: 'response' });
+    return this.http.delete<T>(this.createCompleteRoute(route), { headers: this.generateHeaders(), observe: 'response' });
   }
 
   /**
@@ -47,19 +53,22 @@ export class RepositoryService {
  * @returns Observable con datos retornados por el server
  */
   public edit<T>(route: string, body: any, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
-    return this.http.put<T>(this.createCompleteRoute(route, this.envUrl.urlAddress), body, { headers: this.generateHeaders(contentType), observe: 'response' });
+    return this.http.put<T>(this.createCompleteRoute(route), body, { headers: this.generateHeaders(contentType), observe: 'response' });
   }
 
   // Junta el url base del API con la ruta relative de los
-  private createCompleteRoute = (route: string, envAddress: string) => {
-    return `${envAddress}API/${route}`;
+  private createCompleteRoute = (route: string) => {
+    return `${this.envAdress}Api/${route}`;
   }
 
   private generateHeaders = (contentType: string | undefined = undefined) => {
-    return new HttpHeaders({
+    let headers = new HttpHeaders({
       // "Access-Control-Allow-Origin": "*", // este header es para permitir todos los CORS necesarios de los requests
-      ...(contentType ? { 'Content-Type': contentType } : {})
+      ...(contentType ? { 'Content-Type': contentType } : {}),
+      ...(environment.production ? {} : { "Access-Control-Allow-Origin": "*" })
     })
+    console.log("headers:", headers)
+    return headers
 
   }
 }
