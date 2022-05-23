@@ -33,6 +33,9 @@ export class RegisterUserComponent implements OnInit {
         console.log(resp)
         this.registerService.resetForm(this.registerFormComponent.registerForm)
         this.registerFormComponent.message = "Felicitaciones! Se ha registrado correctamente";
+        if (this.registerFormComponent.imageURL != null) {
+          URL.revokeObjectURL(this.registerFormComponent.imageURL)
+        }
       },
       err => {
         if (err.status == 409) {

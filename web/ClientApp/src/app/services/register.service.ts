@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
 import { User } from '../interfaces/user';
+import { RoleLevels } from '../constants/user.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -21,15 +22,15 @@ export class RegisterService {
       "lastName": user.lastName,
       "birthDate": user.birthDate.toISOString(),
       "nationality": user.country,
-      "type": user.type
+      "type": RoleLevels[user.type]
     }
 
 
     console.log("New user: " + JSON.stringify(new_user))
 
-
-    return this.repositoryService.create(
-      "Users", new_user)
+    return of({ id: 69 })
+    // return this.repositoryService.create(
+    //   "Users", new_user)
 
   }
 
