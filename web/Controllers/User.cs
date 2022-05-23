@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using web.Body.Common;
 
 using Req = web.Body.Req;
@@ -22,21 +23,27 @@ public class IdentityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult Login(Req.Login req)
     {
+        (int id, byte[] hash, byte[] salt) row;
         using (var cmd = _conn.Cmd("SELECT id, hash, salt FROM users WHERE username=@username"))
         {
             cmd.Param("username", req.Username);
 
-            var result = cmd.Tuple<(int id, byte[] hash, byte[] salt1)>();
+            var result = cmd.Tuple<(int, byte[], byte[])>();
             if (result == null)
             {
                 return Unauthorized();
             }
 
-            var row = result.Value;
-
-            HttpContext.Session.SetInt32("uid", row.id);
-            return Ok(new Resp.Ref(row.id));
+            row = result.Value;
         }
+
+        if (!HashFor(req.Password, row.salt).SequenceEqual(row.hash))
+        {
+            return Unauthorized();
+        }
+
+        HttpContext.Session.SetInt32("uid", row.id);
+        return Ok(new Resp.Ref(row.id));
     }
 
     [HttpPut("{id}/Password")]
@@ -51,6 +58,12 @@ public class IdentityController : ControllerBase
     }
 
     private ISqlConn _conn;
+
+    // Calcula el campo de hash de clave a partir del plaintext y la sal
+    private byte[] HashFor(string password, byte[] salt)
+    {
+        return KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, 1000, 16);
+    }
 }
 
 [ApiController]
