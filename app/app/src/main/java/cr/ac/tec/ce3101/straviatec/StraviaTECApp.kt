@@ -12,9 +12,4 @@ import com.google.android.gms.tasks.Task
  */
 class StraviaTECApp : Application(){
     var session: Session? = null
-    var mCurrentLocation: Location? = null
-
-    fun configLocations(){
-
-    }
 }

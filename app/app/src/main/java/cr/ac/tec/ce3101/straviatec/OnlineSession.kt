@@ -3,6 +3,8 @@ package cr.ac.tec.ce3101.straviatec
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.GsonBuilder
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,9 +18,6 @@ class OnlineSession(
     private val cache: LocalDB =
         Room.databaseBuilder(cx.applicationContext, LocalDB::class.java, "cache")
             .allowMainThreadQueries().build(),
-    /*private val pendingOps: PendingOpDB =
-        Room.databaseBuilder(cx.applicationContext, PendingOpDB::class.java, "pending-ops")
-            .allowMainThreadQueries().build()*/
 ) : Session {
     private val service: StraviaService
 
@@ -40,7 +39,7 @@ class OnlineSession(
         //re-validate saved credentials
         localUsers.forEach { user ->
             run {
-                service.checkLogin(user.username, user.password).enqueue(
+                service.checkLogin(user).enqueue(
                     object : Cb<String>() {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
                             if (response.code() == 200) {
@@ -58,15 +57,7 @@ class OnlineSession(
 
         // sync activities
         activities.forEach { activity ->
-            service.addActivity(activity).enqueue(
-                object : Cb<Unit>() {
-                    override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
-                        if (response.code() != 200) {
-                            simpleDialog(cx, cx.getString(R.string.sync_error))
-                        }
-                    }
-                }
-            )
+            saveActivity(activity) {}
         };
         return true
     }
@@ -88,7 +79,7 @@ class OnlineSession(
     }
 
     override fun login(auth: (Boolean) -> Unit) {
-        service.checkLogin(user.username, user.password).enqueue(
+        service.checkLogin(user).enqueue(
             object : Cb<String>() {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.code() == 200) {
@@ -108,7 +99,82 @@ class OnlineSession(
     }
 
     override fun saveActivity(activity: Activity, afterOp: (Boolean) -> Unit) {
-        TODO("Not yet implemented")
+        val user = activity.user
+        //extract gpx
+        val gpx = RequestBody.create(MediaType.parse("text/xml"), activity.gpx);
+        val newActivity = NewActivity(
+            activity.start, activity.end, activity.type, activity.length
+        )
+        val afterActivity : (Int) -> Unit = { id ->
+            // try to add track gpx to activity in server
+            service.addActivityGPX(id, gpx).enqueue(
+                object : Cb<Unit>() {
+                    override fun onResponse(
+                        call: Call<Unit>,
+                        response: Response<Unit>
+                    ) {
+                        when (response.code()) {
+                            400 -> {
+                                // bad gpx probably
+                                simpleDialog(cx, "Bad Request")
+                                afterOp(false)
+                            }
+                            404
+                            -> {
+                                // inconsistent state in the server
+                                simpleDialog(
+                                    cx,
+                                    "Activity Not Found"
+                                )
+                                afterOp(false)
+                            }
+                            200 -> {
+                                afterOp(true)
+                            }
+                            else -> {
+                                simpleDialog(cx, "Unknown error.")
+                                afterOp(false)
+                            }
+                        }
+                    }
+                }
+            )
+        }
+        val addActivity : ()-> Unit = {
+            //try to add activity
+            service.addActivity(newActivity).enqueue(
+                object : Cb<Id>() {
+                    override fun onResponse(call: Call<Id>, response: Response<Id>) {
+                        when (response.code()) {
+                            400 -> {
+                                // failed to add activity, bad info
+                                simpleDialog(cx, "Bad Request")
+                                afterOp(false)
+                            }
+                            201 -> {
+                                // managed to create activity
+                                response.body()?.let {
+                                    afterActivity(it.id);
+                                }
+
+                            }
+                        }
+                    }
+                }
+            )
+        }
+        //refresh cookie based on user info
+        service.checkLogin(user).enqueue(
+            object : Cb<String>() {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.code() != 200) {
+                        simpleDialog(cx, "Error refreshing cookie")
+                    }
+                    addActivity();
+
+                }
+            }
+        )
     }
 
     /**

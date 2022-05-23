@@ -26,7 +26,12 @@ class LoginActivity : AppCompatActivity() {
 
 
     }
-
+    /**
+     * Tries to create a session based on the data provided by the user in the 
+     * different text fields. Based on the [offlineSwitch] component state, it will
+     * either create an online or offline session. Online sessions will automatically
+     * trigger a synchronization attempt. 
+     */
     fun login(view: View) {
         val username = findViewById<EditText>(R.id.loginUsernameText).text.toString()
         val password = findViewById<EditText>(R.id.loginPasswordText).text.toString()
@@ -75,7 +80,10 @@ class LoginActivity : AppCompatActivity() {
     fun offlineCheck(view: View) {
         isOffline = findViewById<Switch>(R.id.offlineSwitch).isChecked
     }
-
+    
+    /**
+     * Performs a synchronization operation based on the server url provided
+     */
     fun noLoginSync(view: View) {
         OnlineSession(
             findViewById<EditText>(R.id.serverSettingsText).text.toString(),

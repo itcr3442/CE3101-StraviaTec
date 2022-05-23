@@ -1,6 +1,10 @@
 package cr.ac.tec.ce3101.straviatec
 
 import androidx.room.*
+
+/**
+ * Database definition for storing local data related to users and activities
+ */
 @Database(
     entities = [User::class, Activity::class],
     version = 1
@@ -19,12 +23,16 @@ data class User(
     val password: String,
 )
 
+/**
+ * Stores Data related to an activity
+ */
 @Entity
 data class Activity(
-    @PrimaryKey val timeStamp: String,
-    val kilometers: Float,
-    val duration: Long,
-    val gpx: String,
+    @PrimaryKey val start: String,
+    val end: String,
+    val length: Float,
+    val type: String,
+    var gpx: String,
     @Embedded
     val user: User,
 )
@@ -60,6 +68,11 @@ interface UserDao {
     )
     fun findCredentials(username: String, password: String): User?
 }
+
+/**
+ * Interface to perform sql operations on databases that have a
+ * [Activity] entity
+ */
 @Dao
 interface ActivityDao {
     @Insert

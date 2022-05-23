@@ -43,7 +43,7 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var distanceText: TextView
     private lateinit var speedText: TextView
     private var distance = 0F
-    private var startTime = 0L
+    private lateinit var startTime: Instant
     private lateinit var lastLocation: Location
     private var locations: MutableList<Location> = mutableListOf()
 
@@ -91,8 +91,8 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (this@TrackingActivity::lastLocation.isInitialized) {
                         distance += lastLocation.distanceTo(location)  //m
                         distanceText.text = String.format("%.2f Km", distance / 1000)
-                        val elapsedTime = SystemClock.elapsedRealtime() //ms
-                        val speed = distance * 360 / (elapsedTime - startTime)
+                        val elapsedTime = Instant.now()
+                        val speed = distance * 360 / (elapsedTime.toEpochMilli() - startTime.toEpochMilli())
                         speedText.text = String.format("%.2f Km/h", speed)
                     }
                     if (this@TrackingActivity::mMap.isInitialized) {
@@ -194,8 +194,8 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
     fun onStartClick(view: View) {
         stopBtn.isEnabled = true
 
-        startTime = SystemClock.elapsedRealtime()
-        chronometer.base = startTime
+        startTime = Instant.now()
+        chronometer.base = SystemClock.elapsedRealtime()
         chronometer.start()
         startBtn.isEnabled = false
     }
@@ -205,8 +205,10 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         stopLocationRequests()
 
         val activity = Activity(
-            DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-            ,distance, startTime - SystemClock.elapsedRealtime(),
+            DateTimeFormatter.ISO_INSTANT.format(startTime),
+            DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+            distance,
+            "Cycling",
             generateGPX("route", locations),
             (application as StraviaTECApp).session!!.getUser(),
         )

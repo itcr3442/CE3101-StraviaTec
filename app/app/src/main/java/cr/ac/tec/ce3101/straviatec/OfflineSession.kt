@@ -5,7 +5,7 @@ import androidx.room.Room
 
 /**
  * Session type for user session without connection to the main server
- * Look into [Session] for documentation on the overriden functions
+ * Look into [Session] for documentation on the overridden functions
  */
 class OfflineSession(
     private val user: User,
@@ -41,5 +41,6 @@ class OfflineSession(
 
     override fun saveActivity(activity: Activity, afterOp: (Boolean) -> Unit) {
         cache.activityDao().insertAll(activity)
+        afterOp(true)
     }
 }
