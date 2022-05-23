@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
+import { of } from 'rxjs';
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
@@ -11,48 +13,23 @@ export class RegisterService {
 
   constructor(private repositoryService: RepositoryService, private authService: AuthService) { }
 
-  public register_user(username: string, password: string, firstName: string, lastName: string, phoneNumber: number, email: string, isStudent: boolean, university: string, studentId: string) {
+  public register_user(user: User) {
 
     let new_user = {
-      "type": 0,
-      username,
-      password,
-      firstName,
-      lastName,
-      phoneNumber,
-      email,
-      university: isStudent ? university : null,
-      studentId: isStudent ? studentId : null
+      "username": user.username,
+      "firstName": user.firstName,
+      "lastName": user.lastName,
+      "birthDate": user.birthDate.toISOString(),
+      "nationality": user.country,
+      "type": user.type
     }
+
 
     console.log("New user: " + JSON.stringify(new_user))
 
 
     return this.repositoryService.create(
-      "users", new_user)
-
-  }
-
-  // TODO: cambiar los parámetros al modelo de trabajador cuando soto termine la base 
-  public register_worker(username: string, password: string, firstName: string, lastName: string, phoneNumber: number, email: string) {
-
-    let new_worker = {
-      "type": 1,
-      username,
-      password,
-      firstName,
-      lastName,
-      phoneNumber,
-      email,
-      university: null,
-      studentId: null
-    }
-
-    console.log("New worker: " + JSON.stringify(new_worker))
-
-
-    return this.repositoryService.create(
-      "users", new_worker)
+      "Users", new_user)
 
   }
 

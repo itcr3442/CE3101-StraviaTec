@@ -43,7 +43,8 @@
     </div>
     <div class="row">
         <p class="register">
-            Desea afiliarse? <a href="register">Regístrese aquí</a>
+            Desea crear un nuevo usuario? <a [routerLinkActive]="['link-active']"
+                [routerLink]="['/register']">Regístrese aquí</a>
         </p>
     </div>
 </ng-template>

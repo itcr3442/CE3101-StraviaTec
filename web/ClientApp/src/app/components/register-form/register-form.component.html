@@ -1,0 +1,53 @@
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+    <div class="mb-3 form-group">
+        <label for="id">Usuario</label>
+        <input type="id" id="id" formControlName="username" class="form-control"
+            placeholder="Ingrese su nombre de usuario">
+    </div>
+
+    <div class="row mb-3 form-group">
+        <label for="fullname">Nombre Completo</label>
+
+        <div class="col" id="fullname">
+            <input formControlName="firstName" class="form-control" placeholder="Nombre">
+        </div>
+        <div class="col">
+
+            <input formControlName="lastName" class="form-control" placeholder="Apellidos">
+        </div>
+    </div>
+    <div class="mb-3 form-group">
+        <label for="birthDate">Fecha De Nacimiento</label>
+        <input min={{this.minDate}} max={{this.maxDate}} type="date" id="birthDate" formControlName="birthDate"
+            class="form-control">
+    </div>
+
+    <div class="mb-3 form-group">
+        <label for="id">Nacionalidad</label>
+        <select id="airport-OG" class="form-select" formControlName="country">
+            <option *ngFor="let country of countryList" [value]="country.alpha2">{{country.official+ "\t" +
+                country.flag}}
+            </option>
+
+        </select>
+    </div>
+
+    <div class="mb-3 form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" formControlName="password" class="form-control" placeholder="Contraseña">
+    </div>
+
+    <div class="mb-3 form-group">
+        <label for="pfp">Foto De Perfil Opcional</label>
+        <input id="pfp" class="form-control" type="file" accept="image/jpeg"
+            (change)="upload($any($event.target).files)" />
+    </div>
+
+    <ng-container *ngIf="this.message">
+        <p class="warning">
+            {{this.message}}
+        </p>
+    </ng-container>
+    <button type="submit" class="btn btn-primary">Regístrese</button>
+</form>
