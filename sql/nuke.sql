@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS activities;
 DROP TABLE IF EXISTS activity_types;
 DROP TABLE IF EXISTS friends;
+DROP TABLE IF EXISTS photos;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS countries;
 

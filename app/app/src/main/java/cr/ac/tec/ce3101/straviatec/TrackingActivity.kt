@@ -47,6 +47,9 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var lastLocation: Location
     private var locations: MutableList<Location> = mutableListOf()
 
+    /**
+     * Creates a list of LatLng points from a list of locations
+     */
     fun locationsToPoints(locations: List<Location>): List<LatLng> {
         var list = mutableListOf<LatLng>()
         locations.forEach { location ->
@@ -55,22 +58,26 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         return list
     }
 
+    /**
+     * Executed when the activity is created
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracking)
 
+        // Misc UI componentes
         chronometer = findViewById(R.id.timeCounter)
         stopBtn = findViewById(R.id.stopBtn)
         startBtn = findViewById(R.id.startBtn)
         distanceText = findViewById(R.id.distanceText)
         speedText = findViewById(R.id.speedText)
 
-
+        // Map
         mapView = findViewById(R.id.mapx)
         mapView.onCreate(savedInstanceState)
-
         mapView.getMapAsync(this)
 
+        // Start location requests
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         locationRequest = LocationRequest.create().apply {
             interval = 1
@@ -80,10 +87,10 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         var builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
 
-
         val client: SettingsClient = LocationServices.getSettingsClient(this)
         val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
 
+        // what to do each time a new location is received
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
@@ -128,9 +135,11 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
+    /**
+    * Activates location requests
+    */
     @SuppressLint("MissingPermission")
-    fun startLocationRequests() {
+    private fun startLocationRequests() {
         fusedLocationProviderClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
@@ -138,10 +147,16 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
-    fun stopLocationRequests() {
+    /**
+     * Deactivates location requests
+     */
+    private fun stopLocationRequests() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
+    /**
+     * Executed when the google maps api retrieves the new map to be rendered
+     */
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
 
@@ -154,43 +169,69 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         route = mMap.addPolyline(options)
     }
 
+    /**
+     * Executed on activity start
+     */
     override fun onStart() {
         super.onStart()
         mapView.onStart()
 
     }
 
+    /**
+     * Executed when the activity returns from pause state
+     */
     override fun onResume() {
         super.onResume()
         mapView.onResume()
         startLocationRequests()
     }
 
+    /**
+     * Executed when the user moves to another activity without destroying this one
+     */
     override fun onPause() {
         super.onPause()
         mapView.onPause()
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
+    /**
+     * Executed on activity stop
+     */
     override fun onStop() {
         super.onStop()
         mapView.onStop()
     }
 
+    /**
+     * Executed when the activity is destroyed (finished)
+     */
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
     }
 
+    /**
+     * Executed when the saveInstanceState event is triggered on the activity
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView.onSaveInstanceState(outState)
     }
 
+    /**
+     * Executed on the low memory event for the activity
+     */
     override fun onLowMemory() {
         mapView.onLowMemory()
     }
 
+
+    /**
+     * Executed when user clicks the activity start button. Starts the chronometer
+     * and logs the current Instant.
+     */
     fun onStartClick(view: View) {
         stopBtn.isEnabled = true
 
@@ -200,6 +241,11 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         startBtn.isEnabled = false
     }
 
+    /**
+     * Executed when the user decides to stop tracking the activity.
+     * Creates the activity object and tries to save the activity in either
+     * the local cache or the remote server based on the type of session.
+     */
     fun onStopClick(view: View) {
         chronometer.stop()
         stopLocationRequests()
@@ -225,7 +271,10 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         finish()
     }
 
-    fun generateGPX(name: String, points: List<Location>): String {
+    /**
+     * Generates a GPX format compliant string to send as xml to the server
+     */
+    private fun generateGPX(name: String, points: List<Location>): String {
         val header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n";
         val name = "<name>$name</name><trkseg>\n"
         var segments = ""

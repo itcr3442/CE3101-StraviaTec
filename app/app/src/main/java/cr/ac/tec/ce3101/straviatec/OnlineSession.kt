@@ -29,7 +29,7 @@ class OnlineSession(
         service = retrofit.create(StraviaService::class.java)
     }
 
-    fun synchronize(): Boolean {
+    fun synchronize(afterOp: () -> Unit){
         val localUsers = cache.userDao().getAll()
         val activities = cache.activityDao().getAll()
 
@@ -43,11 +43,7 @@ class OnlineSession(
                     object : Cb<String>() {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
                             if (response.code() == 200) {
-                                val currentUser = User(
-                                    user.username,
-                                    user.password,
-                                )
-                                cache.userDao().insertAll(currentUser)
+                                cache.userDao().insertAll(user)
                             }
                         }
                     }
@@ -58,8 +54,8 @@ class OnlineSession(
         // sync activities
         activities.forEach { activity ->
             saveActivity(activity) {}
-        };
-        return true
+        }
+        afterOp()
     }
 
     override fun changeContext(cx: Context) {
@@ -79,23 +75,22 @@ class OnlineSession(
     }
 
     override fun login(auth: (Boolean) -> Unit) {
-        service.checkLogin(user).enqueue(
-            object : Cb<String>() {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.code() == 200) {
-                        val currentUser = User(
-                            user.username,
-                            user.password,
-                        )
-                        cache.userDao().deleteByUsername(user.username)
-                        cache.userDao().insertAll(currentUser)
-                        auth(synchronize())
-                    } else {
-                        auth(false)
+        val loginFunc = {
+            service.checkLogin(user).enqueue(
+                object : Cb<String>() {
+                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                        if (response.code() == 200) {
+                            cache.userDao().deleteByUsername(user.username)
+                            cache.userDao().insertAll(user)
+                            auth(true)
+                        } else {
+                            auth(false)
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
+        synchronize(loginFunc)
     }
 
     override fun saveActivity(activity: Activity, afterOp: (Boolean) -> Unit) {
