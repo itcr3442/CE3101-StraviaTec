@@ -28,7 +28,6 @@ export class AuthService {
     //TODO: Cambiar esto para usar cookies
     if (localStorage.getItem('isLoggedIn') == "true") {
       let id = JSON.parse(localStorage.getItem('id') || 'null')
-      console.log("Id:", id)
       if (id) {
         return true;
       }

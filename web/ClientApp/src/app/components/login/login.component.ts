@@ -29,7 +29,6 @@ export class LoginComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private repo: RepositoryService
   ) {
     if (authService.isLoggedIn()) {
       this.router.navigate(['/'])
@@ -60,15 +59,7 @@ export class LoginComponent implements OnInit {
   get password() {
     return this.loginForm.controls['password'].value
   }
-  /**
-   * Función que se llama para salir de la sesión.
-   * Esta es llamada al apretar el botón correspondiente.
-   */
-  // logout() {
-  //   this.authService.logout()
-  //   this.logged = false
-  //   this.refresh()
-  // }
+
   /**
   * Método que se llama para verificar con el servido si los datos introducidos
   * son válidos para el inicio de sesión.
