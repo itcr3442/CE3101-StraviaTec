@@ -808,7 +808,7 @@ CREATE TABLE users
   is_organizer bit            NOT NULL,
   hash         binary(16)     NULL,
   salt         binary(16)     NULL,
-  photo        varbinary(max) NOT NULL, -- El parámetro es max o < 8000
+  photo        varbinary(max) NULL, -- El parámetro es max o < 8000
 );
 
 CREATE TABLE friends
