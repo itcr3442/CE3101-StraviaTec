@@ -3,7 +3,8 @@ import { Country } from './country'
 
 
 export interface User {
-    name: string,
+    username: string,
+    firstName: string,
     lastName: string,
     birthDate: Date,
     country: Country,

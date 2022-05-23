@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { RoleLevels } from 'src/app/constants/user.constants';
 import { User } from 'src/app/interfaces/user';
 import { RegisterService } from 'src/app/services/register.service';
+import { RegisterFormComponent } from '../register-form/register-form.component';
 
 
 @Component({
@@ -11,6 +12,8 @@ import { RegisterService } from 'src/app/services/register.service';
   styleUrls: ['./register-user.component.css']
 })
 export class RegisterUserComponent implements OnInit {
+
+  @ViewChild(RegisterFormComponent) registerFormComponent: RegisterFormComponent = {} as RegisterFormComponent;
 
   athlete = RoleLevels.Athlete;
 
@@ -23,17 +26,21 @@ export class RegisterUserComponent implements OnInit {
   }
 
   onSubmit(user: User) {
+
     console.log("Submitted user:", user)
-    // this.registerService.register_user(this.username, this.password, this.firstName, this.lastName, this.phone, this.email, this.isStudent, this.university, this.studentId).subscribe(
-    //   (resp: any) => {
-    //     this.message = "Felicitaciones! Se ha registrado correctamente";
-    //     this.registerService.resetForm(this.registerForm)
-    //   },
-    //   err => {
-    //     if (err.status == 409) {
-    //       this.message = "Nombre de usuario ya está tomado";
-    //     }
-    //   })
+    this.registerService.register_user(user).subscribe(
+      (resp: any) => {
+        this.registerService.resetForm(this.registerFormComponent.registerForm)
+        this.registerFormComponent.message = "Felicitaciones! Se ha registrado correctamente";
+      },
+      err => {
+        if (err.status == 409) {
+          this.registerFormComponent.message = "Nombre de usuario ya está tomado";
+        } else if (err.status == 400) {
+          this.registerFormComponent.message = "Bad Request 400";
+
+        }
+      })
 
   }
 }

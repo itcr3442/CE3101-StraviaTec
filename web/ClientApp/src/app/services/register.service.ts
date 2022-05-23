@@ -4,6 +4,7 @@ import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
@@ -12,28 +13,23 @@ export class RegisterService {
 
   constructor(private repositoryService: RepositoryService, private authService: AuthService) { }
 
-  public register_user(username: string, password: string, firstName: string, lastName: string, phoneNumber: number, email: string, isStudent: boolean, university: string, studentId: string) {
+  public register_user(user: User) {
 
     let new_user = {
-      "type": 0,
-      username,
-      password,
-      firstName,
-      lastName,
-      phoneNumber,
-      email,
-      university: isStudent ? university : null,
-      studentId: isStudent ? studentId : null
+      "username": user.username,
+      "firstName": user.firstName,
+      "lastName": user.lastName,
+      "birthDate": user.birthDate.toISOString(),
+      "nationality": user.country,
+      "type": user.type
     }
+
 
     console.log("New user: " + JSON.stringify(new_user))
 
 
-    return of({
-      "id": 69
-    })
-    // return this.repositoryService.create(
-    //   "users", new_user)
+    return this.repositoryService.create(
+      "Api/Users", new_user)
 
   }
 

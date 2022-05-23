@@ -23,9 +23,10 @@ export class RegisterFormComponent implements OnInit {
     country: new FormControl('', [Validators.required])
   })
 
+  maxDate: string;
+  minDate: string = '1900-01-01'
   message: string = ""
   countryList: Country[];
-  maxDate: string;
   imageURL: string | null = null;
 
   @Output() formSubmit = new EventEmitter<User>();
@@ -77,15 +78,29 @@ export class RegisterFormComponent implements OnInit {
     return this.registerForm.controls['birthDate'].value
   }
 
+  validateForm(): boolean {
+    //validate date
+    if (!this.registerForm.valid) {
+      this.message = "Por favor verifique que ingresó todos los campos correctamente";
+      return false
+    }
+    if (this.birthDate > this.maxDate || this.birthDate < this.minDate) {
+      this.message = "Por favor introduzca una fecha de nacimiento válida. Solo se permiten usuarios mayores de 13 años."
+      return false
+    }
+    return true
+  }
+
 
   onSubmit() {
-    if (this.registerForm.valid) {
+    if (this.validateForm()) {
       this.message = ""
       let arrivalTime: Date = new Date(this.birthDate)
       console.log(arrivalTime.toISOString())
 
       let user: User = {
-        name: this.firstName,
+        username: this.username,
+        firstName: this.firstName,
         lastName: this.lastName,
         birthDate: new Date(this.birthDate),
         country: this.country,
@@ -96,20 +111,7 @@ export class RegisterFormComponent implements OnInit {
 
       this.formSubmit.emit(user)
 
-      // this.registerService.register_user(this.username, this.password, this.firstName, this.lastName, this.phone, this.email, this.isStudent, this.university, this.studentId).subscribe(
-      //   (resp: any) => {
-      //     this.message = "Felicitaciones! Se ha registrado correctamente";
-      //     this.registerService.resetForm(this.registerForm)
-      //   },
-      //   err => {
-      //     if (err.status == 409) {
-      //       this.message = "Nombre de usuario ya está tomado";
-      //     }
-      //   })
+    }
 
-    }
-    else {
-      this.message = "Por favor verifique que ingresó todos los campos correctamente";
-    }
   }
 }
