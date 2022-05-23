@@ -9,7 +9,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { HomeComponent } from './components/home/home.component';
-import { CounterComponent } from './components/counter/counter.component';
 import { LoginComponent } from './components/login/login.component';
 // import { NavbarComponent } from './components/navbar/navbar.component';
 import { RegisterUserComponent } from './components/register-user/register-user.component';
@@ -24,7 +23,6 @@ import { RegisterFormComponent } from './components/register-form/register-form.
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
     LoginComponent,
     RegisterUserComponent,
     RegisterFormComponent,
