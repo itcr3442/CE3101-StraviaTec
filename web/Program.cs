@@ -22,8 +22,9 @@ builder.Services.AddControllersWithViews(config =>
     .AddXmlSerializerFormatters();
 
 builder.Services.AddEndpointsApiExplorer()
-    .AddSwaggerGen()
-    .AddSingleton<IConnectionStrings, ConnectionStrings>()
+    .AddSwaggerGen(config => config.OperationFilter<FileUploadOperationFilter>());
+
+builder.Services.AddSingleton<IConnectionStrings, ConnectionStrings>()
     .AddScoped<ISqlConn, SqlConn>()
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

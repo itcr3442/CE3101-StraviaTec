@@ -78,10 +78,10 @@ public class SqlCmd : IDisposable
         return new SqlStream(_cmd.ExecuteReader());
     }
 
-    public void Exec()
+    public async Task Exec()
     {
         _exec.Bind(_cmd);
-        _cmd.ExecuteNonQuery();
+        await _cmd.ExecuteNonQueryAsync();
     }
 
     private ISqlExec _exec;

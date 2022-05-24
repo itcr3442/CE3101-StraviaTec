@@ -70,7 +70,7 @@ public class IdentityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult UpdatePassword(int id, Req.UpdatePassword req)
+    public async Task<ActionResult> UpdatePassword(int id, Req.UpdatePassword req)
     {
         int? self = this.RequireSelf(id);
         if (self == null)
@@ -102,7 +102,7 @@ public class IdentityController : ControllerBase
 
             using (var cmd = txn.Cmd("UPDATE users SET hash=@hash, salt=@salt WHERE id=@id"))
             {
-                cmd.Param("id", self).Param("hash", newHash).Param("salt", newSalt).Exec();
+                await cmd.Param("id", self).Param("hash", newHash).Param("salt", newSalt).Exec();
             }
 
             txn.Commit();
@@ -228,11 +228,12 @@ public class PhotoController : ControllerBase
     }
 
     [HttpPut]
+    [FileUpload]
     [Consumes(MediaTypeNames.Image.Jpeg)]
     [RequestSizeLimit(1048576)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Put(int id, IFormFile photo)
+    public async Task<ActionResult> Put(int id)
     {
         int? self = this.RequireSelf(id);
         if (self == null)
@@ -244,18 +245,15 @@ public class PhotoController : ControllerBase
         {
             using (var cmd = txn.Cmd("DELETE FROM photos WHERE user_id=@id"))
             {
-                cmd.Param("id", self).Exec();
+                await cmd.Param("id", self).Exec();
             }
 
-            using (var stream = photo.OpenReadStream())
+            using (var cmd = txn.Cmd("INSERT INTO photos(id, photo) VALUES(@id, @photo)"))
             {
-                using (var cmd = txn.Cmd("INSERT INTO photos(id, photo) VALUES(@id, @photo)"))
-                {
-                    cmd.Param("id", self).Param("photo", stream).Exec();
-                }
-
-                txn.Commit();
+                await cmd.Param("id", self).Param("photo", Request.Body).Exec();
             }
+
+            txn.Commit();
         }
 
         return Ok();
