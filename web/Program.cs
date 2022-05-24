@@ -34,6 +34,22 @@ builder.Services.AddSingleton<IConnectionStrings, ConnectionStrings>()
         options.LoginPath = PathString.Empty;
 
         // https://github.com/dotnet/aspnetcore/issues/18013
+        options.Events.OnRedirectToAccessDenied = ctx =>
+        {
+            if (ctx.Request.Path.StartsWithSegments("/api") &&
+                ctx.Response.StatusCode == (int)HttpStatusCode.OK)
+            {
+                ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            }
+            else
+            {
+                ctx.Response.Redirect(ctx.RedirectUri);
+            }
+
+            return Task.FromResult(0);
+        };
+
+        // https://github.com/dotnet/aspnetcore/issues/18013
         options.Events.OnRedirectToLogin = ctx =>
         {
             if (ctx.Request.Path.StartsWithSegments("/api") &&
