@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpContextToken, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 
-// Service for handling server requests
+export const SKIP_401 = new HttpContextToken<boolean>(() => false);
 
+// Service for handling server requests
 @Injectable({
   providedIn: 'root'
 })
@@ -21,8 +22,8 @@ export class RepositoryService {
    * @param route endpoint relativo
    * @returns Observable con datos retornados por el server
    */
-  public getData<T>(route: string): Observable<HttpResponse<T>> {
-    return this.http.get<T>(this.createCompleteRoute(route), { headers: this.generateHeaders(), observe: 'response' });
+  public getData<T>(route: string, skip401: boolean = false): Observable<HttpResponse<T>> {
+    return this.http.get<T>(this.createCompleteRoute(route), { headers: this.generateHeaders(), observe: 'response', context: new HttpContext().set(SKIP_401, skip401) });
   }
 
   /**
@@ -31,10 +32,10 @@ export class RepositoryService {
    * @param body contenidos JSON requeridos por endpoint
    * @returns Observable con datos retornados por el server
    */
-  public create<T>(route: string, body: any, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
+  public create<T>(route: string, body: any, skip401: boolean = false, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
     let url = this.createCompleteRoute(route)
     console.log("route:", url)
-    return this.http.post<T>(url, body, { headers: this.generateHeaders(contentType), observe: 'response' });
+    return this.http.post<T>(url, body, { headers: this.generateHeaders(contentType), observe: 'response', context: new HttpContext().set(SKIP_401, skip401) });
   }
 
   /**
@@ -42,8 +43,8 @@ export class RepositoryService {
    * @param route endpoint relativo
    * @returns Observable con datos retornados por el server
    */
-  public delete<T>(route: string): Observable<HttpResponse<T>> {
-    return this.http.delete<T>(this.createCompleteRoute(route), { headers: this.generateHeaders(), observe: 'response' });
+  public delete<T>(route: string, skip401: boolean = false): Observable<HttpResponse<T>> {
+    return this.http.delete<T>(this.createCompleteRoute(route), { headers: this.generateHeaders(), observe: 'response', context: new HttpContext().set(SKIP_401, skip401) });
   }
 
   /**
@@ -52,8 +53,8 @@ export class RepositoryService {
  * @param body contenidos JSON requeridos por endpoint
  * @returns Observable con datos retornados por el server
  */
-  public edit<T>(route: string, body: any, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
-    return this.http.put<T>(this.createCompleteRoute(route), body, { headers: this.generateHeaders(contentType), observe: 'response' });
+  public edit<T>(route: string, body: any, skip401: boolean = false, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
+    return this.http.put<T>(this.createCompleteRoute(route), body, { headers: this.generateHeaders(contentType), observe: 'response', context: new HttpContext().set(SKIP_401, skip401) });
   }
 
   // Junta el url base del API con la ruta relative de los

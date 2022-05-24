@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service'
+import { AuthService, LoginResponse } from 'src/app/services/auth.service'
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { RepositoryService } from 'src/app/services/repository.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Id } from 'src/app/interfaces/id';
+import { CookiesService } from 'src/app/services/cookies.service';
+import { UserCookieName } from 'src/app/constants/cookie.constants';
 
 @Component({
   selector: 'app-login',
@@ -29,27 +31,15 @@ export class LoginComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private cookies: CookiesService
   ) {
     if (authService.isLoggedIn()) {
       this.router.navigate(['/'])
     }
   }
 
-  refresh(): void {
-    if (this.router.url === "/login/redirect") {
-      this.router.navigate(['/login'])
-    }
-    else {
-      window.location.reload()
-    }
-  }
-
   ngOnInit(): void {
-    // this.logged = this.authService.isLoggedIn()
 
-    if (this.router.url === "/login/redirect") {
-      this.message = "Debe ingresar al sistema para poder acceder a esa página"
-    }
   }
 
   get username() {
@@ -68,26 +58,20 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
 
       this.authService.login(this.username, this.password).subscribe(
-        (res: HttpResponse<Id>) => {
+        (res: HttpResponse<LoginResponse>) => {
           this.loginMsg = ""
           console.log("login resp:", res)
 
-          if (res.body?.id) {
-            localStorage.setItem('id', res.body?.id + "")
-            localStorage.setItem('isLoggedIn', 'true');
+          if (res.body?.id && res.body.type) {
+
+            this.cookies.setCookie(UserCookieName, JSON.stringify(res.body), 1)
+            this.router.navigate(['/'])
+
           }
           else {
             this.loginMsg = "Estamos experimentando dificultades, vuelva a intentar más tarde.\n(Error: No id in response body)";
           }
-          this.router.navigate(['/'])
-          // this.logged = true
-          // this.loginMsg = ""
-          // this.repo.getData("users/" + res)
-          //   .subscribe((result: any) => {
-          //     console.log("ADJJD", result)
-          //     localStorage.setItem('role', result.body.type)
-          //     this.refresh()
-          //   })
+
         },
         (error: HttpErrorResponse) => {
           console.log("login error:", error)

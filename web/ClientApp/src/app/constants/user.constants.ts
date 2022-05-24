@@ -4,3 +4,5 @@ export enum RoleLevels {
 }
 
 export const allRoles = Object.values(RoleLevels)
+
+export declare type RoleLevelType = keyof typeof RoleLevels;

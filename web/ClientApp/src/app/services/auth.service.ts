@@ -4,35 +4,41 @@ import { map } from 'rxjs/operators';
 import { Id } from '../interfaces/id';
 import { HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RoleLevels } from '../constants/user.constants';
+import { RoleLevels, RoleLevelType } from '../constants/user.constants';
+import { CookiesService } from './cookies.service';
+import { UserCookieName } from '../constants/cookie.constants';
+
+export interface LoginResponse {
+  id: number,
+  type: RoleLevelType
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private repo: RepositoryService) { }
+  constructor(private repo: RepositoryService, private cookies: CookiesService) { }
 
   /**
    * Remueve los datos de local storage que mantienen la sesión del usuario
    */
-  public logout(): void {
-    localStorage.setItem('isLoggedIn', 'false');
-    localStorage.removeItem('id');
-    // localStorage.removeItem('role');
+  public logout() {
+    this.cookies.delete_cookie(UserCookieName, '/')
+
+    return this.repo.create<null>("Users/Logout", null, true)
   }
+
   /**
    * 
    * @returns Revisa que los datos necesarios estén presentes en local storage para decir que el usuario está ingresado
    */
   public isLoggedIn(): boolean {
-    //TODO: Cambiar esto para usar cookies
-    if (localStorage.getItem('isLoggedIn') == "true") {
-      let id = JSON.parse(localStorage.getItem('id') || 'null')
-      if (id) {
-        return true;
-      }
+    let cookie = this.cookies.get_cookie(UserCookieName)
+    console.log("User cookie from isLoggedIn():", cookie)
+    if (cookie) {
+      return true;
     }
-    localStorage.setItem('isLoggedIn', 'false')
+
     return false;
   }
 
@@ -41,32 +47,30 @@ export class AuthService {
    * @returns El nivel de rol del usuario que está loggeado
    */
   public getRole(): RoleLevels {
-    return RoleLevels.Athlete
+    let cookie = this.cookies.get_cookie(UserCookieName)
+    if (cookie) {
+      let credentials: LoginResponse = JSON.parse(cookie)
+      console.log("Credentials from getRole():", credentials)
+      return RoleLevels[credentials.type];
+    }
 
-    // if (localStorage.getItem('isLoggedIn') == "true") {
-    //   let role = localStorage.getItem('role')
-    //   if (role != null) {
-    //     return +role
-    //   }
-    // }
-    // return 0;
+    return 0;
   }
 
-  /**
-   * Obtiene la info del usuario actual de local storage, llamar después de isLoggedIn()
-   * @returns Object con 'id' y 'password' fields
-   */
-  // public getCredentials(): any {
-  //   return JSON.parse(localStorage.getItem('token') || '{}')
-  // }
 
   /**
- * Obtiene la info del usuario actual de local storage, llamar después de isLoggedIn()
+ * Obtiene el id del usuario actual de local storage, llamar después de isLoggedIn()
  * @returns Object con 'id'
  */
-  public getCredentials(): Id {
+  public getId(): number {
     //TODO si no hay id entonces revisar login y upatear id
-    return JSON.parse(localStorage.getItem('id') || '{}')
+    let cookie = this.cookies.get_cookie(UserCookieName)
+    if (cookie) {
+      let credentials: LoginResponse = JSON.parse(cookie)
+      return credentials.id;
+    }
+
+    return 0;
   }
 
 
@@ -76,13 +80,13 @@ export class AuthService {
    * @param password contraseña
    * @returns retorna los datos del usuario
    */
-  public login(username: string, password: string): Observable<HttpResponse<Id>> {
+  public login(username: string, password: string): Observable<HttpResponse<LoginResponse>> {
 
     let credentials = {
       username,
       password
     }
 
-    return this.repo.create<Id>("Users/Login", credentials)
+    return this.repo.create<LoginResponse>("Users/Login", credentials, true)
   }
 }

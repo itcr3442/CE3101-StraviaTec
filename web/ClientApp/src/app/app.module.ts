@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AuthGuard } from './guards/auth.guard';
 
@@ -16,6 +16,8 @@ import { RegisterUserComponent } from './components/register-user/register-user.
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { ForbiddenComponent } from './components/forbidden/forbidden.component';
+import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
 
 
 
@@ -30,6 +32,7 @@ import { SettingsComponent } from './components/settings/settings.component';
     RegisterFormComponent,
     UnauthorizedComponent,
     SettingsComponent,
+    ForbiddenComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -38,7 +41,8 @@ import { SettingsComponent } from './components/settings/settings.component';
     FormsModule,
     AppRoutingModule,
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard,
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedHandlerInterceptor, multi: true },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

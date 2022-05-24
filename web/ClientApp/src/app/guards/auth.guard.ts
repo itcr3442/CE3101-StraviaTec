@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, CanActivate, Router } from '@angular/router';
+import { truncate } from 'fs';
 import { RoleLevels } from '../constants/user.constants';
 import { AuthService } from '../services/auth.service';
 
@@ -11,23 +12,29 @@ export class AuthGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const requiredRoles: RoleLevels[] = route.data['roles'];
 
-    console.log("Required Roles:", requiredRoles)
-    console.log("Own Role:", this.authService.getRole())
+    // console.log("Required Roles:", requiredRoles)
+    // console.log("Required Roles length:", requiredRoles.length)
+
+    // Si no se especifican requiredRoles entonces el usuario tiene que estar desloggeado
     if (requiredRoles.length === 0 && !this.authService.isLoggedIn()) {
       return true
     }
 
+    if (this.authService.isLoggedIn()) {
+      // Si sí, entonces hay que revisar que el rol del usuario caiga adentro de los posibles roles
+      if (requiredRoles.includes(this.authService.getRole())) {
+        return true
+      }
+      else {
+        this.router.navigate(['/403']);
+      }
+    }
     if (this.authService.isLoggedIn() && requiredRoles.includes(this.authService.getRole())) {
       return true
     }
 
-    // navigate to login page if not authenticated
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login/redirect']);
-    }
-    else {
-      this.router.navigate(['/401']);
-    }
+    // navigate to 401 page if not authenticated
+    this.router.navigate(['/401']);
     return false;
   }
 
