@@ -10,4 +10,10 @@ public static class Authn
         var principal = controller.HttpContext.User as ClaimsPrincipal;
         return int.Parse(principal.FindFirst("uid")!.Value);
     }
+
+    public static int? RequireSelf(this ControllerBase controller, int id)
+    {
+        int self = controller.LoginId();
+        return id == 0 || id == self ? self : null;
+    }
 }

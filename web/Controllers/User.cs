@@ -18,7 +18,7 @@ namespace web.Controllers;
 [Route("Api/Users")]
 public class IdentityController : ControllerBase
 {
-    public IdentityController(ISqlConn conn) => _conn = conn;
+    public IdentityController(ISqlConn db) => _db = db;
 
     [HttpPost("[action]")]
     [AllowAnonymous]
@@ -29,7 +29,7 @@ public class IdentityController : ControllerBase
     public async Task<ActionResult> Login(Req.Login req)
     {
         (int id, byte[] hash, byte[] salt) row;
-        using (var cmd = _conn.Cmd("SELECT id, hash, salt FROM users WHERE username=@username"))
+        using (var cmd = _db.Cmd("SELECT id, hash, salt FROM users WHERE username=@username"))
         {
             var result = cmd.Param("username", req.Username).Tuple<(int, byte[], byte[])>();
             if (result == null)
@@ -67,12 +67,56 @@ public class IdentityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult UpdatePassword(Req.UpdatePassword req)
+    public ActionResult UpdatePassword(int id, Req.UpdatePassword req)
     {
-        return Random.Shared.Next(2) == 0 ? Ok() : Unauthorized();
+        int? self = this.RequireSelf(id);
+        if (self == null)
+        {
+            return Forbid();
+        }
+
+        using (var txn = _db.Txn())
+        {
+            (byte[] hash, byte[] salt) row;
+            using (var cmd = txn.Cmd("SELECT hash, salt FROM users WHERE id=@id"))
+            {
+                var result = cmd.Param("id", self).Tuple<(byte[], byte[])>();
+                if (result == null)
+                {
+                    return Unauthorized();
+                }
+
+                row = result.Value;
+            }
+
+            if (!HashFor(req.Current, row.salt).SequenceEqual(row.hash))
+            {
+                return Unauthorized();
+            }
+
+            var newSalt = RandomSalt();
+            var newHash = HashFor(req.New, newSalt);
+
+            using (var cmd = txn.Cmd("UPDATE users SET hash=@hash, salt=@salt WHERE id=@id"))
+            {
+                cmd.Param("id", self).Param("hash", newHash).Param("salt", newSalt).Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return Ok();
     }
 
-    private ISqlConn _conn;
+    private readonly ISqlConn _db;
+
+    // Genera una sal aleatoria de 16 bytes
+    private byte[] RandomSalt()
+    {
+        var salt = new byte[16];
+        Random.Shared.NextBytes(salt);
+        return salt;
+    }
 
     // Calcula el campo de hash de clave a partir del plaintext y la sal
     private byte[] HashFor(string password, byte[] salt)
@@ -157,7 +201,7 @@ public class UserController : ControllerBase
 [Route("Api/Users/{id}/Photo")]
 public class PhotoController : ControllerBase
 {
-    public PhotoController(ISqlConn conn) => _conn = conn;
+    public PhotoController(ISqlConn db) => _db = db;
 
     [HttpGet]
     [Produces(MediaTypeNames.Image.Jpeg)]
@@ -165,7 +209,7 @@ public class PhotoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
-        using (var cmd = _conn.Cmd("SELECT photo FROM photos WHERE user_id=@id"))
+        using (var cmd = _db.Cmd("SELECT photo FROM photos WHERE user_id=@id"))
         {
             using (var stream = cmd.Param("id", id).Stream())
             {
@@ -198,5 +242,5 @@ public class PhotoController : ControllerBase
         return Random.Shared.Next(2) == 0 ? Ok() : NotFound();
     }
 
-    private ISqlConn _conn;
+    private readonly ISqlConn _db;
 }
