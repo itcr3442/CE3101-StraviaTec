@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 
 namespace web;
 
-public interface ISqlExec
+public interface ISqlExec : IDisposable
 {
     SqlConnection Connection { get; }
 
@@ -19,14 +19,13 @@ public interface ISqlConn : ISqlExec
 
 public interface ISqlTxn : ISqlExec
 {
+    void Commit();
 }
 
 public static class SqlOps
 {
-    public static SqlCmd Cmd(this ISqlExec exec, string query)
-    {
-        return new SqlCmd(query, exec);
-    }
+    public static ISqlTxn Txn(this ISqlConn conn) => new SqlTxn(conn);
+    public static SqlCmd Cmd(this ISqlExec exec, string query) => new SqlCmd(query, exec);
 }
 
 public class SqlCmd : IDisposable
@@ -117,7 +116,7 @@ public class SqlStream : IDisposable
     private Stream? _stream;
 }
 
-public class SqlConn : ISqlConn, IDisposable
+public class SqlConn : ISqlConn
 {
     public SqlConn(IConnectionStrings strs) => _db = new SqlConnection(strs.Sql);
 
@@ -150,11 +149,24 @@ public class SqlTxn : ISqlTxn
 {
     public SqlTxn(ISqlConn conn) => _conn = conn;
 
+    public void Dispose()
+    {
+        if (_txn != null)
+        {
+            _txn.Dispose();
+        }
+    }
+
     public SqlConnection Connection => _conn.Connection;
 
     public void Bind(SqlCommand command)
     {
         command.Transaction = Txn();
+    }
+
+    public void Commit()
+    {
+        _txn!.Commit();
     }
 
     private ISqlConn _conn;

@@ -25,7 +25,6 @@ builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddSingleton<IConnectionStrings, ConnectionStrings>()
     .AddScoped<ISqlConn, SqlConn>()
-    .AddScoped<ISqlTxn, SqlTxn>()
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
