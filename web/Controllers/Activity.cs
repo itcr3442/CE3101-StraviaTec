@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
 
@@ -11,7 +10,6 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("Api/Activities")]
 public class ActivityController : ControllerBase
 {

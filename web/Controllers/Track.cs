@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
 
@@ -12,7 +11,6 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("Api/[action]/{id}/Track")]
 [RequestSizeLimit(4194304)] // 4MiB
 [ProducesResponseType(StatusCodes.Status200OK)]

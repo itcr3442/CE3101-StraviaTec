@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
 
@@ -11,7 +10,6 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("Api/[action]/{id}/Registration")]
 public class RegistrationController : ControllerBase
 {
@@ -66,7 +64,6 @@ public class RegistrationController : ControllerBase
 }
 
 [ApiController]
-[Authorize]
 [Route("Api/Races/{raceId}/Receipts")]
 public class ReceiptController : ControllerBase
 {
@@ -106,7 +103,6 @@ public class ReceiptController : ControllerBase
 }
 
 [ApiController]
-[Authorize]
 [Route("Api/Races/{raceId}/Receipts/{userId}/[action]")]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]

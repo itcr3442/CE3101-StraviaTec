@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
 
@@ -11,7 +10,6 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("Api/[action]/Available")]
 [Produces(MediaTypeNames.Application.Json)]
 [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -37,7 +35,6 @@ public class AvailableController : ControllerBase
 }
 
 [ApiController]
-[Authorize]
 [Route("Api/[action]/{id}/Progress")]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]

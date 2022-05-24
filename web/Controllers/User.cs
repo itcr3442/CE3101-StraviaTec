@@ -15,7 +15,6 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("Api/Users")]
 public class IdentityController : ControllerBase
 {
@@ -59,7 +58,7 @@ public class IdentityController : ControllerBase
     public async Task<ActionResult> Logout()
     {
         await HttpContext.SignOutAsync();
-		return Ok();
+        return Ok();
     }
 
     [HttpPut("{id}/Password")]
@@ -83,7 +82,6 @@ public class IdentityController : ControllerBase
 }
 
 [ApiController]
-[Authorize]
 [Route("Api/Users")]
 public class UserController : ControllerBase
 {
@@ -156,7 +154,6 @@ public class UserController : ControllerBase
 }
 
 [ApiController]
-[Authorize]
 [Route("Api/Users/{id}/Photo")]
 public class PhotoController : ControllerBase
 {

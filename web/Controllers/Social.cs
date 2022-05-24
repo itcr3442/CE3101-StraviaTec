@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Req = web.Body.Req;
@@ -10,7 +9,6 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("Api/[action]")]
 public class DashboardController : ControllerBase
 {
@@ -29,7 +27,6 @@ public class DashboardController : ControllerBase
 }
 
 [ApiController]
-[Authorize]
 [Route("Api/Following/{followeeId}")]
 public class FriendsController : ControllerBase
 {
