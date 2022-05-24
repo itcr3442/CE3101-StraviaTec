@@ -132,6 +132,8 @@ public class IdentityController : ControllerBase
 [Route("Api/Users")]
 public class UserController : ControllerBase
 {
+    public UserController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -159,15 +161,66 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
-        return Ok(new Resp.GetUser
+        (int effective, int self) = this.OrSelf(id);
+
+        using (var txn = _db.Txn())
         {
-            Username = "foo",
-            FirstName = "bar",
-            LastName = "baz",
-            BirthDate = DateTime.Today,
-            Nationality = "cr",
-            Relationship = UserRelationship.Self,
-        });
+            (string username, string firstName, string lastName,
+             DateTime birthDate, string country) row;
+
+            var query = @"
+                SELECT username, first_name, last_name, birth_date, country
+                FROM   users
+                WHERE  id=@id";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("id", effective);
+
+                var result = cmd.Tuple<(string, string, string, DateTime, string)>();
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                row = result.Value;
+            }
+
+            var relationship = effective == self ? UserRelationship.Self : UserRelationship.None;
+            if (effective != self)
+            {
+                query = @"
+                    SELECT follower
+                    FROM   friends
+                    WHERE  (follower=@id AND followee=@self) OR (follower=@self AND followee=@id)";
+
+                using (var cmd = txn.Cmd(query))
+                {
+                    cmd.Param("id", effective).Param("self", self);
+                    foreach (int follower in cmd.Rows<int>())
+                    {
+                        relationship = (relationship, follower == self) switch
+                        {
+                            (UserRelationship.None, true) => UserRelationship.Following,
+                            (UserRelationship.None, false) => UserRelationship.FollowedBy,
+                            (UserRelationship.Following, false) => UserRelationship.BothFollowing,
+                            (UserRelationship.FollowedBy, true) => UserRelationship.BothFollowing,
+                            _ => relationship,
+                        };
+                    }
+                }
+            }
+
+            return Ok(new Resp.GetUser
+            {
+                Username = row.username,
+                FirstName = row.firstName,
+                LastName = row.lastName,
+                BirthDate = row.birthDate,
+                Nationality = row.country,
+                Relationship = relationship,
+            });
+        }
     }
 
     [HttpPatch("{id}")]
@@ -198,6 +251,8 @@ public class UserController : ControllerBase
     {
         return Ok();
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]

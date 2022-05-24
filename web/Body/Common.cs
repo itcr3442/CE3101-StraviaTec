@@ -8,6 +8,7 @@ public enum UserType
 
 public enum UserRelationship
 {
+    None,
     Self,
     Following,
     FollowedBy,
