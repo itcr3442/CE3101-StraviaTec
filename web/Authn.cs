@@ -8,7 +8,7 @@ public static class Authn
     public static int LoginId(this ControllerBase controller)
     {
         var principal = controller.HttpContext.User as ClaimsPrincipal;
-        return int.Parse(principal.FindFirst("uid")!.Value);
+        return int.Parse(principal.FindFirst("id")!.Value);
     }
 
     public static int? RequireSelf(this ControllerBase controller, int id)
