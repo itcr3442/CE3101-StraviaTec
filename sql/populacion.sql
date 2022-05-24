@@ -247,3 +247,23 @@ INSERT INTO activity_types(name) VALUES
   ('Hiking'),
   ('Kayaking'),
   ('Walking');
+
+INSERT INTO users
+( username
+, first_name
+, last_name
+, birth_date
+, country
+, is_organizer
+, hash
+, salt
+) VALUES
+( 'john'
+, 'John'
+, 'Doe'
+, '1969-06-01'
+, 'KP'
+, 1
+, CONVERT(varbinary, '0x5e6eac40021f178d2ad50e8018a821d2', 1)
+, CONVERT(varbinary, '0xbbd9871fb29487fc2c2619068a1ccc2f', 1)
+);

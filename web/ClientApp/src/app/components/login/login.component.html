@@ -2,7 +2,7 @@
     <div class="row align-items-center">
 
         <div class="col-md-6 col-md-offset-3 loginBox">
-            <ng-container *ngTemplateOutlet="this.logged ? logoutBlock : loginBlock">
+            <ng-container *ngTemplateOutlet="false ? logoutBlock : loginBlock">
             </ng-container>
             <div>
                 <ng-container *ngIf="this.message">
@@ -51,5 +51,5 @@
 
 <ng-template #logoutBlock>
     <h2>Bienvenido al sistema!</h2>
-    <button type="submit" (click)="logout()" class="btn btn-danger">Salir</button>
+    <!-- <button type="submit" (click)="logout()" class="btn btn-danger">Salir</button> -->
 </ng-template>

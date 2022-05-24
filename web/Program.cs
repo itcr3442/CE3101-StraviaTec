@@ -13,7 +13,8 @@ builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddSingleton<IConnectionStrings, ConnectionStrings>()
     .AddScoped<ISqlConn, SqlConn>()
-    .AddScoped<ISqlTxn, SqlTxn>();
+    .AddScoped<ISqlTxn, SqlTxn>()
+    .AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(5));
 
 var app = builder.Build();
 
@@ -32,6 +33,7 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

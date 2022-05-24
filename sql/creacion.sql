@@ -799,16 +799,21 @@ CREATE TABLE countries
 
 CREATE TABLE users
 (
-  id           int            NOT NULL IDENTITY PRIMARY KEY,
-  username     varchar(64)    NOT NULL UNIQUE,
-  first_name   varchar(64)    NOT NULL,
-  last_name    varchar(64)    NOT NULL,
-  birth_date   DATE           NOT NULL,
-  country      char(2)        NOT NULL REFERENCES countries(iso),
-  is_organizer bit            NOT NULL,
-  hash         binary(16)     NULL,
-  salt         binary(16)     NULL,
-  photo        varbinary(max) NOT NULL, -- El parámetro es max o < 8000
+  id           int         NOT NULL IDENTITY PRIMARY KEY,
+  username     varchar(64) NOT NULL UNIQUE,
+  first_name   varchar(64) NOT NULL,
+  last_name    varchar(64) NOT NULL,
+  birth_date   DATE        NOT NULL,
+  country      char(2)     NOT NULL REFERENCES countries(iso),
+  is_organizer bit         NOT NULL,
+  hash         binary(16)  NOT NULL,
+  salt         binary(16)  NOT NULL,
+);
+
+CREATE TABLE photos
+(
+  user_id int            NOT NULL REFERENCES users(id),
+  photo   varbinary(max) NOT NULL, -- El parámetro es max o < 8000
 );
 
 CREATE TABLE friends

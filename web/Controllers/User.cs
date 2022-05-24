@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using web.Body.Common;
 
 using Req = web.Body.Req;
@@ -13,15 +14,55 @@ namespace web.Controllers;
 [Route("Api/Users")]
 public class IdentityController : ControllerBase
 {
+    public IdentityController(ISqlConn conn) => _conn = conn;
+
     [HttpPost("[action]")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Ref))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult Login(Req.Login req)
     {
-        return Random.Shared.Next(2) == 0 ? Ok(new Resp.Ref(69)) : Unauthorized();
+        (int id, byte[] hash, byte[] salt) row;
+        using (var cmd = _conn.Cmd("SELECT id, hash, salt FROM users WHERE username=@username"))
+        {
+            cmd.Param("username", req.Username);
+
+            var result = cmd.Tuple<(int, byte[], byte[])>();
+            if (result == null)
+            {
+                return Unauthorized();
+            }
+
+            row = result.Value;
+        }
+
+        if (!HashFor(req.Password, row.salt).SequenceEqual(row.hash))
+        {
+            return Unauthorized();
+        }
+
+        HttpContext.Session.SetInt32("uid", row.id);
+        return Ok(new Resp.Ref(row.id));
+    }
+
+    [HttpPut("{id}/Password")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public ActionResult UpdatePassword(Req.UpdatePassword req)
+    {
+        return Random.Shared.Next(2) == 0 ? Ok() : Unauthorized();
+    }
+
+    private ISqlConn _conn;
+
+    // Calcula el campo de hash de clave a partir del plaintext y la sal
+    private byte[] HashFor(string password, byte[] salt)
+    {
+        return KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, 1000, 16);
     }
 }
 
@@ -95,17 +136,6 @@ public class UserController : ControllerBase
     {
         return Ok();
     }
-
-    [HttpPut("{id}/Password")]
-    [Consumes(MediaTypeNames.Application.Json)]
-    [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult UpdatePassword(Req.UpdatePassword req)
-    {
-        return Random.Shared.Next(2) == 0 ? Ok() : Unauthorized();
-    }
 }
 
 [ApiController]
@@ -120,19 +150,17 @@ public class PhotoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
-        using (var cmd = _conn.Cmd("SELECT photo FROM users WHERE id=@id"))
+        using (var cmd = _conn.Cmd("SELECT photo FROM photos WHERE user_id=@id"))
         {
             using (var stream = cmd.Param("id", id).Stream())
             {
-                if (stream.Stream == null)
+                var photo = stream.Take();
+                if (photo == null)
                 {
                     return NotFound();
                 }
 
-                using (var photo = stream.Stream)
-                {
-                    return File(photo, MediaTypeNames.Image.Jpeg);
-                }
+                return File(photo, MediaTypeNames.Image.Jpeg);
             }
         }
     }

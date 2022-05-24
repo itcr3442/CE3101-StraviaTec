@@ -8,10 +8,7 @@ import { Observable, of } from 'rxjs';
 import { User } from '../interfaces/user';
 import { RoleLevels } from '../constants/user.constants';
 import { HttpResponse } from '@angular/common/http';
-
-export interface RegisterResp {
-  id: number
-}
+import { Id } from '../interfaces/id';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +17,7 @@ export class RegisterService {
 
   constructor(private repositoryService: RepositoryService, private authService: AuthService) { }
 
-  public register_user(user: User): Observable<HttpResponse<RegisterResp>> {
+  public register_user(user: User): Observable<HttpResponse<Id>> {
 
     let new_user = {
       "username": user.username,
@@ -35,7 +32,7 @@ export class RegisterService {
     console.log("New user: " + JSON.stringify(new_user))
 
     // return of({ id: 69 })
-    return this.repositoryService.create<RegisterResp>(
+    return this.repositoryService.create<Id>(
       "Users", new_user)
 
   }
