@@ -248,7 +248,7 @@ public class PhotoController : ControllerBase
                 await cmd.Param("id", self).Exec();
             }
 
-            using (var cmd = txn.Cmd("INSERT INTO photos(id, photo) VALUES(@id, @photo)"))
+            using (var cmd = txn.Cmd("INSERT INTO photos(user_id, photo) VALUES(@id, @photo)"))
             {
                 await cmd.Param("id", self).Param("photo", Request.Body).Exec();
             }
