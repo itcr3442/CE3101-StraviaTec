@@ -54,6 +54,14 @@ public class IdentityController : ControllerBase
         return Ok(new Resp.Ref(row.id));
     }
 
+    [HttpPost("[action]")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync();
+		return Ok();
+    }
+
     [HttpPut("{id}/Password")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
