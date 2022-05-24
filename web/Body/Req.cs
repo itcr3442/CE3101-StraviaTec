@@ -13,7 +13,8 @@ public record Login
 
 public record UpdatePassword
 {
-    public string? Current { get; set; }
+    [Required]
+    public string Current { get; set; } = null!;
     [Required]
     public string New { get; set; } = null!;
 }
