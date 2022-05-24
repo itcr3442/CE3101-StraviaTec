@@ -5,6 +5,14 @@ namespace web.Body.Resp;
 
 public record struct Ref([Required] int Id);
 
+public record Login
+{
+    [Required]
+    public int Id { get; set; }
+    [Required]
+    public UserType Type { get; set; }
+}
+
 public record GetUser
 {
     [Required]

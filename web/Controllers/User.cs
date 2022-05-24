@@ -24,14 +24,16 @@ public class IdentityController : ControllerBase
     [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Ref))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Login))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> Login(Req.Login req)
     {
-        (int id, byte[] hash, byte[] salt) row;
-        using (var cmd = _db.Cmd("SELECT id, hash, salt FROM users WHERE username=@username"))
+        (int id, byte[] hash, byte[] salt, bool organizer) row;
+
+        var query = "SELECT id, hash, salt, is_organizer FROM users WHERE username=@username";
+        using (var cmd = _db.Cmd(query))
         {
-            var result = cmd.Param("username", req.Username).Tuple<(int, byte[], byte[])>();
+            var result = cmd.Param("username", req.Username).Tuple<(int, byte[], byte[], bool)>();
             if (result == null)
             {
                 return Unauthorized();
@@ -50,7 +52,8 @@ public class IdentityController : ControllerBase
         var identity = new ClaimsIdentity(claims, scheme);
         await HttpContext.SignInAsync(scheme, new ClaimsPrincipal(identity));
 
-        return Ok(new Resp.Ref(row.id));
+        var type = row.organizer ? UserType.Organizer : UserType.Athlete;
+        return Ok(new Resp.Login { Id = row.id, Type = type });
     }
 
     [HttpPost("[action]")]
