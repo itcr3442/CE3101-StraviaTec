@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using Microsoft.Data.SqlClient;
@@ -44,32 +46,21 @@ public class SqlCmd : IDisposable
         return this;
     }
 
-    public T? Tuple<T>() where T : struct, ITuple
+    public T? Tuple<T>() where T : struct
     {
-        var ty = typeof(T);
-        var args = ty.GetGenericArguments();
-        var columns = new object?[args.Length];
-
         _exec.Bind(_cmd);
-        using (var reader = _cmd.ExecuteReader())
+        foreach (var row in Rows<T>())
         {
-            if (!reader.Read())
-            {
-                return null;
-            }
-
-            reader.GetValues(columns);
+            return row;
         }
 
-        for (int i = 0; i < args.Length; ++i)
-        {
-            if (Nullable.GetUnderlyingType(args[i]) != null && columns[i] == DBNull.Value)
-            {
-                columns[i] = null;
-            }
-        }
+        return null;
+    }
 
-        return (T?)Activator.CreateInstance(ty, columns);
+    public IEnumerable<T> Rows<T>() where T : struct
+    {
+        _exec.Bind(_cmd);
+        return new SqlRows<T>(_cmd.ExecuteReader());
     }
 
     public SqlStream Stream()
@@ -86,6 +77,52 @@ public class SqlCmd : IDisposable
 
     private ISqlExec _exec;
     private SqlCommand _cmd;
+}
+
+public class SqlRows<T> : IDisposable, IEnumerable<T>, IEnumerator<T> where T : struct
+{
+    public void Dispose() => _reader.Dispose();
+
+    public IEnumerator<T> GetEnumerator() => this;
+
+    public T Current
+    {
+        get
+        {
+            var columns = new object?[_args != null ? _args.Length : 1];
+            _reader.GetValues(columns);
+
+            for (int i = 0; i < columns.Length; ++i)
+            {
+                Type reference = _args != null ? _args[i] : _ty;
+                if (Nullable.GetUnderlyingType(reference) != null && columns[i] == DBNull.Value)
+                {
+                    columns[i] = null;
+                }
+            }
+
+            return (T)(_args != null ? Activator.CreateInstance(_ty, columns) : columns[0])!;
+        }
+    }
+
+    public bool MoveNext() => _reader.Read();
+
+    public void Reset() => throw new InvalidOperationException("Cannot reset row iterator");
+
+    IEnumerator IEnumerable.GetEnumerator() => this;
+
+    object IEnumerator.Current => Current;
+
+    internal SqlRows(SqlDataReader reader)
+    {
+        _reader = reader;
+        _ty = typeof(T);
+        _args = typeof(ITuple).IsAssignableFrom(_ty) ? _ty.GetGenericArguments() : null;
+    }
+
+    private readonly SqlDataReader _reader;
+    private readonly Type _ty;
+    private readonly Type[]? _args;
 }
 
 public class SqlStream : IDisposable
