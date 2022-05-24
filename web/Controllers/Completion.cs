@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,31 @@ namespace web.Controllers;
 [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
 public class AvailableController : ControllerBase
 {
+    public AvailableController(ISqlConn db) => _db = db;
+
     [HttpGet]
-    public ActionResult Categories()
+    public async Task<ActionResult> Categories()
     {
-        return Ok(new Category[] { Category.Junior, Category.Elite });
+        int self = this.LoginId();
+        int? age;
+
+        using (var cmd = _db.Cmd("current_age"))
+        {
+            cmd.Param("id", self).Output("age", SqlDbType.Int);
+            age = (await cmd.StoredProcedure())["@age"].Value as int?;
+        }
+
+        Category ageCategory = age switch
+        {
+            >= 51 => Category.MasterC,
+            >= 41 => Category.MasterB,
+            >= 30 => Category.MasterA,
+            >= 24 => Category.Open,
+            >= 15 => Category.Sub23,
+            _ => Category.Junior,
+        };
+
+        return Ok(new Category[] { ageCategory, Category.Elite });
     }
 
     [HttpGet]
@@ -32,6 +54,8 @@ public class AvailableController : ControllerBase
     {
         return Ok(new int[] { 1, 2, 3 });
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]
