@@ -12,12 +12,12 @@ import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 // import { NavbarComponent } from './components/navbar/navbar.component';
 import { RegisterUserComponent } from './components/register-user/register-user.component';
-// import { WorkerAdminComponent } from './components/worker-admin/worker-admin.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
+import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
 
 
 
@@ -42,7 +42,8 @@ import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-hand
     AppRoutingModule,
   ],
   providers: [AuthGuard,
-    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedHandlerInterceptor, multi: true },],
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedHandlerInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ForbiddenHandlerInterceptor, multi: true },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
