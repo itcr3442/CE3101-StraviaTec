@@ -1,12 +1,15 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Net.Mime;
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+
 using web.Body.Common;
 
 using Req = web.Body.Req;
@@ -159,7 +162,7 @@ public class UserController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetUser))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Get(int id)
+    public async Task<ActionResult> Get(int id)
     {
         (int effective, int self) = this.OrSelf(id);
 
@@ -184,6 +187,18 @@ public class UserController : ControllerBase
                 }
 
                 row = result.Value;
+            }
+
+            int? age;
+            using (var cmd = txn.Cmd("current_age"))
+            {
+                cmd.Param("id", effective).Output("age", SqlDbType.Int);
+                age = (await cmd.StoredProcedure())["@age"].Value as int?;
+            }
+
+            if (age == null)
+            {
+                return NotFound();
             }
 
             var relationship = effective == self ? UserRelationship.Self : UserRelationship.None;
@@ -217,6 +232,7 @@ public class UserController : ControllerBase
                 FirstName = row.firstName,
                 LastName = row.lastName,
                 BirthDate = row.birthDate,
+                Age = age.Value,
                 Nationality = row.country,
                 Relationship = relationship,
             });

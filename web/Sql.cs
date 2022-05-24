@@ -46,6 +46,12 @@ public class SqlCmd : IDisposable
         return this;
     }
 
+    public SqlCmd Output(string name, SqlDbType type)
+    {
+        _cmd.Parameters.Add("@" + name, type).Direction = ParameterDirection.Output;
+        return this;
+    }
+
     public T? Tuple<T>() where T : struct
     {
         _exec.Bind(_cmd);
@@ -73,6 +79,13 @@ public class SqlCmd : IDisposable
     {
         _exec.Bind(_cmd);
         return await _cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<SqlParameterCollection> StoredProcedure()
+    {
+        _cmd.CommandType = CommandType.StoredProcedure;
+        await Exec();
+        return _cmd.Parameters;
     }
 
     private ISqlExec _exec;
