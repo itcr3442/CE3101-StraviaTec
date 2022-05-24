@@ -232,8 +232,32 @@ public class PhotoController : ControllerBase
     [RequestSizeLimit(1048576)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Put(int id, IFormFile image)
+    public ActionResult Put(int id, IFormFile photo)
     {
+        int? self = this.RequireSelf(id);
+        if (self == null)
+        {
+            return Forbid();
+        }
+
+        using (var txn = _db.Txn())
+        {
+            using (var cmd = txn.Cmd("DELETE FROM photos WHERE user_id=@id"))
+            {
+                cmd.Param("id", self).Exec();
+            }
+
+            using (var stream = photo.OpenReadStream())
+            {
+                using (var cmd = txn.Cmd("INSERT INTO photos(id, photo) VALUES(@id, @photo)"))
+                {
+                    cmd.Param("id", self).Param("photo", stream).Exec();
+                }
+
+                txn.Commit();
+            }
+        }
+
         return Ok();
     }
 
