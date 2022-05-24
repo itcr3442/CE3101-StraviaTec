@@ -1,7 +1,11 @@
 using System;
 using System.IO;
 using System.Net.Mime;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using web.Body.Common;
 
@@ -11,24 +15,24 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("Api/Users")]
 public class IdentityController : ControllerBase
 {
     public IdentityController(ISqlConn conn) => _conn = conn;
 
     [HttpPost("[action]")]
+    [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Ref))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult Login(Req.Login req)
+    public async Task<ActionResult> Login(Req.Login req)
     {
         (int id, byte[] hash, byte[] salt) row;
         using (var cmd = _conn.Cmd("SELECT id, hash, salt FROM users WHERE username=@username"))
         {
-            cmd.Param("username", req.Username);
-
-            var result = cmd.Tuple<(int, byte[], byte[])>();
+            var result = cmd.Param("username", req.Username).Tuple<(int, byte[], byte[])>();
             if (result == null)
             {
                 return Unauthorized();
@@ -42,7 +46,11 @@ public class IdentityController : ControllerBase
             return Unauthorized();
         }
 
-        HttpContext.Session.SetInt32("uid", row.id);
+        var claims = new Claim[] { new Claim("id", row.id.ToString()) };
+        var scheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        var identity = new ClaimsIdentity(claims, scheme);
+        await HttpContext.SignInAsync(scheme, new ClaimsPrincipal(identity));
+
         return Ok(new Resp.Ref(row.id));
     }
 
@@ -67,6 +75,7 @@ public class IdentityController : ControllerBase
 }
 
 [ApiController]
+[Authorize]
 [Route("Api/Users")]
 public class UserController : ControllerBase
 {
@@ -139,6 +148,7 @@ public class UserController : ControllerBase
 }
 
 [ApiController]
+[Authorize]
 [Route("Api/Users/{id}/Photo")]
 public class PhotoController : ControllerBase
 {

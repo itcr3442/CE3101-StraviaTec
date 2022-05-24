@@ -1,5 +1,8 @@
 using web;
+using System.Net;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +17,29 @@ builder.Services.AddEndpointsApiExplorer()
     .AddSingleton<IConnectionStrings, ConnectionStrings>()
     .AddScoped<ISqlConn, SqlConn>()
     .AddScoped<ISqlTxn, SqlTxn>()
-    .AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(5));
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+        options.SlidingExpiration = true;
+        options.LoginPath = PathString.Empty;
+
+        // https://github.com/dotnet/aspnetcore/issues/18013
+        options.Events.OnRedirectToLogin = ctx =>
+        {
+            if (ctx.Request.Path.StartsWithSegments("/api") &&
+                ctx.Response.StatusCode == (int)HttpStatusCode.OK)
+            {
+                ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            }
+            else
+            {
+                ctx.Response.Redirect(ctx.RedirectUri);
+            }
+
+            return Task.FromResult(0);
+        };
+    });
 
 var app = builder.Build();
 
@@ -33,7 +58,8 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

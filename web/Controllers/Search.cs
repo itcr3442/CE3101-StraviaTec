@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Req = web.Body.Req;
@@ -9,6 +10,7 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("Api/[action]/Search")]
 [Produces(MediaTypeNames.Application.Json)]
 [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Paged))]
