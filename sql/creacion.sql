@@ -784,6 +784,7 @@ N'<?xml version="1.0" encoding="UTF-16"?>
   </xsd:simpleType>
 
 </xsd:schema>';
+
 GO
 
 -- Tomado de <https://gist.github.com/abroadbent/6233480>
@@ -841,3 +842,34 @@ CREATE TABLE activities
   length     decimal  NOT NULL,
   track      xml(gpx) NOT NULL,
 );
+
+GO
+
+CREATE PROCEDURE current_age
+  @id  INT
+, @age INT OUTPUT
+AS BEGIN
+  DECLARE @birth_date DATETIME;
+  DECLARE @years      INT;
+  DECLARE @now        DATETIME;
+
+  IF @id IS NULL
+  BEGIN
+    PRINT 'User ID cannot be null';
+    RETURN 1;
+  END
+
+  SELECT @birth_date = birth_date FROM users WHERE id = @id;
+
+  IF @birth_date IS NOT NULL
+  BEGIN
+    SELECT @now = GETDATE();
+    SELECT @years = DATEDIFF(year, @birth_date, @now);
+
+    IF MONTH(@now) < MONTH(@birth_date)
+    OR (MONTH(@now) = MONTH(@birth_date) AND DAY(@now) < DAY(@birth_date))
+      SELECT @age = @years - 1;
+    ELSE
+      SELECT @age = @years;
+  END;
+END;
