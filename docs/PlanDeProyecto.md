@@ -263,6 +263,14 @@ $$~~~~~$$
   así que esto mismo funciona en cualquier otro sistema Linux donde se haya
   instalado Nix.
 
+- 23 de mayo: Implementé una abstracción por inyección de dependencias para
+  manejar automáticamente las conexiones a la base de datos sin repetir mucho
+  código, así como el proceso de creación, envío y tratamiento de respuestas de
+  solicitud.
+
+  Implemento login y fotos de usuario. Agrego un usuario organizador
+  predeterminado al script de populación.
+
 ### José Morales
 
 - 27 ABR
