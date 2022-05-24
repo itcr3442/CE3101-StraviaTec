@@ -11,9 +11,15 @@ public static class Authn
         return int.Parse(principal.FindFirst("id")!.Value);
     }
 
-    public static int? RequireSelf(this ControllerBase controller, int id)
+    public static (int effective, int self) OrSelf(this ControllerBase controller, int id)
     {
         int self = controller.LoginId();
-        return id == 0 || id == self ? self : null;
+        return (id == 0 ? self : id, self);
+    }
+
+    public static int? RequireSelf(this ControllerBase controller, int id)
+    {
+        (int effective, int self) = controller.OrSelf(id);
+        return effective == self ? self : null;
     }
 }
