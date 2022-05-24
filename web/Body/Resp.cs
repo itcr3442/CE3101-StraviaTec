@@ -5,7 +5,7 @@ namespace web.Body.Resp;
 
 public record struct Ref([Required] int Id);
 
-public record Login
+public record Identity
 {
     [Required]
     public int Id { get; set; }

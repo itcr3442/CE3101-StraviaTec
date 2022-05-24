@@ -24,7 +24,7 @@ public class IdentityController : ControllerBase
     [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Login))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Identity))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> Login(Req.Login req)
     {
@@ -53,7 +53,7 @@ public class IdentityController : ControllerBase
         await HttpContext.SignInAsync(scheme, new ClaimsPrincipal(identity));
 
         var type = row.organizer ? UserType.Organizer : UserType.Athlete;
-        return Ok(new Resp.Login { Id = row.id, Type = type });
+        return Ok(new Resp.Identity { Id = row.id, Type = type });
     }
 
     [HttpPost("[action]")]
