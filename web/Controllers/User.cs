@@ -262,9 +262,18 @@ public class PhotoController : ControllerBase
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        return Random.Shared.Next(2) == 0 ? Ok() : NotFound();
+        int? self = this.RequireSelf(id);
+        if (self == null)
+        {
+            return Forbid();
+        }
+
+        using (var cmd = _db.Cmd("DELETE FROM photos WHERE user_id=@id"))
+        {
+            return await cmd.Param("id", self).Exec() > 0 ? Ok() : NotFound();
+        }
     }
 
     private readonly ISqlConn _db;
