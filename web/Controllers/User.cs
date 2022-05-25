@@ -245,19 +245,61 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult Patch(int id, Req.PatchUser req)
+    public async Task<ActionResult> Patch(int id, Req.PatchUser req)
     {
-        switch (Random.Shared.Next(3))
+        int? self = this.RequireSelf(id);
+        if (self == null)
         {
-            case 0:
-                return Ok();
-
-            case 1:
-                return BadRequest();
-
-            default:
-                return Conflict();
+            return Forbid();
         }
+
+        using (var txn = _db.Txn())
+        {
+            (string username, string firstName, string lastName,
+             DateTime birthDate, string country) row;
+
+            var query = @"
+                SELECT username, first_name, last_name, birth_date, country
+                FROM   users
+                WHERE  id=@id";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("id", self);
+
+                var result = cmd.Tuple<(string, string, string, DateTime, string)>();
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                row = result.Value;
+            }
+
+            query = @"
+                UPDATE users
+                SET    username=@username,
+                       first_name=@first_name,
+                       last_name=@last_name,
+                       birth_date=@last_name,
+                       country=@country
+                WHERE  id=@id";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                await cmd.Param("id", self)
+                   .Param("username", req.Username ?? row.username)
+                   .Param("first_name", req.FirstName ?? row.firstName)
+                   .Param("last_name", req.LastName ?? row.lastName)
+                   .Param("birth_date", req.BirthDate ?? row.birthDate)
+                   .Param("country", req.Nationality ?? row.country)
+                   .Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return Ok();
     }
 
     [HttpDelete("{id}")]
