@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { RoleLevels, RoleLevelType } from '../constants/user.constants';
 import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
+import { Router } from '@angular/router';
 
 export interface LoginResponse {
   id: number,
@@ -17,17 +18,22 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private repo: RepositoryService, private cookies: CookiesService) { }
+  constructor(private repo: RepositoryService, private cookies: CookiesService, private router: Router) { }
 
   /**
-   * Remueve los datos de local storage que mantienen la sesión del usuario
-   */
-  public logout() {
-    return this.repo.create<null>("Users/Logout", null).subscribe((res: HttpResponse<null>) => {
-      console.log("Log out:", res)
-    }).add(() => {
-      this.cookies.delete_cookie(UserCookieName, '/')
-    })
+ * 
+ * @param username username del usuario
+ * @param password contraseña
+ * @returns retorna los datos del usuario
+ */
+  public login(username: string, password: string): Observable<HttpResponse<LoginResponse>> {
+
+    let credentials = {
+      username,
+      password
+    }
+
+    return this.repo.create<LoginResponse>("Users/Login", credentials, true)
   }
 
   /**
@@ -36,7 +42,7 @@ export class AuthService {
    */
   public isLoggedIn(): boolean {
     let cookie = this.cookies.get_cookie(UserCookieName)
-    console.log("User cookie from isLoggedIn():", cookie)
+    // console.log("User cookie from isLoggedIn():", cookie)
     if (cookie) {
       return true;
     }
@@ -52,7 +58,7 @@ export class AuthService {
     let cookie = this.cookies.get_cookie(UserCookieName)
     if (cookie) {
       let credentials: LoginResponse = JSON.parse(cookie)
-      console.log("Credentials from getRole():", credentials)
+      // console.log("Credentials from getRole():", credentials)
       return RoleLevels[credentials.type];
     }
 
@@ -77,18 +83,19 @@ export class AuthService {
 
 
   /**
-   * 
-   * @param username username del usuario
-   * @param password contraseña
-   * @returns retorna los datos del usuario
+   * Remueve los cookies que mantienen la sesión del usuario y manda un request de logout al API
    */
-  public login(username: string, password: string): Observable<HttpResponse<LoginResponse>> {
+  public logout() {
+    return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
+      (error: HttpErrorResponse) => {
+        console.log("Log out error:", error)
+      }
 
-    let credentials = {
-      username,
-      password
-    }
-
-    return this.repo.create<LoginResponse>("Users/Login", credentials, true)
+    ).add(() => {
+      this.cookies.delete_cookie(UserCookieName, '/')
+      this.router.navigate(['/login'])
+    })
   }
+
+
 }
