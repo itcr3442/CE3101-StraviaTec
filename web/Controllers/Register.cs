@@ -29,12 +29,12 @@ public class RegistrationController : ControllerBase
     }
 
     [HttpDelete]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public ActionResult Races(int id)
     {
-        return Random.Shared.Next(2) == 0 ? Ok() : Conflict();
+        return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
     }
 
     [HttpPost]
@@ -54,12 +54,12 @@ public class RegistrationController : ControllerBase
 
     [HttpDelete]
     [ActionName("Challenges")] // Evita colisión de prototipos
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public ActionResult UnregisterChallenge(int id)
     {
-        return Random.Shared.Next(2) == 0 ? Ok() : Conflict();
+        return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
     }
 }
 
@@ -104,19 +104,19 @@ public class ReceiptController : ControllerBase
 
 [ApiController]
 [Route("Api/Races/{raceId}/Receipts/{userId}/[action]")]
-[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status204NoContent)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 public class ConfirmationController : ControllerBase
 {
     [HttpPost]
     public ActionResult Accept(int raceId, int userId)
     {
-        return Ok();
+        return NoContent();
     }
 
     [HttpPost]
     public ActionResult Reject(int raceId, int userId)
     {
-        return Ok();
+        return NoContent();
     }
 }

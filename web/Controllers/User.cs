@@ -60,17 +60,17 @@ public class IdentityController : ControllerBase
     }
 
     [HttpPost("[action]")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Logout()
     {
         await HttpContext.SignOutAsync();
-        return Ok();
+        return NoContent();
     }
 
     [HttpPut("{id}/Password")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> UpdatePassword(int id, Req.UpdatePassword req)
@@ -111,7 +111,7 @@ public class IdentityController : ControllerBase
             txn.Commit();
         }
 
-        return Ok();
+        return NoContent();
     }
 
     private readonly ISqlConn _db;
@@ -241,7 +241,7 @@ public class UserController : ControllerBase
 
     [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -299,11 +299,11 @@ public class UserController : ControllerBase
             txn.Commit();
         }
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
@@ -320,7 +320,7 @@ public class UserController : ControllerBase
         }
 
         await HttpContext.SignOutAsync();
-        return Ok();
+        return NoContent();
     }
 
     private readonly ISqlConn _db;
@@ -334,7 +334,7 @@ public class PhotoController : ControllerBase
 
     [HttpGet]
     [Produces(MediaTypeNames.Image.Jpeg)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
@@ -382,7 +382,7 @@ public class PhotoController : ControllerBase
             txn.Commit();
         }
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpDelete]
@@ -398,7 +398,7 @@ public class PhotoController : ControllerBase
 
         using (var cmd = _db.Cmd("DELETE FROM photos WHERE user_id=@id"))
         {
-            return await cmd.Param("id", self).Exec() > 0 ? Ok() : NotFound();
+            return await cmd.Param("id", self).Exec() > 0 ? NoContent() : NotFound();
         }
     }
 

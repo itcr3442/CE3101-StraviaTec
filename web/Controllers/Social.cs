@@ -51,10 +51,10 @@ public class FriendsController : ControllerBase
     }
 
     [HttpDelete]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Unfollow(int followeeId)
     {
-        return Ok();
+        return NoContent();
     }
 }
