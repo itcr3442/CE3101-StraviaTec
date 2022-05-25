@@ -50,19 +50,19 @@ public class ChallengeController : ControllerBase
 
     [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult Patch(int id, Req.PatchChallenge req)
     {
-        return Random.Shared.Next(2) == 0 ? Ok() : BadRequest();
+        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
     }
 
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)
     {
-        return Ok();
+        return NoContent();
     }
 }

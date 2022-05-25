@@ -60,7 +60,7 @@ public class AvailableController : ControllerBase
 
 [ApiController]
 [Route("Api/[action]/{id}/Progress")]
-[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status204NoContent)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 [ProducesResponseType(StatusCodes.Status409Conflict)]
 public class ProgressController : ControllerBase
@@ -68,12 +68,12 @@ public class ProgressController : ControllerBase
     [HttpPost]
     public ActionResult Races(int id, int activity)
     {
-        return Ok();
+        return NoContent();
     }
 
     [HttpPost]
     public ActionResult Challenges(int id, int activity)
     {
-        return Ok();
+        return NoContent();
     }
 }

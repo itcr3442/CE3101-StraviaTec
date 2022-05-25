@@ -14,12 +14,12 @@ public class CommentsController : ControllerBase
 {
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult Comment(int activityId, Req.NewComment req)
     {
-        return Random.Shared.Next(2) == 0 ? Ok() : BadRequest();
+        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
     }
 
     [HttpGet("{page}")]
