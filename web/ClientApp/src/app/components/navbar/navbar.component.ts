@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RoleLevels } from 'src/app/constants/auth.constants';
+import { RoleLevels } from 'src/app/constants/user.constants';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({

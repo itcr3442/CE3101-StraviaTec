@@ -6,13 +6,12 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <ng-container
-                    *ngTemplateOutlet="this.logged ?  (this.role === RoleLevels.User ? userBlock  : adminBlock) : unloggedBlock">
-                </ng-container>
-            </ul>
-        </div>
+
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ng-container *ngTemplateOutlet="this.logged ?  loggedBlock : unloggedBlock">
+            </ng-container>
+        </ul>
+
     </div>
 </nav>
 
@@ -20,14 +19,14 @@
 
 </ng-template>
 
+<ng-template #loggedBlock>
+
+</ng-template>
+
 <ng-template #userBlock>
-    <li class="nav-item">
-        <a class="nav-link" href="flight_search">Búsqueda de Vuelos</a>
-    </li>
+
 </ng-template>
 
 <ng-template #adminBlock>
-    <li class="nav-item">
-        <a class="nav-link" href="worker_register">Gestión de Funcionarios</a>
-    </li>
+
 </ng-template>

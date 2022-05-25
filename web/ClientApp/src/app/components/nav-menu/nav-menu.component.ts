@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { RoleLevels } from 'src/app/constants/user.constants';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-nav-menu',
@@ -6,7 +8,26 @@ import { Component } from '@angular/core';
   styleUrls: ['./nav-menu.component.css']
 })
 export class NavMenuComponent {
+
+  RoleLevels = RoleLevels; //  accessible in html
   isExpanded = false;
+  role: RoleLevels | null = null;
+  authenticated: boolean = false;
+
+  constructor(private authService: AuthService) {
+    this.refresh_auth()
+  }
+
+  ngDoCheck(): void {
+    this.refresh_auth()
+  }
+
+  refresh_auth(): void {
+    this.authenticated = this.authService.isLoggedIn()
+    if (this.authenticated) {
+      this.role = this.authService.getRole()
+    }
+  }
 
   collapse() {
     this.isExpanded = false;

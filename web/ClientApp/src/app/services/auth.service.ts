@@ -2,7 +2,7 @@ import { Injectable, ɵisObservable } from '@angular/core';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { Id } from '../interfaces/id';
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RoleLevels, RoleLevelType } from '../constants/user.constants';
 import { CookiesService } from './cookies.service';
@@ -23,10 +23,10 @@ export class AuthService {
    * Remueve los datos de local storage que mantienen la sesión del usuario
    */
   public logout() {
-    this.cookies.delete_cookie(UserCookieName, '/')
-
-    return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => {
+    return this.repo.create<null>("Users/Logout", null).subscribe((res: HttpResponse<null>) => {
       console.log("Log out:", res)
+    }).add(() => {
+      this.cookies.delete_cookie(UserCookieName, '/')
     })
   }
 
