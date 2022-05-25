@@ -25,7 +25,9 @@ export class AuthService {
   public logout() {
     this.cookies.delete_cookie(UserCookieName, '/')
 
-    return this.repo.create<null>("Users/Logout", null, true)
+    return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => {
+      console.log("Log out:", res)
+    })
   }
 
   /**
