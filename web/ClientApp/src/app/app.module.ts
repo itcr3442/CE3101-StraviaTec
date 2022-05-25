@@ -14,10 +14,10 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterUserComponent } from './components/register-user/register-user.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
-import { SettingsComponent } from './components/settings/settings.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
 import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
+import { SettingsDropdownComponent } from './components/settings-dropdown/settings-dropdown.component';
 
 
 
@@ -31,8 +31,8 @@ import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.in
     RegisterUserComponent,
     RegisterFormComponent,
     UnauthorizedComponent,
-    SettingsComponent,
     ForbiddenComponent,
+    SettingsDropdownComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

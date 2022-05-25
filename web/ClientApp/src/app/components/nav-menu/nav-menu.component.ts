@@ -10,7 +10,6 @@ import { AuthService } from 'src/app/services/auth.service';
 export class NavMenuComponent {
 
   RoleLevels = RoleLevels; //  accessible in html
-  isExpanded = false;
   role: RoleLevels | null = null;
   authenticated: boolean = false;
 
@@ -29,11 +28,9 @@ export class NavMenuComponent {
     }
   }
 
-  collapse() {
-    this.isExpanded = false;
+  logout(): void {
+    this.authService.logout()
   }
 
-  toggle() {
-    this.isExpanded = !this.isExpanded;
-  }
+
 }

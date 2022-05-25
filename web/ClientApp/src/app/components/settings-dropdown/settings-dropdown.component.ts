@@ -3,12 +3,11 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css']
+  selector: 'app-settings-dropdown',
+  templateUrl: './settings-dropdown.component.html',
+  styleUrls: ['./settings-dropdown.component.css']
 })
-export class SettingsComponent implements OnInit {
-
+export class SettingsDropdownComponent implements OnInit {
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -21,7 +20,6 @@ export class SettingsComponent implements OnInit {
  */
   logout() {
     this.authService.logout()
-    this.router.navigate(['/login'])
   }
 
 }
