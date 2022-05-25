@@ -305,8 +305,21 @@ public class UserController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
+        int? self = this.RequireSelf(id);
+        if (self == null)
+        {
+            return Forbid();
+        }
+
+        //TODO: Eliminar referencias en otras tablas
+        using (var cmd = _db.Cmd("DELETE FROM users WHERE id=@id"))
+        {
+            await cmd.Param("id", self).Exec();
+        }
+
+        await HttpContext.SignOutAsync();
         return Ok();
     }
 
