@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
   })
   // mensaje de login
-  loginMsg: string = ""
+  warningMsg: string = ""
   // para errores más que todo
   message: string = ""
   // estado del usuario
@@ -57,10 +57,15 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     if (this.loginForm.valid) {
 
+      this.warningMsg = ""
+      this.message = "Cargando..."
+
       this.authService.login(this.username, this.password).subscribe(
         (res: HttpResponse<LoginResponse>) => {
-          this.loginMsg = ""
+          this.warningMsg = ""
           console.log("login resp:", res)
+          this.message = ""
+
 
           if (res.body?.id && res.body.type) {
 
@@ -69,18 +74,19 @@ export class LoginComponent implements OnInit {
 
           }
           else {
-            this.loginMsg = "Estamos experimentando dificultades, vuelva a intentar más tarde.\n(Error: No id in response body)";
+            this.warningMsg = "Estamos experimentando dificultades, vuelva a intentar más tarde.\n(Error: No id in response body)";
           }
 
         },
         (error: HttpErrorResponse) => {
           console.log("login error:", error)
-          this.loginMsg = "Cédula o contraseña incorrectos";
+          this.message = ""
+          this.warningMsg = "Cédula o contraseña incorrectos";
         }
       )
     }
     else {
-      this.loginMsg = "Por favor verifique que ingresó todos los campos";
+      this.warningMsg = "Por favor verifique que ingresó todos los campos";
     }
   }
 }
