@@ -281,7 +281,7 @@ public class UserController : ControllerBase
                 SET    username=@username,
                        first_name=@first_name,
                        last_name=@last_name,
-                       birth_date=@last_name,
+                       birth_date=@birth_date,
                        country=@country
                 WHERE  id=@id";
 
