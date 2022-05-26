@@ -24,8 +24,8 @@
     </div>
 
     <div class="mb-3 form-group">
-        <label for="id">Nacionalidad</label>
-        <select id="airport-OG" class="form-select" formControlName="country">
+        <label for="country">Nacionalidad</label>
+        <select id="country" class="form-select" formControlName="country">
             <option *ngFor="let country of countryList" [value]="country.alpha2">{{country.official+ "\t" +
                 country.flag}}
             </option>

@@ -53,8 +53,18 @@ export class RepositoryService {
  * @param body contenidos JSON requeridos por endpoint
  * @returns Observable con datos retornados por el server
  */
-  public edit<T>(route: string, body: any, skip401: boolean = false, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
+  public replace<T>(route: string, body: any, skip401: boolean = false, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
     return this.http.put<T>(this.createCompleteRoute(route), body, { headers: this.generateHeaders(contentType), observe: 'response', context: new HttpContext().set(SKIP_401, skip401) });
+  }
+
+  /**
+   * PATCH request
+   * @param route endpoint relativo
+   * @param body contenidos JSON requeridos por endpoint
+   * @returns Observable con datos retornados por el server
+   */
+  public edit<T>(route: string, body: any, skip401: boolean = false, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
+    return this.http.patch<T>(this.createCompleteRoute(route), body, { headers: this.generateHeaders(contentType), observe: 'response', context: new HttpContext().set(SKIP_401, skip401) });
   }
 
   // Junta el url base del API con la ruta relative de los

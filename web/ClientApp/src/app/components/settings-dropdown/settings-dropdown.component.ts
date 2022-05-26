@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
+import { EditProfileFormComponent } from '../edit-profile-form/edit-profile-form.component';
 
 @Component({
   selector: 'app-settings-dropdown',
@@ -10,7 +11,10 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class SettingsDropdownComponent implements OnInit {
 
+  @ViewChild("editForm") editProfileForm: EditProfileFormComponent = {} as EditProfileFormComponent;
+
   userInfo: User | null = null;
+  trigger: number = 0
 
   constructor(private authService: AuthService, private router: Router) {
   }

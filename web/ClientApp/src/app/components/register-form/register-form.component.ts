@@ -53,11 +53,6 @@ export class RegisterFormComponent implements OnInit {
     console.log("imageURL:", this.imageURL)
   }
 
-  // Este get es para poder usarlo dentro de template
-  public get RoleLevels(): typeof RoleLevels {
-    return RoleLevels;
-  }
-
   get username() {
     return this.registerForm.controls['username'].value
   }

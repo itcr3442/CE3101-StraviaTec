@@ -1,1 +1,48 @@
-<p>edit-profile-form works!</p>
+<form [formGroup]="registerForm">
+
+    <div class="mb-3 form-group">
+        <label for="id">Usuario</label>
+        <input type="id" id="id" formControlName="username" class="form-control" value={{user?.username}}>
+    </div>
+
+    <div class="row mb-3 form-group">
+        <label for="fullname">Nombre Completo</label>
+
+        <div class="col" id="fullname">
+            <input formControlName="firstName" class="form-control" value={{user?.firstName}}>
+        </div>
+        <div class="col">
+
+            <input formControlName="lastName" class="form-control" value={{user?.lastName}}>
+        </div>
+    </div>
+    <div class="mb-3 form-group">
+        <label for="birthDate">Fecha De Nacimiento</label>
+        <input min={{this.minDate}} max={{this.maxDate}} type="date" id="birthDate" formControlName="birthDate"
+            class="form-control" value={{this.userBirthString}}>
+    </div>
+
+    <div class="mb-3 form-group">
+        <label for="coutry">Nacionalidad</label>
+        <select id="country" class="form-select" formControlName="country">
+            <option *ngFor="let contr of countryList" [value]="contr.alpha2"
+                selected="{{contr.alpha2 === user?.country?.alpha2}}">
+                {{contr.official+ "\t" + contr.flag}}
+            </option>
+
+        </select>
+    </div>
+
+    <!-- <div class="mb-3 form-group">
+        <label for="pfp">Foto De Perfil Opcional</label>
+        <input id="pfp" class="form-control" type="file" accept="image/jpeg"
+            (change)="upload($any($event.target).files)" />
+    </div>  -->
+
+    <ng-container *ngIf="this.message">
+        <p class="warning">
+            {{this.message}}
+        </p>
+    </ng-container>
+    <!-- <button type="submit" class="btn btn-primary">Regístrese</button> -->
+</form>
