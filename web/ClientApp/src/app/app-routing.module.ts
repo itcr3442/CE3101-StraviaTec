@@ -17,9 +17,10 @@ import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
   { path: '401', component: UnauthorizedComponent },
   { path: '403', component: ForbiddenComponent },
+  { path: '404', component: UnauthorizedComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterUserComponent, canActivate: [AuthGuard], data: { roles: [] } }, // solo accesible si no está loggeado
   // { path: 'settings', component: SettingsDropdownComponent, canActivate: [AuthGuard], data: { roles: [...allRoles] } },
   { path: '', component: HomeComponent, pathMatch: 'full' },

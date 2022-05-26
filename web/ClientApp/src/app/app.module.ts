@@ -15,11 +15,13 @@ import { RegisterUserComponent } from './components/register-user/register-user.
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
+import { SettingsDropdownComponent } from './components/settings-dropdown/settings-dropdown.component';
+import { EditProfileFormComponent } from './components/edit-profile-form/edit-profile-form.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
+
 import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
 import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
-import { SettingsDropdownComponent } from './components/settings-dropdown/settings-dropdown.component';
-
-
+import { NotFoundHandlerInterceptor } from './interceptors/not-found-handler.interceptor';
 
 
 @NgModule({
@@ -33,6 +35,8 @@ import { SettingsDropdownComponent } from './components/settings-dropdown/settin
     UnauthorizedComponent,
     ForbiddenComponent,
     SettingsDropdownComponent,
+    EditProfileFormComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -43,7 +47,8 @@ import { SettingsDropdownComponent } from './components/settings-dropdown/settin
   ],
   providers: [AuthGuard,
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedHandlerInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ForbiddenHandlerInterceptor, multi: true },],
+    { provide: HTTP_INTERCEPTORS, useClass: ForbiddenHandlerInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: NotFoundHandlerInterceptor, multi: true },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,13 +1,15 @@
 import { Injectable, ɵisObservable } from '@angular/core';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
-import { Id } from '../interfaces/id';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { RoleLevels, RoleLevelType } from '../constants/user.constants';
+import { Observable, throwError } from 'rxjs';
+import { RoleLevels, RoleLevelType, countries } from '../constants/user.constants';
 import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
+import { User, UserResp } from '../interfaces/user';
+import { Country } from '../interfaces/country';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 
 export interface LoginResponse {
   id: number,
@@ -79,6 +81,50 @@ export class AuthService {
     }
 
     return 0;
+  }
+
+  public getUser(id: number): Observable<User | null> {
+    return this.repo.getData<UserResp>(`Users/${id}`).pipe(map((resp: HttpResponse<UserResp>) => {
+      if (resp.body) {
+        let userResp: UserResp = resp.body;
+
+        return this.resp2user(userResp)
+      }
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
+
+    }
+    ))
+
+  }
+
+  private resp2user(userResp: UserResp): User {
+    let birthDate = new Date(userResp.birthDate)
+    // return throwError("Empty body in GET Api/User/{id}")
+
+    console.log("User Resp:", userResp)
+
+    let alpha2: string = userResp.nationality
+    let country: Country = {
+      alpha2,
+      official: countries.getName(alpha2, "es"),
+      flag: getUnicodeFlagIcon(alpha2),
+    }
+
+    let type: RoleLevels = RoleLevels[userResp.type]
+
+    return {
+      username: userResp.username,
+      firstName: userResp.firstName,
+      lastName: userResp.lastName,
+      birthDate,
+      country,
+      imageURL: null,
+      type,
+    }
+
   }
 
 

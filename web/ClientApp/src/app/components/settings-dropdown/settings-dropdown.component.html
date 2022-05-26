@@ -6,10 +6,34 @@
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
         <!-- <li><a class="dropdown-item" href="#">Action</a></li>
         <li><a class="dropdown-item" href="#">Another action</a></li> -->
+        <li><a></a> </li>
+        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editProfile">
+            Editar perfil
+        </button>
+
+        <li>
+            <hr class="dropdown-divider">
+        </li>
         <li><a class="dropdown-item" type="button" (click)="logout()">Logout</a></li>
     </ul>
 </li>
 
 
-
-<!-- <button type="click" (click)="logout()" class="btn btn-danger">Salir</button> -->
+<!-- Edit modal -->
+<div class="modal fade" id="editProfile" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileLabel">Edita perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <app-edit-profile-form></app-edit-profile-form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

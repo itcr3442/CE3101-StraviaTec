@@ -17,10 +17,11 @@ export class RegisterService {
 
   constructor(private repositoryService: RepositoryService, private authService: AuthService) { }
 
-  public register_user(user: User): Observable<HttpResponse<Id>> {
+  public register_user(user: User, password: string): Observable<HttpResponse<Id>> {
 
     let new_user = {
       "username": user.username,
+      password,
       "firstName": user.firstName,
       "lastName": user.lastName,
       "birthDate": user.birthDate.toISOString(),

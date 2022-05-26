@@ -1,16 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { RoleLevels } from 'src/app/constants/user.constants';
+import { RoleLevels, countries } from 'src/app/constants/user.constants';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 import { User } from 'src/app/interfaces/user'
 import { Country } from 'src/app/interfaces/country'
-import { Observable } from 'rxjs';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { RegisterService } from 'src/app/services/register.service'
 import { Id } from "src/app/interfaces/id";
 
-const countries = require("i18n-iso-countries");
-countries.registerLocale(require("i18n-iso-countries/langs/es.json"));
 
 @Component({
   selector: 'app-register-form',
@@ -105,7 +102,6 @@ export class RegisterFormComponent implements OnInit {
         lastName: this.lastName,
         birthDate: new Date(this.birthDate),
         country: this.country,
-        password: this.password,
         imageURL: this.imageURL,
         type: this.userRole,
       }
@@ -113,7 +109,7 @@ export class RegisterFormComponent implements OnInit {
       console.log("User submitted:", user)
 
 
-      this.registerService.register_user(user).subscribe(
+      this.registerService.register_user(user, this.password).subscribe(
         (resp: HttpResponse<Id>) => {
           console.log(resp)
           this.registerService.resetForm(this.registerForm)

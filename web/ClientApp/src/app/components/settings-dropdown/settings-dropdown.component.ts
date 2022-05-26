@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -9,9 +10,19 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class SettingsDropdownComponent implements OnInit {
 
-  constructor(private authService: AuthService, private router: Router) { }
+  userInfo: User | null = null;
+
+  constructor(private authService: AuthService, private router: Router) {
+  }
 
   ngOnInit(): void {
+    this.refreshUser()
+  }
+
+  refreshUser(): void {
+    this.authService.getUser(0).subscribe((user: User | null) => {
+      this.userInfo = user
+    })
   }
 
   /**
@@ -20,6 +31,10 @@ export class SettingsDropdownComponent implements OnInit {
  */
   logout() {
     this.authService.logout()
+  }
+
+  editUser() {
+    console.log("Edit")
   }
 
 }
