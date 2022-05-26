@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 using web.Body.Common;
 
@@ -45,17 +44,22 @@ public class IdentityController : ControllerBase
             row = result.Value;
         }
 
-        if (!HashFor(req.Password, row.salt).SequenceEqual(row.hash))
+        if (!Authn.HashFor(req.Password, row.salt).SequenceEqual(row.hash))
         {
             return Unauthorized();
         }
 
-        var claims = new Claim[] { new Claim("id", row.id.ToString()) };
+        var type = row.organizer ? UserType.Organizer : UserType.Athlete;
+        var claims = new Claim[]
+        {
+            new Claim("id", row.id.ToString()),
+            new Claim("type", type.ToString()),
+        };
+
         var scheme = CookieAuthenticationDefaults.AuthenticationScheme;
         var identity = new ClaimsIdentity(claims, scheme);
         await HttpContext.SignInAsync(scheme, new ClaimsPrincipal(identity));
 
-        var type = row.organizer ? UserType.Organizer : UserType.Athlete;
         return Ok(new Resp.Identity { Id = row.id, Type = type });
     }
 
@@ -95,13 +99,13 @@ public class IdentityController : ControllerBase
                 row = result.Value;
             }
 
-            if (!HashFor(req.Current, row.salt).SequenceEqual(row.hash))
+            if (!Authn.HashFor(req.Current, row.salt).SequenceEqual(row.hash))
             {
                 return Unauthorized();
             }
 
-            var newSalt = RandomSalt();
-            var newHash = HashFor(req.New, newSalt);
+            var newSalt = Authn.RandomSalt();
+            var newHash = Authn.HashFor(req.New, newSalt);
 
             using (var cmd = txn.Cmd("UPDATE users SET hash=@hash, salt=@salt WHERE id=@id"))
             {
@@ -115,20 +119,6 @@ public class IdentityController : ControllerBase
     }
 
     private readonly ISqlConn _db;
-
-    // Genera una sal aleatoria de 16 bytes
-    private byte[] RandomSalt()
-    {
-        var salt = new byte[16];
-        Random.Shared.NextBytes(salt);
-        return salt;
-    }
-
-    // Calcula el campo de hash de clave a partir del plaintext y la sal
-    private byte[] HashFor(string password, byte[] salt)
-    {
-        return KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, 1000, 16);
-    }
 }
 
 [ApiController]
@@ -138,24 +128,49 @@ public class UserController : ControllerBase
     public UserController(ISqlConn db) => _db = db;
 
     [HttpPost]
+    [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Resp.Ref))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public ActionResult New(Req.NewUser req)
     {
-        switch (Random.Shared.Next(3))
+        bool is_organizer = req.Type == UserType.Organizer;
+        if (is_organizer && !this.RequireOrganizer())
         {
-            case 0:
-                return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
-
-            case 1:
-                return BadRequest();
-
-            default:
-                return Conflict();
+            return Forbid();
         }
+
+        var salt = Authn.RandomSalt();
+        var hash = Authn.HashFor(req.Password, salt);
+
+        var query = @"
+            INSERT INTO users
+            ( username, first_name, last_name, birth_date
+            , country, is_organizer, hash, salt
+            ) OUTPUT INSERTED.id VALUES
+            ( @username, @first_name, @last_name, @birth_date
+            , @country, @is_organizer, @hash, @salt
+            )";
+
+        int id;
+        using (var cmd = _db.Cmd(query))
+        {
+            cmd.Param("username", req.Username)
+               .Param("first_name", req.FirstName)
+               .Param("last_name", req.LastName)
+               .Param("birth_date", req.BirthDate)
+               .Param("country", req.Nationality)
+               .Param("is_organizer", is_organizer)
+               .Param("hash", hash)
+               .Param("salt", salt);
+
+            id = cmd.Tuple<int>().Value;
+        }
+
+        return CreatedAtAction(nameof(Get), new { id }, new Resp.Ref(id));
     }
 
     [HttpGet("{id}")]
