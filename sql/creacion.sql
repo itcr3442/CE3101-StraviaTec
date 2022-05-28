@@ -809,6 +809,9 @@ CREATE TABLE users
   is_organizer bit         NOT NULL,
   hash         binary(16)  NOT NULL,
   salt         binary(16)  NOT NULL,
+
+  CHECK(LEN(username) > 0 AND username NOT LIKE '%[^a-z]%'),
+  CHECK(LEN(first_name) > 0 AND LEN(last_name) > 0),
 );
 
 CREATE TABLE photos
