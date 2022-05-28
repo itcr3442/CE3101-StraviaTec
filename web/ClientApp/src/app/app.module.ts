@@ -23,6 +23,11 @@ import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-hand
 import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
 import { NotFoundHandlerInterceptor } from './interceptors/not-found-handler.interceptor';
 import { RegisterOrgComponent } from './components/register-org/register-org.component';
+import { RegisterActivityComponent } from './components/register-activity/register-activity.component';
+import { UserRacesComponent } from './components/user-races/user-races.component';
+import { UserChallengesComponent } from './components/user-challenges/user-challenges.component';
+import { UserGroupsComponent } from './components/user-groups/user-groups.component';
+import { UserSubscribedComponent } from './components/user-subscribed/user-subscribed.component';
 
 
 @NgModule({
@@ -39,6 +44,11 @@ import { RegisterOrgComponent } from './components/register-org/register-org.com
     EditProfileFormComponent,
     NotFoundComponent,
     RegisterOrgComponent,
+    RegisterActivityComponent,
+    UserRacesComponent,
+    UserChallengesComponent,
+    UserGroupsComponent,
+    UserSubscribedComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

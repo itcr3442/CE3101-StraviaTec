@@ -30,6 +30,21 @@
 <ng-template #loggedBlock>
 
   <ng-container *ngIf="this.role === this.RoleLevels.Athlete">
+    <li class="nav-item" [routerLinkActive]="['link-active']">
+      <a class="nav-link text-dark" [routerLink]="['/register=act']">Registrar Actividad</a>
+    </li>
+    <li class="nav-item" [routerLinkActive]="['link-active']">
+      <a class="nav-link text-dark" [routerLink]="['/subscribe=race']">Carreras</a>
+    </li>
+    <li class="nav-item" [routerLinkActive]="['link-active']">
+      <a class="nav-link text-dark" [routerLink]="['/subscribe=challenge']">Retos</a>
+    </li>
+    <li class="nav-item" [routerLinkActive]="['link-active']">
+      <a class="nav-link text-dark" [routerLink]="['/subscribe=group']">Grupos</a>
+    </li>
+    <li class="nav-item" [routerLinkActive]="['link-active']">
+      <a class="nav-link text-dark" [routerLink]="['/subscriptions']">Inscripciones</a>
+    </li>
   </ng-container>
 
   <ng-container *ngIf="this.role === this.RoleLevels.Organizer">
