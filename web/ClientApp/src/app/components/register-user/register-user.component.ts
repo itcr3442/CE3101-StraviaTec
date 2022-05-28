@@ -15,7 +15,6 @@ export class RegisterUserComponent implements OnInit {
   @ViewChild(RegisterFormComponent) registerFormComponent: RegisterFormComponent = {} as RegisterFormComponent;
 
   athlete = RoleLevels.Athlete;
-  successMsg = "Felicidades! Se ha registrado correctamente."
 
   constructor(
   ) {

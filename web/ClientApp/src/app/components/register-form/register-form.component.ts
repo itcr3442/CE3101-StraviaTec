@@ -33,6 +33,8 @@ export class RegisterFormComponent implements OnInit {
   @Input() userRole: RoleLevels = RoleLevels.Athlete;
   @Input() successMsg: string = "";
 
+  successMsgOn: boolean = false;
+
   constructor(private registerService: RegisterService
   ) {
     let countryObject = countries.getNames("es", { select: "official" })
@@ -44,6 +46,7 @@ export class RegisterFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // console.log("Success Msg:", this.successMsg)
   }
 
   upload(files: FileList) {
@@ -89,8 +92,10 @@ export class RegisterFormComponent implements OnInit {
 
 
   onSubmit() {
+    console.log("Role:", this.userRole)
     if (this.validateForm()) {
       this.message = ""
+      this.successMsgOn = false
       let user: User = {
         username: this.username,
         firstName: this.firstName,
@@ -108,7 +113,7 @@ export class RegisterFormComponent implements OnInit {
         (resp: HttpResponse<Id>) => {
           console.log(resp)
           this.registerService.resetForm(this.registerForm)
-          this.message = this.successMsg;
+          this.successMsgOn = true
           if (this.imageURL != null) {
             //TODO: submit image to server
             URL.revokeObjectURL(this.imageURL)

@@ -3,7 +3,7 @@
     <div class="mb-3 form-group">
         <label for="id">Usuario</label>
         <input type="id" id="id" formControlName="username" class="form-control"
-            placeholder="Ingrese su nombre de usuario">
+            placeholder="Ingresar nombre de usuario">
     </div>
 
     <div class="row mb-3 form-group">
@@ -49,5 +49,10 @@
             {{this.message}}
         </p>
     </ng-container>
-    <button type="submit" class="btn btn-primary">Regístrese</button>
+    <ng-container *ngIf="this.successMsgOn">
+        <p>
+            {{this.successMsg}}
+        </p>
+    </ng-container>
+    <button type="submit" class="btn btn-primary">Registrar</button>
 </form>

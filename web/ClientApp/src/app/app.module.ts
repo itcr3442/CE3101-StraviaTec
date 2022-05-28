@@ -22,6 +22,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
 import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
 import { NotFoundHandlerInterceptor } from './interceptors/not-found-handler.interceptor';
+import { RegisterOrgComponent } from './components/register-org/register-org.component';
 
 
 @NgModule({
@@ -37,6 +38,7 @@ import { NotFoundHandlerInterceptor } from './interceptors/not-found-handler.int
     SettingsDropdownComponent,
     EditProfileFormComponent,
     NotFoundComponent,
+    RegisterOrgComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

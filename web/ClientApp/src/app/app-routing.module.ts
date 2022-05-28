@@ -12,6 +12,7 @@ import { RegisterUserComponent } from './components/register-user/register-user.
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { SettingsDropdownComponent } from './components/settings-dropdown/settings-dropdown.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
+import { RegisterOrgComponent } from './components/register-org/register-org.component';
 // import { WorkerAdminComponent } from './components/worker-admin/worker-admin.component';
 
 
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: '404', component: UnauthorizedComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterUserComponent, canActivate: [AuthGuard], data: { roles: [] } }, // solo accesible si no está loggeado
+  { path: 'register=org', component: RegisterOrgComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } }, // solo accesible si no está loggeado
   // { path: 'settings', component: SettingsDropdownComponent, canActivate: [AuthGuard], data: { roles: [...allRoles] } },
   { path: '', component: HomeComponent, pathMatch: 'full' },
 ];

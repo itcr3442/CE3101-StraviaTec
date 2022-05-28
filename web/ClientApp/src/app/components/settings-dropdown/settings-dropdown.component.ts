@@ -2,6 +2,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { RoleLevels } from 'src/app/constants/user.constants';
 // import { bootstrap } from '';
 import { Country, newc_alpha2 } from 'src/app/interfaces/country';
 import { NullableUser, User } from 'src/app/interfaces/user';
@@ -20,8 +21,16 @@ export class SettingsDropdownComponent implements OnInit {
 
   userInfo: User | null = null;
   trigger: number = 0
+  RoleLevels = RoleLevels
 
   constructor(private authService: AuthService, private registerService: RegisterService, private router: Router) {
+  }
+
+  get role(): RoleLevels | null {
+    if (this.userInfo) {
+      return this.userInfo.type
+    }
+    return null
   }
 
   ngOnInit(): void {
@@ -30,7 +39,10 @@ export class SettingsDropdownComponent implements OnInit {
 
   refreshUser(): void {
     this.authService.getUser(0).subscribe((user: User | null) => {
-      this.userInfo = user
+      if (user) {
+        user.type = this.authService.getRole()
+        this.userInfo = user
+      }
     })
   }
 
