@@ -33,3 +33,13 @@ export interface NullableUser {
     // imageURL: string | null,
     // type: RoleLevels 
 }
+
+export interface UserSearchByID {
+    username:       string,
+    firstName:      string,
+    lastName:       string,
+    birthDate:      Date,
+    age:            number, 
+    nationality:    string,
+    relationship:   string
+}

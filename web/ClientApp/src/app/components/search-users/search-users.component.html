@@ -1,0 +1,51 @@
+<div class="container">
+    <div class="row mb-3">
+        <h3>Búsqueda de Atletas</h3>
+    </div>
+    <form [formGroup]="searchUserForm" (ngSubmit)="onSearch()">
+        <div class="col mb-4 form-group">
+            <label for="Nombre del Atleta">Ingrese el nombre del atleta a buscar:</label>
+            <input formControlName="username" class="form-control" placeholder="Nombre del Atleta">
+        </div>
+        <div class="col-md-4">
+            <button type="search" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+    <div class="row-md-4">
+        <ng-container *ngIf="this.message">
+            <p>
+                {{this.message}}
+            </p>
+        </ng-container>
+    </div>
+    <div class="row-md-4">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Nacionalidad</th>
+                        <th>Edad</th>
+                        <th>Seguir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor = "let user of users_page" >
+                        <td>{{user.username}}</td>
+                        <td>{{user.firstName}}</td>
+                        <td>{{user.lastName}}</td>
+                        <td>{{user.nationality}}</td>
+                        <td>{{user.age}}</td>
+                        <td><button type="follow" class="btn btn-outline-success" (click)="onFollow(user.id)">Seguir</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div> 
+    <div class="col-md-4">
+        <button type="follow" class="btn btn-outline-secondary" (click)="onPreviousPage()">←</button>
+        <button type="follow" class="btn btn-outline-secondary" (click)="onNextPage()">→</button>
+    </div>
+</div>

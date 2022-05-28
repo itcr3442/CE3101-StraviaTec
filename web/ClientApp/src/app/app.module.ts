@@ -18,6 +18,7 @@ import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 import { SettingsDropdownComponent } from './components/settings-dropdown/settings-dropdown.component';
 import { EditProfileFormComponent } from './components/edit-profile-form/edit-profile-form.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { SearchUsersComponent } from './components/search-users/search-users.component';
 
 import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
 import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
@@ -43,6 +44,7 @@ import { UserSubscribedComponent } from './components/user-subscribed/user-subsc
     SettingsDropdownComponent,
     EditProfileFormComponent,
     NotFoundComponent,
+    SearchUsersComponent,
     RegisterOrgComponent,
     RegisterActivityComponent,
     UserRacesComponent,

@@ -19,7 +19,7 @@ export class NotFoundHandlerInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(er => {
         if (er.status === 404) {
-          this.router.navigate(['/403'])
+          this.router.navigate(['/404'])
         }
         return throwError(er);
       })

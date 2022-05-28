@@ -9,6 +9,9 @@
           <li class="nav-item" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
             <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
           </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/settings']">Settings</a>
+          </li>
 
           <ng-container *ngTemplateOutlet="this.authenticated ?  loggedBlock : unloggedBlock">
           </ng-container>
@@ -45,9 +48,15 @@
     <li class="nav-item" [routerLinkActive]="['link-active']">
       <a class="nav-link text-dark" [routerLink]="['/subscriptions']">Inscripciones</a>
     </li>
+    <li class="nav-item" [routerLinkActive]="['link-active']">
+      <a class="nav-link text-dark" [routerLink]="['/search']"> Search </a>
+    </li>
   </ng-container>
 
   <ng-container *ngIf="this.role === this.RoleLevels.Organizer">
+    <li class="nav-item" [routerLinkActive]="['link-active']">
+      <a class="nav-link text-dark" [routerLink]="['/search']"> Search </a>
+    </li>
   </ng-container>
 
 
