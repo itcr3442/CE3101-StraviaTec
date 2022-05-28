@@ -845,6 +845,18 @@ CREATE TABLE activities
 
 GO
 
+CREATE FULLTEXT CATALOG search;
+CREATE UNIQUE INDEX idx_users_id ON users(id);
+
+GO
+
+CREATE FULLTEXT INDEX ON users
+( first_name LANGUAGE 5130 -- es-CR
+, last_name  LANGUAGE 5130 -- es-Cr
+) KEY INDEX idx_users_id ON search;
+
+GO
+
 CREATE PROCEDURE current_age
   @id  INT
 , @age INT OUTPUT
