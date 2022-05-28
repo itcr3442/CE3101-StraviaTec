@@ -8,7 +8,7 @@ import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
 import { User, UserResp } from '../interfaces/user';
-import { Country } from '../interfaces/country';
+import { Country, newc_alpha2 } from '../interfaces/country';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 
 export interface LoginResponse {
@@ -107,11 +107,7 @@ export class AuthService {
     console.log("User Resp:", userResp)
 
     let alpha2: string = userResp.nationality
-    let country: Country = {
-      alpha2,
-      official: countries.getName(alpha2, "es"),
-      flag: getUnicodeFlagIcon(alpha2),
-    }
+    let country: Country = newc_alpha2(alpha2)
 
     let type: RoleLevels = RoleLevels[userResp.type]
 

@@ -2,24 +2,24 @@
 
     <div class="mb-3 form-group">
         <label for="id">Usuario</label>
-        <input type="id" id="id" formControlName="username" class="form-control" value={{user?.username}}>
+        <input type="id" id="id" formControlName="username" class="form-control">
     </div>
 
     <div class="row mb-3 form-group">
         <label for="fullname">Nombre Completo</label>
 
         <div class="col" id="fullname">
-            <input formControlName="firstName" class="form-control" value={{user?.firstName}}>
+            <input formControlName="firstName" class="form-control">
         </div>
         <div class="col">
 
-            <input formControlName="lastName" class="form-control" value={{user?.lastName}}>
+            <input formControlName="lastName" class="form-control">
         </div>
     </div>
     <div class="mb-3 form-group">
         <label for="birthDate">Fecha De Nacimiento</label>
         <input min={{this.minDate}} max={{this.maxDate}} type="date" id="birthDate" formControlName="birthDate"
-            class="form-control" value={{this.userBirthString}}>
+            class="form-control">
     </div>
 
     <div class="mb-3 form-group">

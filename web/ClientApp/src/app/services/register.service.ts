@@ -5,7 +5,7 @@ import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { User } from '../interfaces/user';
+import { NullableUser, User } from '../interfaces/user';
 import { RoleLevels } from '../constants/user.constants';
 import { HttpResponse } from '@angular/common/http';
 import { Id } from '../interfaces/id';
@@ -40,24 +40,23 @@ export class RegisterService {
 
   public delete_user(id: string) {
     return this.repositoryService.delete(
-      "users/" + id)
+      "Users/" + id)
   }
 
-  public edit_user(id: string, username: string, password: string, firstName: string, lastName: string, phoneNumber: number, email: string, isStudent: boolean, university: string, studentId: string) {
+  public edit_user(user: NullableUser): Observable<HttpResponse<null>> {
     {
-      let user = {
-        username,
-        password,
-        firstName,
-        lastName,
-        phoneNumber,
-        email,
-        university: isStudent ? university : null,
-        studentId: isStudent ? studentId : null
+      let edit_user = {
+        "username": user.username,
+        "firstName": user.firstName,
+        "lastName": user.lastName,
+        "birthDate": user.birthDate?.toISOString(),
+        "nationality": user.country?.alpha2,
       }
 
-      return this.repositoryService.edit(
-        "users/" + id, user)
+      let id = this.authService.getId()
+
+      return this.repositoryService.edit<null>(
+        "Users/" + id, edit_user)
     }
   }
 

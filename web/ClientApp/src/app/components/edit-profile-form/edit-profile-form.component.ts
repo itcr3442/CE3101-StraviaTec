@@ -47,20 +47,30 @@ export class EditProfileFormComponent implements OnInit {
   //   console.log("imageURL:", this.imageURL)
   // }
 
-  get username() {
+  ngOnChanges(): void {
+    if (this.user !== null) {
+      this.registerForm.controls['username'].setValue(this.user.username)
+      this.registerForm.controls['firstName'].setValue(this.user.firstName)
+      this.registerForm.controls['lastName'].setValue(this.user.lastName)
+      this.registerForm.controls['country'].setValue(this.user.country.alpha2)
+      this.registerForm.controls['birthDate'].setValue(this.userBirthString)
+    }
+  }
+
+  get username(): string {
     return this.registerForm.controls['username'].value
   }
 
-  get firstName() {
+  get firstName(): string {
     return this.registerForm.controls['firstName'].value
   }
-  get lastName() {
+  get lastName(): string {
     return this.registerForm.controls['lastName'].value
   }
-  get country() {
+  get country(): string {
     return this.registerForm.controls['country'].value
   }
-  get birthDate() {
+  get birthDate(): string {
     return this.registerForm.controls['birthDate'].value
   }
 
@@ -79,9 +89,8 @@ export class EditProfileFormComponent implements OnInit {
 
   // Esto es para adentro de html
   get userBirthString(): string {
-    console.log("User passed down:", this.user)
+    // console.log("User passed down:", this.user)
     if (this.user) {
-      console.log("So birthday is getting done")
       let userBirthDate: Date = this.user.birthDate;
       return userBirthDate.getFullYear() + "-" + (userBirthDate.getMonth() + 1 + "").padStart(2, "0") + "-" + (userBirthDate.getDate() + '').padStart(2, "0")
     }

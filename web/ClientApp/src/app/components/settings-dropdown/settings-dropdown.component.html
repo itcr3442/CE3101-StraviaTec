@@ -28,13 +28,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <app-edit-profile-form #editForm [user]="userInfo"></app-edit-profile-form>
+                <app-edit-profile-form *ngIf="userInfo!==null" #editForm [user]="userInfo"></app-edit-profile-form>
                 <p *ngIf="userInfo===null">Cargando información de usuario...</p>
 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">Guardar cambios</button>
+                <button type="button" (click)="editUser()" class="btn btn-primary">Guardar cambios</button>
             </div>
         </div>
     </div>
