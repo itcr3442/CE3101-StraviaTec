@@ -35,6 +35,17 @@ export class SettingsDropdownComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshUser()
+
+
+    let myModalEl: HTMLElement | null = document.getElementById('editProfile');
+    if (!!myModalEl) {
+
+      let self = this
+      myModalEl.addEventListener('hidden.bs.modal', function (event) {
+        self.refreshUser()
+      })
+    }
+
   }
 
   refreshUser(): void {
@@ -44,6 +55,10 @@ export class SettingsDropdownComponent implements OnInit {
         this.userInfo = user
       }
     })
+  }
+
+  deleteUser(): void {
+    console.log("mik")
   }
 
   /**
@@ -98,7 +113,6 @@ export class SettingsDropdownComponent implements OnInit {
           } else if (err.status == 404) {
             console.log("404:", err)
             this.editProfileForm.message = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
-
           }
         })
     }

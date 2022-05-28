@@ -53,10 +53,10 @@ export class RegisterService {
         "nationality": user.country?.alpha2,
       }
 
-      let id = this.authService.getId()
+      // let id = this.authService.getId()
 
       return this.repositoryService.edit<null>(
-        "Users/" + id, edit_user)
+        "Users/0", edit_user)
     }
   }
 

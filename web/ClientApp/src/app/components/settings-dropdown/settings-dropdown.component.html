@@ -13,6 +13,10 @@
             Editar perfil
         </button>
 
+        <button type="button" class="dropdown-item warning" data-bs-toggle="modal" data-bs-target="#deleteProfile">
+            Eliminar perfil
+        </button>
+
         <li>
             <hr class="dropdown-divider">
         </li>
@@ -37,6 +41,26 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" (click)="editUser()" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal fade" id="deleteProfile" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="delete-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteLabel">Eliminar cuenta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Seguro que desea eliminar su cuenta? Esta acción es irreversible.</p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" (click)="deleteUser()" class="btn btn-danger">Eliminar cuenta</button>
             </div>
         </div>
     </div>
