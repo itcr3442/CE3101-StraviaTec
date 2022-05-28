@@ -58,13 +58,19 @@ export class SettingsDropdownComponent implements OnInit {
   }
 
   deleteUser(): void {
-    console.log("mik")
+    this.registerService.delete_self().subscribe(
+      (resp: HttpResponse<null>) => {
+        // this.
+        console.log("Cuenta eliminada:", resp)
+        // this.router.navigate(['/login'])
+        window.location.reload()
+      })
   }
 
   /**
- * Función que se llama para salir de la sesión.
- * Esta es llamada al apretar el botón correspondiente.
- */
+  * Función que se llama para salir de la sesión.
+  * Esta es llamada al apretar el botón correspondiente.
+  */
   logout() {
     this.authService.logout()
   }

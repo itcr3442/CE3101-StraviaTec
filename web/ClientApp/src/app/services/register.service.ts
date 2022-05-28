@@ -38,9 +38,9 @@ export class RegisterService {
 
   }
 
-  public delete_user(id: string) {
-    return this.repositoryService.delete(
-      "Users/" + id)
+  public delete_self() {
+    return this.repositoryService.delete<null>(
+      "Users/0")
   }
 
   public edit_user(user: NullableUser): Observable<HttpResponse<null>> {
