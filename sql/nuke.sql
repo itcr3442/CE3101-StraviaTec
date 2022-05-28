@@ -9,9 +9,39 @@ IF EXISTS (SELECT 0 FROM  sys.fulltext_catalogs
                     WHERE name = N'search')
    DROP FULLTEXT CATALOG search;
 
-DROP INDEX IF EXISTS idx_users_Id ON users;
+
+DROP INDEX IF EXISTS idx_users_id                 ON users;
+DROP INDEX IF EXISTS idx_friends_follower         ON friends;
+DROP INDEX IF EXISTS idx_friends_followee         ON friends;
+DROP INDEX IF EXISTS idx_activities_athlete       ON activities;
+DROP INDEX IF EXISTS idx_race_categories          ON race_categories;
+DROP INDEX IF EXISTS idx_race_private_groups      ON race_private_groups;
+DROP INDEX IF EXISTS idx_race_participants        ON race_participants;
+DROP INDEX IF EXISTS idx_race_sponsors            ON race_sponsors;
+DROP INDEX IF EXISTS idx_bank_accounts_race       ON bank_accounts;
+DROP INDEX IF EXISTS idx_challenge_private_groups ON challenge_private_groups;
+DROP INDEX IF EXISTS idx_challenge_participants   ON challenge_participants;
+DROP INDEX IF EXISTS idx_challenge_activities     ON challenge_activities;
 
 
+DROP TABLE IF EXISTS challenge_activities;
+DROP TABLE IF EXISTS challenge_participants;
+DROP TABLE IF EXISTS challenge_private_groups;
+DROP TABLE IF EXISTS challenges;
+DROP TABLE IF EXISTS bank_accounts;
+DROP TABLE IF EXISTS receipts;
+DROP TABLE IF EXISTS race_sponsors;
+DROP TABLE IF EXISTS race_participants;
+DROP TABLE IF EXISTS race_private_groups;
+DROP TABLE IF EXISTS race_tracks;
+DROP TABLE IF EXISTS race_categories;
+DROP TABLE IF EXISTS races;
+DROP TABLE IF EXISTS sponsor_logos;
+DROP TABLE IF EXISTS sponsors;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS group_members;
+DROP TABLE IF EXISTS groups;
+DROP TABLE IF EXISTS activity_tracks;
 DROP TABLE IF EXISTS activities;
 DROP TABLE IF EXISTS activity_types;
 DROP TABLE IF EXISTS friends;

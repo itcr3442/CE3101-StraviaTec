@@ -793,8 +793,8 @@ CREATE TABLE countries
   -- ISO 3166-1 alfa-2
   iso        char(2)     NOT NULL PRIMARY KEY,
   name       varchar(80) NOT NULL,
-  iso3       char(3)     NULL,
-  num_code   int         NULL,
+  iso3       char(3)         NULL,
+  num_code   int             NULL,
   phone_code int         NOT NULL,
 ) 
 
@@ -829,6 +829,9 @@ CREATE TABLE friends
   CHECK(follower <> followee),
 );
 
+CREATE INDEX idx_freinds_follower ON friends(follower);
+CREATE INDEX idx_freinds_followee ON friends(followee);
+
 CREATE TABLE activity_types
 (
   id   int         NOT NULL IDENTITY PRIMARY KEY,
@@ -843,8 +846,178 @@ CREATE TABLE activities
   end_time   datetime NOT NULL,
   type       int      NOT NULL REFERENCES activity_types(id),
   length     decimal  NOT NULL,
-  track      xml(gpx) NOT NULL,
+
+  CHECK(start_time < end_time),
 );
+
+CREATE INDEX idx_activities_athlete ON activities(athlete);
+
+CREATE TABLE activity_tracks
+(
+  activity int      NOT NULL PRIMARY KEY REFERENCES activities(id),
+  track    xml(gpx) NOT NULL,
+);
+
+CREATE TABLE groups
+(
+  id    int         NOT NULL IDENTITY PRIMARY KEY,
+  name  varchar(64) NOT NULL UNIQUE,
+  admin int         NOT NULL REFERENCES users(id),
+
+  CHECK(LEN(name) > 0),
+);
+
+CREATE TABLE group_members
+(
+  group_id int NOT NULL REFERENCES groups(id),
+  member   int NOT NULL REFERENCES users(id),
+);
+
+CREATE TABLE categories
+(
+  id   int         NOT NULL IDENTITY PRIMARY KEY,
+  name varchar(32) NOT NULL UNIQUE,
+);
+
+CREATE TABLE sponsors
+(
+  id         int         NOT NULL IDENTITY PRIMARY KEY,
+  brand_name varchar(64) NOT NULL UNIQUE,
+  legal_rep  varchar(64) NOT NULL,
+  legal_tel  varchar(32) NOT NULL,
+
+  CHECK(brand_name > 0),
+);
+
+CREATE TABLE sponsor_logos
+(
+  sponsor int            NOT NULL REFERENCES sponsors(id),
+  logo    varbinary(max) NOT NULL,
+);
+
+CREATE TABLE races
+(
+  id      int         NOT NULL IDENTITY PRIMARY KEY,
+  name    varchar(64) NOT NULL UNIQUE,
+  on_date date        NOT NULL,
+  type    int         NOT NULL REFERENCES activity_types(id),
+  price   decimal     NOT NULL,
+
+  CHECK(LEN(name) > 0),
+  CHECK(price > 0),
+);
+
+CREATE TABLE race_categories
+(
+  race     int NOT NULL REFERENCES races(id),
+  category int NOT NULL REFERENCES categories(id),
+
+  PRIMARY KEY(race, category),
+);
+
+CREATE INDEX idx_race_categories ON race_categories(race);
+
+CREATE TABLE race_tracks
+(
+  race  int      NOT NULL PRIMARY KEY REFERENCES races(id),
+  track xml(gpx) NOT NULL,
+);
+
+CREATE TABLE race_private_groups
+(
+  race     int NOT NULL REFERENCES races(id),
+  group_id int NOT NULL REFERENCES groups(id),
+
+  PRIMARY KEY(race, group_id),
+);
+
+CREATE INDEX idx_race_private_groups ON race_private_groups(race);
+
+CREATE TABLE race_participants
+(
+  race     int NOT NULL REFERENCES races(id),
+  athlete  int NOT NULL REFERENCES users(id),
+  activity int     NULL REFERENCES activities(id),
+
+  PRIMARY KEY(race, athlete),
+);
+
+CREATE INDEX idx_race_participants ON race_participants(race);
+
+CREATE TABLE race_sponsors
+(
+  race    int NOT NULL REFERENCES races(id),
+  sponsor int NOT NULL REFERENCES sponsors(id),
+
+  PRIMARY KEY(race, sponsor),
+);
+
+CREATE INDEX idx_race_sponsors ON race_sponsors(race);
+
+CREATE TABLE receipts
+(
+  race    int            NOT NULL REFERENCES races(id),
+  athlete int            NOT NULL REFERENCES users(id),
+  receipt varbinary(max) NOT NULL,
+
+  PRIMARY KEY(race, athlete),
+);
+
+CREATE TABLE bank_accounts
+(
+  race int         NOT NULL REFERENCES races(id),
+  iban varchar(34) NOT NULL, -- ISO 13616
+
+  PRIMARY KEY(race, iban),
+);
+
+CREATE INDEX idx_bank_accounts_race ON bank_accounts(race);
+
+CREATE TABLE challenges
+(
+  id         int         NOT NULL IDENTITY PRIMARY KEY,
+  name       varchar(64) NOT NULL UNIQUE,
+  start_time datetime    NOT NULL,
+  end_time   datetime    NOT NULL,
+  type       int         NOT NULL REFERENCES activity_types(id),
+  goal       decimal     NOT NULL,
+
+  CHECK(LEN(name) > 0),
+  CHECK(start_time < end_time),
+  CHECK(goal > 0),
+);
+
+CREATE TABLE challenge_private_groups
+(
+  challenge int NOT NULL REFERENCES challenges(id),
+  group_id  int NOT NULL REFERENCES groups(id),
+
+  PRIMARY KEY(challenge, group_id),
+);
+
+CREATE INDEX idx_challenge_private_groups ON challenge_private_groups(challenge);
+
+CREATE TABLE challenge_participants
+(
+  challenge int NOT NULL REFERENCES challenges(id),
+  athlete   int NOT NULL REFERENCES users(id),
+
+  PRIMARY KEY(challenge, athlete),
+);
+
+CREATE INDEX idx_challenge_participants ON challenge_participants(challenge);
+
+CREATE TABLE challenge_activities
+(
+  challenge int NOT NULL REFERENCES challenges(id),
+  activity  int NOT NULL REFERENCES activities(id),
+  seq_no    int NOT NULL,
+
+  PRIMARY KEY(challenge, activity),
+  CHECK(seq_no >= 0),
+);
+
+CREATE INDEX idx_challenge_activities ON challenge_activities(challenge);
 
 GO
 
@@ -861,12 +1034,12 @@ CREATE FULLTEXT INDEX ON users
 GO
 
 CREATE PROCEDURE current_age
-  @id  INT
-, @age INT OUTPUT
+  @id  int
+, @age int OUTPUT
 AS BEGIN
-  DECLARE @birth_date DATETIME;
-  DECLARE @years      INT;
-  DECLARE @now        DATETIME;
+  DECLARE @birth_date datetime;
+  DECLARE @years      int;
+  DECLARE @now        datetime;
 
   IF @id IS NULL
   BEGIN

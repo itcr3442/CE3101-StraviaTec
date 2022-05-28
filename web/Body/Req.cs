@@ -87,11 +87,11 @@ public record NewRace
     [Required]
     public ActivityType Type { get; set; }
     [Required]
+    public decimal Price { get; set; }
+    [Required]
     public int[] PrivateGroups { get; set; } = null!;
     [Required]
     public Category[] Categories { get; set; } = null!;
-    [Required]
-    public decimal Price { get; set; }
 }
 
 public record PatchRace
@@ -115,6 +115,8 @@ public record NewChallenge
     [Required]
     public ActivityType Type { get; set; }
     [Required]
+    public decimal Goal { get; set; }
+    [Required]
     public int[] PrivateGroups { get; set; } = null!;
 }
 
@@ -124,5 +126,6 @@ public record PatchChallenge
     public DateTime? Start { get; set; }
     public DateTime? End { get; set; }
     public ActivityType? Type { get; set; }
+    public decimal? Goal { get; set; }
     public int[]? PrivateGroups { get; set; }
 }

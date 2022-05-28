@@ -248,6 +248,15 @@ INSERT INTO activity_types(name) VALUES
   ('Kayaking'),
   ('Walking');
 
+INSERT INTO categories(name) VALUES
+  ('Junior'),
+  ('Sub23'),
+  ('Open'),
+  ('Elite'),
+  ('MasterA'),
+  ('MasterB'),
+  ('MasterC');
+
 INSERT INTO users
 ( username
 , first_name
