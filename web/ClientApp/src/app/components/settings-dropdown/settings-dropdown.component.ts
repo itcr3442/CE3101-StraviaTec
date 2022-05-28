@@ -2,6 +2,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+// import { bootstrap } from '';
 import { Country, newc_alpha2 } from 'src/app/interfaces/country';
 import { NullableUser, User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
@@ -60,8 +61,15 @@ export class SettingsDropdownComponent implements OnInit {
 
       this.registerService.edit_user(edit_user).subscribe(
         (resp: HttpResponse<null>) => {
-          console.log(resp)
-          this.registerService.resetForm(this.editProfileForm.registerForm)
+
+          // Esconder modal si request sirvió
+          let myModalEl: HTMLElement | null = document.getElementById('editProfile');
+          if (!!myModalEl) {
+            // @ts-ignore
+            let modal: bootstrap.Modal | null = bootstrap.Modal.getInstance(myModalEl)
+            // console.log("modal:", modal)
+            modal?.hide();
+          }
 
           let imageURL = null
           if (/*this.*/imageURL != null) {
