@@ -6,18 +6,24 @@ namespace web;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class FileUploadAttribute : Attribute
-{ }
+{
+    public FileUploadAttribute(string mime) { }
+}
 
 // https://stackoverflow.com/questions/39152612/swashbuckle-5-and-multipart-form-data-helppages/58516446#58516446
 public class FileUploadOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        var isFileUploadOperation =
-            context.MethodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(FileUploadAttribute));
+        var attribute =
+            context.MethodInfo.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(FileUploadAttribute));
 
-        if (!isFileUploadOperation) return;
+        if (attribute == null)
+        {
+            return;
+        }
 
+        string? mime = attribute.ConstructorArguments.First()!.Value as string;
         var uploadFileMediaType = new OpenApiMediaType()
         {
             Schema = new OpenApiSchema()
@@ -43,7 +49,7 @@ public class FileUploadOperationFilter : IOperationFilter
         {
             Content =
             {
-                ["image/jpeg"] = uploadFileMediaType
+                [mime] = uploadFileMediaType
             }
         };
     }
