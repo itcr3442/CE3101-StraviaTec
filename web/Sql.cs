@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
+using System.Xml;
 using Microsoft.Data.SqlClient;
 
 namespace web;
@@ -73,6 +74,12 @@ public class SqlCmd : IDisposable
     {
         _exec.Bind(_cmd);
         return new SqlStream(_cmd.ExecuteReader());
+    }
+
+    public XmlReader Xml()
+    {
+        _exec.Bind(_cmd);
+        return _cmd.ExecuteXmlReader();
     }
 
     public async Task<int> Exec()
