@@ -829,8 +829,8 @@ CREATE TABLE friends
   CHECK(follower <> followee),
 );
 
-CREATE INDEX idx_freinds_follower ON friends(follower);
-CREATE INDEX idx_freinds_followee ON friends(followee);
+CREATE INDEX idx_friends_follower ON friends(follower);
+CREATE INDEX idx_friends_followee ON friends(followee);
 
 CREATE TABLE activity_types
 (
