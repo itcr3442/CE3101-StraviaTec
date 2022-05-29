@@ -65,6 +65,8 @@ public class GroupController : ControllerBase
 [Route("Api/Groups/{id}/Membership")]
 public class MembershipController : ControllerBase
 {
+    public MembershipController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -88,8 +90,19 @@ public class MembershipController : ControllerBase
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : NotFound();
+        string query = @"
+            DELETE FROM group_members
+            WHERE       group_id=@group_id AND member=@member
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            cmd.Param("group_id", id).Param("member", this.LoginId());
+            return await cmd.Exec() > 0 ? NoContent() : NotFound();
+        }
     }
+
+    private ISqlConn _db;
 }
