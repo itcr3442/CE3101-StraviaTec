@@ -72,18 +72,20 @@ public class MembershipController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult New(int id, Req.NewGroup req)
+    public async Task<ActionResult> New(int id, Req.NewGroup req)
     {
-        switch (Random.Shared.Next(3))
+        string query = @"
+            INSERT INTO group_members(group_id, member)
+            VALUES(@group_id, @member)
+            ";
+
+        using (var cmd = _db.Cmd(query))
         {
-            case 0:
-                return CreatedAtAction(nameof(Delete), new { id = id });
+            cmd.Param("group_id", id).Param("member", this.LoginId());
 
-            case 1:
-                return Conflict();
-
-            default:
-                return BadRequest();
+            return await cmd.Exec() > 0
+                ? CreatedAtAction(nameof(Delete), new { id = id })
+                : NotFound();
         }
     }
 
