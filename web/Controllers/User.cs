@@ -369,7 +369,7 @@ public class PhotoController : ControllerBase
     }
 
     [HttpPut]
-    [FileUpload]
+    [FileUpload(MediaTypeNames.Image.Jpeg)]
     [Consumes(MediaTypeNames.Image.Jpeg)]
     [RequestSizeLimit(1048576)]
     [ProducesResponseType(StatusCodes.Status200OK)]
