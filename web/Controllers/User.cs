@@ -167,7 +167,7 @@ public class UserController : ControllerBase
                .Param("hash", hash)
                .Param("salt", salt);
 
-            id = cmd.Row<int>().Value;
+            id = cmd.InsertId();
         }
 
         return CreatedAtAction(nameof(Get), new { id }, new Resp.Ref(id));

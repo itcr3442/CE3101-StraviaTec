@@ -88,6 +88,8 @@ public class SqlCmd : IDisposable
         return await _cmd.ExecuteNonQueryAsync();
     }
 
+    public int InsertId() => Row<int>().Value;
+
     public async Task<SqlParameterCollection> StoredProcedure()
     {
         _cmd.CommandType = CommandType.StoredProcedure;
