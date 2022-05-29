@@ -39,12 +39,10 @@ public class FriendsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Follow(int followeeId)
     {
-        int self = this.LoginId();
-
         string query = "INSERT INTO friends(follower, followee) VALUES(@follower, @followee)";
         using (var cmd = _db.Cmd(query))
         {
-            await cmd.Param("follower", self).Param("followee", followeeId).Exec();
+            await cmd.Param("follower", this.LoginId()).Param("followee", followeeId).Exec();
         }
 
         return CreatedAtAction(nameof(Follow), new { followeeId = followeeId });
@@ -53,9 +51,14 @@ public class FriendsController : ControllerBase
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Unfollow(int followeeId)
+    public async Task<ActionResult> Unfollow(int followeeId)
     {
-        return NoContent();
+        string query = "DELETE FROM friends WHERE follower=@follower AND followee=@followee";
+        using (var cmd = _db.Cmd(query))
+        {
+            cmd.Param("follower", this.LoginId()).Param("followee", followeeId);
+            return await cmd.Exec() > 0 ? NoContent() : NotFound();
+        }
     }
 
     private ISqlConn _db;
