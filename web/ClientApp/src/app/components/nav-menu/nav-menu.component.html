@@ -4,19 +4,13 @@
       <a class="navbar-brand" [routerLink]="['/']">StraviaTEC</a>
       <div class="d-sm-inline-flex justify-content-end">
 
-
         <ul class="navbar-nav flex-grow">
           <li class="nav-item" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
             <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/settings']">Settings</a>
-          </li>
 
           <ng-container *ngTemplateOutlet="this.authenticated ?  loggedBlock : unloggedBlock">
           </ng-container>
-
-
 
         </ul>
       </div>
@@ -31,7 +25,6 @@
 </ng-template>
 
 <ng-template #loggedBlock>
-
   <ng-container *ngIf="this.role === this.RoleLevels.Athlete">
     <li class="nav-item" [routerLinkActive]="['link-active']">
       <a class="nav-link text-dark" [routerLink]="['/register=act']">Registrar Actividad</a>
@@ -54,15 +47,9 @@
   </ng-container>
 
   <ng-container *ngIf="this.role === this.RoleLevels.Organizer">
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/search']"> Search </a>
-    </li>
   </ng-container>
 
 
-  <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
-    <a class="nav-link text-dark" [routerLink]="['/settings']">Settings</a>
-  </li> -->
   <app-settings-dropdown></app-settings-dropdown>
 
 

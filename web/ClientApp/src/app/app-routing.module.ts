@@ -11,7 +11,6 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterUserComponent } from './components/register-user/register-user.component';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { SearchUsersComponent } from './components/search-users/search-users.component';
-import { SettingsDropdownComponent } from './components/settings-dropdown/settings-dropdown.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 import { RegisterOrgComponent } from './components/register-org/register-org.component';
 import { RegisterActivityComponent } from './components/register-activity/register-activity.component';
@@ -30,14 +29,13 @@ const routes: Routes = [
   { path: '404', component: NotFoundComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterUserComponent, canActivate: [AuthGuard], data: { roles: [] } }, // solo accesible si no está loggeado
-  { path: 'search', component: SearchUsersComponent , canActivate: [AuthGuard], data: { roles: [...allRoles] }  },
-  { path: 'register=org', component: RegisterOrgComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } }, // solo accesible si no está loggeado
-  { path: 'register=act', component: RegisterActivityComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } }, // solo accesible si no está loggeado
-  { path: 'subscribe=race', component: UserRacesComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } }, // solo accesible si no está loggeado
-  { path: 'subscribe=challenge', component: UserChallengesComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } }, // solo accesible si no está loggeado
-  { path: 'subscribe=group', component: UserGroupsComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } }, // solo accesible si no está loggeado
-  { path: 'subscriptions', component: UserSubscribedComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } }, // solo accesible si no está loggeado
-  // { path: 'settings', component: SettingsDropdownComponent, canActivate: [AuthGuard], data: { roles: [...allRoles] } },
+  { path: 'search', component: SearchUsersComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } },
+  { path: 'register=org', component: RegisterOrgComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
+  { path: 'register=act', component: RegisterActivityComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } },
+  { path: 'subscribe=race', component: UserRacesComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } },
+  { path: 'subscribe=challenge', component: UserChallengesComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } },
+  { path: 'subscribe=group', component: UserGroupsComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } },
+  { path: 'subscriptions', component: UserSubscribedComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Athlete] } },
   { path: '', component: HomeComponent, pathMatch: 'full' },
 ];
 
