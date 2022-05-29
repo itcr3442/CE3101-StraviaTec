@@ -99,9 +99,33 @@ public class ActivityController : ControllerBase
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
+        using (var txn = _db.Txn())
+        {
+            using (var cmd = txn.Cmd("SELECT athlete FROM activities WHERE id=@id"))
+            {
+                int? athlete = cmd.Param("id", id).Row<int>();
+                if (athlete == null)
+                {
+                    return NotFound();
+                }
+                else if (athlete != this.LoginId())
+                {
+                    return Forbid();
+                }
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM activities WHERE id=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            txn.Commit();
+        }
+
         return NoContent();
     }
 
