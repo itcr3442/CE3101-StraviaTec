@@ -1,6 +1,7 @@
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Button } from 'bootstrap';
 import { UserSearchByID } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { RepositoryService } from 'src/app/services/repository.service';
@@ -22,6 +23,8 @@ export class SearchUsersComponent implements OnInit {
   user_id_list !: string[];
   users_page !: UserSearchWithID[];
   amount_of_pages : number = 0;
+  isFirstPage : boolean = true;
+  isLastPage : boolean = true;
 
   constructor(
     private repo: RepositoryService,
@@ -48,6 +51,7 @@ export class SearchUsersComponent implements OnInit {
         console.log(this.user_id_list);
         console.log(this.amount_of_pages);
         this.getPageUsers();
+        this.pageButtonsSetup();
       })
     }else{
       this.message = "Por favor ingrese un nombre válido"
@@ -69,12 +73,13 @@ export class SearchUsersComponent implements OnInit {
           birthDate:      res.body.birthDate,
           age:            res.body.age, 
           nationality:    res.body.nationality,
-          relationship:   res.body.relationship
+          relationship:   res.body.relationship,
+          isfollowing:    this.isFollowing(res.body.relationship)
         };
         this.users_page[j] = incompleteUser;
         console.log(this.users_page[j]);
-      },
-      /*
+      }
+      /*,
       (error: HttpErrorResponse) => {
         console.log("user not found: ", error)
         let error_user : UserSearchWithID = 
@@ -96,16 +101,87 @@ export class SearchUsersComponent implements OnInit {
     console.log("users:", this.users_page)
   }
 
-  onFollow(id:string){
-    this.message = "en proceso, btw el id es " + id;
+  onFollow(id:string, user: UserSearchWithID){
+    let searchUserUrl = "Following/" + id;
+    this.repo.create(searchUserUrl,"")
+    .subscribe((res: HttpResponse<any>) => {
+      console.log("Result:",res);
+    })
+    user.isfollowing = !user.isfollowing;
+  }
+
+  onUnfollow(id:string, user: UserSearchWithID){
+    let searchUserUrl = "Following/" + id;
+    this.repo.delete(searchUserUrl)
+    .subscribe((res: HttpResponse<any>) => {
+      console.log("Result:",res);
+    })
+    user.isfollowing = !user.isfollowing;
+  }
+
+  pageButtonsSetup(){
+    if (this.amount_of_pages == 1 ||this.amount_of_pages == 0){
+      this.isFirstPage = true;
+      this.isLastPage = true;
+    } else if (this.currentPage == 1){
+      this.isFirstPage = true;
+      this.isLastPage = false;
+    } else if (this.amount_of_pages - this.currentPage == 0){
+      this.isFirstPage = false;
+      this.isLastPage = true;
+    } else{
+      this.isFirstPage = false;
+      this.isLastPage = false;
+    }
   }
 
   onPreviousPage(){
-    this.message = "en proceso";
+    this.currentPage = this.currentPage - 1;
+    if (this.currentPage == 0){
+      this.currentPage = 1;
+      this.pageButtonsSetup();
+      return
+    }
+    let searchUserUrl = "Users/Search?query=" + this.searchUserForm.controls['username'].value + "&page=" + this.currentPage;
+    this.repo.getData(searchUserUrl)
+    .subscribe((res: HttpResponse<any>) => {
+      console.log("Result:",res);
+      this.user_id_list = res.body.page as string[];
+      this.users_page = Array(this.user_id_list.length);
+      console.log(this.user_id_list);
+      this.getPageUsers();
+      this.pageButtonsSetup();
+    })
   }
 
   onNextPage(){
-    this.message = "en proceso";
+    this.currentPage = this.currentPage + 1;
+    if (this.currentPage > this.amount_of_pages){
+      this.currentPage = this.amount_of_pages;
+      this.pageButtonsSetup();
+      return
+    }
+    let searchUserUrl = "Users/Search?query=" + this.searchUserForm.controls['username'].value + "&page=" + this.currentPage;
+    this.repo.getData(searchUserUrl)
+    .subscribe((res: HttpResponse<any>) => {
+      console.log("Result:",res);
+      this.user_id_list = res.body.page as string[];
+      this.users_page = Array(this.user_id_list.length);
+      console.log(this.user_id_list);
+      this.getPageUsers();
+      this.pageButtonsSetup();
+    })
+  }
+
+  isFollowing(relationship:string): boolean{
+    if(relationship == "Self"){
+      return false
+    } else if(relationship == "None" || relationship == "FollowedBy"){
+      return false
+    }else if(relationship == "Following" || relationship == "BothFollowing"){
+      return true
+    }
+    return false; //no debería pasar;
   }
 }
 
@@ -117,5 +193,6 @@ interface UserSearchWithID {
   birthDate:      Date,
   age:            number, 
   nationality:    string,
-  relationship:   string
+  relationship:   string,
+  isfollowing:      boolean,
 }

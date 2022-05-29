@@ -38,14 +38,17 @@
                         <td>{{user.lastName}}</td>
                         <td>{{user.nationality}}</td>
                         <td>{{user.age}}</td>
-                        <td><button type="follow" class="btn btn-outline-success" (click)="onFollow(user.id)">Seguir</button></td>
+                        <td>
+                            <div #ListItem1><button type="follow" class="btn btn-outline-success"  *ngIf="!user.isfollowing" (click)="onFollow(user.id,user)" >Follow</button></div>
+                            <div #ListItem2><button type="unfollow" class="btn btn-outline-danger" *ngIf="user.isfollowing" (click)="onUnfollow(user.id,user)" >Unfollow</button></div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div> 
     <div class="col-md-4">
-        <button type="follow" class="btn btn-outline-secondary" (click)="onPreviousPage()">←</button>
-        <button type="follow" class="btn btn-outline-secondary" (click)="onNextPage()">→</button>
+        <button type="follow" class="btn btn-outline-secondary" [disabled]="this.isFirstPage" (click)="onPreviousPage()">←</button>
+        <button type="follow" class="btn btn-outline-secondary" [disabled]="this.isLastPage" (click)="onNextPage()">→</button>
     </div>
 </div>
