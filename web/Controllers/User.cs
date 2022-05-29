@@ -35,7 +35,7 @@ public class IdentityController : ControllerBase
         var query = "SELECT id, hash, salt, is_organizer FROM users WHERE username=@username";
         using (var cmd = _db.Cmd(query))
         {
-            var result = cmd.Param("username", req.Username).Tuple<(int, byte[], byte[], bool)>();
+            var result = cmd.Param("username", req.Username).Row<(int, byte[], byte[], bool)>();
             if (result == null)
             {
                 return Unauthorized();
@@ -90,7 +90,7 @@ public class IdentityController : ControllerBase
             (byte[] hash, byte[] salt) row;
             using (var cmd = txn.Cmd("SELECT hash, salt FROM users WHERE id=@id"))
             {
-                var result = cmd.Param("id", self).Tuple<(byte[], byte[])>();
+                var result = cmd.Param("id", self).Row<(byte[], byte[])>();
                 if (result == null)
                 {
                     return Unauthorized();
@@ -167,7 +167,7 @@ public class UserController : ControllerBase
                .Param("hash", hash)
                .Param("salt", salt);
 
-            id = cmd.Tuple<int>().Value;
+            id = cmd.Row<int>().Value;
         }
 
         return CreatedAtAction(nameof(Get), new { id }, new Resp.Ref(id));
@@ -195,7 +195,7 @@ public class UserController : ControllerBase
             {
                 cmd.Param("id", effective);
 
-                var result = cmd.Tuple<(string, string, string, DateTime, string)>();
+                var result = cmd.Row<(string, string, string, DateTime, string)>();
                 if (result == null)
                 {
                     return NotFound();
@@ -282,7 +282,7 @@ public class UserController : ControllerBase
             {
                 cmd.Param("id", self);
 
-                var result = cmd.Tuple<(string, string, string, DateTime, string)>();
+                var result = cmd.Row<(string, string, string, DateTime, string)>();
                 if (result == null)
                 {
                     return NotFound();

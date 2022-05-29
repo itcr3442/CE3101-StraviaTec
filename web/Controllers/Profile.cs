@@ -24,7 +24,7 @@ public class ProfileController : ControllerBase
 
         using (var cmd = _db.Cmd("SELECT COUNT(id) FROM users WHERE id=@id"))
         {
-            if (cmd.Param("id", effective).Tuple<int>() == 0)
+            if (cmd.Param("id", effective).Row<int>() == 0)
             {
                 return NotFound();
             }
@@ -33,19 +33,19 @@ public class ProfileController : ControllerBase
         int following;
         using (var cmd = _db.Cmd("SELECT COUNT(followee) FROM friends WHERE follower=@id"))
         {
-            following = cmd.Param("id", effective).Tuple<int>() ?? 0;
+            following = cmd.Param("id", effective).Row<int>() ?? 0;
         }
 
         int followers;
         using (var cmd = _db.Cmd("SELECT COUNT(follower) FROM friends WHERE followee=@id"))
         {
-            followers = cmd.Param("id", effective).Tuple<int>() ?? 0;
+            followers = cmd.Param("id", effective).Row<int>() ?? 0;
         }
 
         int activities;
         using (var cmd = _db.Cmd("SELECT COUNT(id) FROM activities WHERE athlete=@id"))
         {
-            activities = cmd.Param("id", effective).Tuple<int>() ?? 0;
+            activities = cmd.Param("id", effective).Row<int>() ?? 0;
         }
 
         var query = @"
@@ -58,7 +58,7 @@ public class ProfileController : ControllerBase
         int? latest;
         using (var cmd = _db.Cmd(query))
         {
-            latest = cmd.Param("id", effective).Tuple<int>();
+            latest = cmd.Param("id", effective).Row<int>();
         }
 
         return Ok(new Resp.HomeStats

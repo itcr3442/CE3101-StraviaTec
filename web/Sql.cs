@@ -52,7 +52,7 @@ public class SqlCmd : IDisposable
         return this;
     }
 
-    public T? Tuple<T>() where T : struct
+    public T? Row<T>() where T : struct
     {
         _exec.Bind(_cmd);
         foreach (var row in Rows<T>())
