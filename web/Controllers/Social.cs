@@ -30,24 +30,24 @@ public class DashboardController : ControllerBase
 [Route("Api/Following/{followeeId}")]
 public class FriendsController : ControllerBase
 {
+    public FriendsController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult Follow(int followeeId)
+    public async Task<ActionResult> Follow(int followeeId)
     {
-        switch (Random.Shared.Next(3))
+        int self = this.LoginId();
+
+        string query = "INSERT INTO friends(follower, followee) VALUES(@follower, @followee)";
+        using (var cmd = _db.Cmd(query))
         {
-            case 0:
-                return CreatedAtAction(nameof(Follow), new { followeeId = followeeId });
-
-            case 1:
-                return Conflict();
-
-            default:
-                return BadRequest();
+            await cmd.Param("follower", self).Param("followee", followeeId).Exec();
         }
+
+        return CreatedAtAction(nameof(Follow), new { followeeId = followeeId });
     }
 
     [HttpDelete]
@@ -57,4 +57,6 @@ public class FriendsController : ControllerBase
     {
         return NoContent();
     }
+
+    private ISqlConn _db;
 }
