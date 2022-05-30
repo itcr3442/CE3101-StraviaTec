@@ -1,9 +1,8 @@
-import { HttpResponse} from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
-import { RepositoryService } from 'src/app/services/repository.service';
-import { NgxMatDatetimePicker } from '@angular-material-components/datetime-picker';
+import { ActivityType } from 'src/app/constants/activity.constants';
 
 @Component({
   selector: 'app-register-activity',
@@ -14,9 +13,16 @@ export class RegisterActivityComponent implements OnInit {
 
   registerForm = new FormGroup({
     startDate: new FormControl('', [Validators.required]),
-    endDate: new FormControl('', [Validators.required]),
+    duration: new FormControl('', [Validators.required]),
     activityType: new FormControl('', [Validators.required]),
+    kilometers: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
   })
+
+  get activityTypeEnum(): typeof ActivityType {
+    return ActivityType
+  }
+
+  activityTypes: (keyof typeof ActivityType)[] = [];
 
   startDateControl = new FormControl(null);
   endDateControl = new FormControl(null);
@@ -25,19 +31,26 @@ export class RegisterActivityComponent implements OnInit {
   minDate: string = '1900-01-01'
   gpxURL: string | null = null;
 
-  constructor() { 
+  constructor() {
     let today = new Date()
-    this.maxDate = (today.getFullYear() - 13) + "-" + (today.getMonth() + 1 + "").padStart(2, "0") + "-" + (today.getDate() + '').padStart(2, "0")
+    this.maxDate = today.getFullYear() + "-" + (today.getMonth() + 1 + "").padStart(2, "0") + "-" + (today.getDate() + '').padStart(2, "0")
+
+    for (let a in ActivityType) {
+      if (typeof ActivityType[a] === 'number') this.activityTypes.push(a as (keyof typeof ActivityType));
+    }
   }
 
   ngOnInit(): void {
   }
 
   onSubmit() {
+    this.message = ""
+
     if (this.registerForm.valid) {
 
-
-    }else{
+      this.message = "yay!!"
+    } else {
+      this.message = "nay >:C"
 
     }
   }

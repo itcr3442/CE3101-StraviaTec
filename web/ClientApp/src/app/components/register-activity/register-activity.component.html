@@ -11,28 +11,27 @@
 
                     <div class="mb-3 form-group">
                         <label for="startDate">Fecha y hora de inicio de actividad</label>
-                        <input min={{this.minDate}} max={{this.maxDate}} type="datetime-local" id="startDate" formControlName="startDate"
-                        class="form-control">
+                        <input min={{this.minDate}} max={{this.maxDate}} type="datetime-local" id="startDate"
+                            formControlName="startDate" class="form-control">
                     </div>
 
                     <div class="mb-3 form-group">
-                        <label for="endDate">Fecha y hora de finalización de actividad</label>
-                        <input min={{this.minDate}} max={{this.maxDate}} type="datetime-local" id="endDate" formControlName="endDate"
-                        class="form-control">
+                        <label for="duration">Duración</label>
+                        <input type="number" id="duration" formControlName="duration" class="form-control">
                     </div>
-        
-                    <div class="row mb-3 form-group">
-                        <label for="fullname">Especifique el tipo de actividad realizado</label>
 
-                        <select class="form-select" aria-label="Default select example" formControlName="activityType">
-                            <option selected>Tipo de Actividad</option>
-                            <option value="Running">Running</option>
-                            <option value="Swimming">Swimming</option>
-                            <option value="Cycling">Cycling</option>
-                            <option value="Hiking">Hiking</option>
-                            <option value="Kayak">Kayaking</option>
-                            <option value="Walking">Walking</option>
+                    <div class="mb-3 form-group">
+                        <label for="activityTypeSelect">Tipo de actividad</label>
+                        <select id="activityTypeSelect" class="form-select" formControlName="country">
+                            <option *ngFor="let act of activityTypes" [value]="activityTypeEnum[act]">
+                                {{act}}
+                            </option>
                         </select>
+                    </div>
+
+                    <div class="mb-3 form-group">
+                        <label for="kilometers">Kilometraje</label>
+                        <input type="number" id="kilometers" formControlName="kilometers" class="form-control">
                     </div>
 
                     <div class="mb-3 form-group">
@@ -51,6 +50,6 @@
             </div>
 
         </div>
-        
-    </div>  
+
+    </div>
 </div>
