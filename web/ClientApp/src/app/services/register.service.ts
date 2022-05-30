@@ -79,4 +79,10 @@ export class RegisterService {
   public unfollow_user(followeeId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.delete<null>("Following/" + followeeId)
   }
+  
+  /* TESTING NO TOCAR
+  public register_user_race(raceId: number): Observable<HttpResponse<null>>{
+   return this.repositoryService.create<null>("Following/" + followeeId)
+  }
+  */
 }

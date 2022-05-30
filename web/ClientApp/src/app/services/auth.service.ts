@@ -9,6 +9,7 @@ import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
 import { User, UserResp } from '../interfaces/user';
 import { Country, newc_alpha2 } from '../interfaces/country';
+import { Race } from '../interfaces/race';
 
 export interface LoginResponse {
   id: number,
@@ -88,6 +89,23 @@ export class AuthService {
         let userResp: UserResp = resp.body;
 
         return this.resp2user(userResp)
+      }
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
+
+    }
+    ))
+
+  }
+
+  public getRace(id: number): Observable<Race | null> {
+    return this.repo.getData<Race>(`Races/${id}`).pipe(map((resp: HttpResponse<Race>) => {
+      if (resp.body) {
+        let raceResp: Race = resp.body;
+
+        return raceResp
       }
       else {
         this.router.navigate(['/404'])
