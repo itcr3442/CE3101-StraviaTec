@@ -6,9 +6,11 @@ import { map } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { NullableUser, User } from '../interfaces/user';
+import { Activity } from '../interfaces/activity';
 import { RoleLevels } from '../constants/user.constants';
 import { HttpResponse } from '@angular/common/http';
 import { Id } from '../interfaces/id';
+import { ActivityType } from '../constants/activity.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -79,7 +81,38 @@ export class RegisterService {
   public unfollow_user(followeeId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.delete<null>("Following/" + followeeId)
   }
-  
+
+  public register_activity(activity: Activity): Observable<HttpResponse<Id>> {
+
+    let new_activity = {
+      start: activity.start.toISOString(),
+      end: activity.end.toISOString(),
+      type: ActivityType[activity.type],
+      length: activity.length
+    }
+
+
+    console.log("New activity: " + JSON.stringify(new_activity))
+
+    return this.repositoryService.create<Id>(
+      "Activities", new_activity)
+
+  }
+
+
+  public delete_activity(id: number): Observable<HttpResponse<null>> {
+
+    return this.repositoryService.delete<null>(
+      "Activities/" + id)
+
+  }
+
+  public put_gpx(id: number, gpx: File): Observable<HttpResponse<null>> {
+
+    return this.repositoryService.replace<null>(
+      "Activities/" + id + "/Track", gpx, false, "application/xml")
+  }
+
   /* TESTING NO TOCAR
   public register_user_race(raceId: number): Observable<HttpResponse<null>>{
    return this.repositoryService.create<null>("Following/" + followeeId)

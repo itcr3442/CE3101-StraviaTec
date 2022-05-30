@@ -1,4 +1,4 @@
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
@@ -6,6 +6,9 @@ import { ActivityType } from 'src/app/constants/activity.constants';
 import { circle, latLng, Layer, tileLayer, map as leafMap, Map as LeafMap, LayerEvent, GPX } from 'leaflet';
 import * as L from 'leaflet-gpx';
 import { map } from 'jquery';
+import { RegisterService } from 'src/app/services/register.service';
+import { Activity } from 'src/app/interfaces/activity';
+import { Id } from 'src/app/interfaces/id';
 
 @Component({
   selector: 'app-register-activity',
@@ -53,7 +56,7 @@ export class RegisterActivityComponent implements OnInit {
     return ActivityType
   }
 
-  constructor() {
+  constructor(private registerService: RegisterService) {
     let today = new Date()
     this.maxDate = this.toLocalTimeStr(today)
     for (let a in ActivityType) {
@@ -117,7 +120,70 @@ export class RegisterActivityComponent implements OnInit {
 
     if (this.checkFormValidity()) {
 
-      this.message = "yay!!"
+      let activity: Activity = {
+        user: 0,
+        start: new Date(this.registerForm.controls['startDate'].value),
+        end: new Date(this.registerForm.controls['endDate'].value),
+        length: this.registerForm.controls['kilometers'].value,
+        type: this.registerForm.controls['activityType'].value
+      }
+
+      // console.log("Activity submitted:", activity)
+
+      this.registerService.register_activity(activity).subscribe(
+        (postResp: HttpResponse<Id>) => {
+          if (postResp.body) {
+            console.log("Register Activity Resp:", postResp)
+            this.registerService.resetForm(this.registerForm)
+            this.message = "Su actividad se ha registrado correctamente."
+
+            // put gpx track
+            if (this.gpxFile !== null) {
+              this.registerService.put_gpx(postResp.body.id, this.gpxFile).subscribe(
+                (gpxResp: HttpResponse<null>) => {
+                  console.log("PUT GPX resp:", gpxResp)
+                },
+                (err: HttpErrorResponse) => {
+                  if (err.status == 400) {
+                    this.warnMessage = "Hubo un problema con el formato del archivo '.gpx'."
+                  }
+                  else {
+                    this.warnMessage = "Lo sentimos, hubo un problema a la hora de enviar el archivo '.gpx' al servidor."
+                  }
+                  console.log("Error while uploading gpx:", err);
+
+                  //Delete previously posted activity
+                  if (postResp.body)
+                    this.registerService.delete_activity(postResp.body.id).subscribe((deleteResp: HttpResponse<null>) => {
+                      console.log("delete resp:", deleteResp),
+                        (err: HttpErrorResponse) => {
+                          console.log("Error deleting activity without gpx:", err)
+                        }
+                    })
+
+                }
+              )
+            }
+
+            if (this.gpxURL !== null) {
+              URL.revokeObjectURL(this.gpxURL)
+            }
+          }
+          else {
+            this.warnMessage = "Lo sentimos, estamos experimentado problemas (falta de body en response).";
+          }
+
+        },
+        (err: HttpErrorResponse) => {
+          if (err.status == 400) {
+            this.warnMessage = "Bad Request 400: Por favor verifique que los datos ingresados son válidos.";
+
+          } else if (err.status == 404) {
+            console.log("404:", err)
+            this.warnMessage = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
+          }
+        })
+
     }
   }
 
@@ -157,7 +223,7 @@ export class RegisterActivityComponent implements OnInit {
           form.controls['endDate'].setValue(self.toLocalTimeStr(e.target.get_end_time()));
           self.updateDuration()
         }
-        form.controls['kilometers'].setValue(e.target.get_distance().toFixed(3))
+        form.controls['kilometers'].setValue((e.target.get_distance() / 1000).toFixed(3))
       })
 
       this.gpxLayer.push(layer)
@@ -172,7 +238,7 @@ export class RegisterActivityComponent implements OnInit {
     let hours = ms / (1000 * 60 * 60)
     let mins = (hours % 1) * 60
     let secs = (mins % 1) * 60
-    let millis = Math.round((secs % 1) * 1000)
+    // let millis = Math.round((secs % 1) * 1000)
     return padTwo(Math.floor(hours)) + ':' + padTwo(Math.floor(mins)) + ':' + padTwo(Math.round(secs))// + '.' + ('' + Math.floor(millis)).padStart(3, "0")
   }
 

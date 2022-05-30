@@ -45,9 +45,10 @@
                         </select>
                     </div>
 
-                    <div class="mb-3 form-group">
-                        <label for="kilometers">Kilometraje</label>
+                    <label for="kilometers">Kilometraje</label>
+                    <div class="mb-3 form-group input-group">
                         <input type="number" id="kilometers" formControlName="kilometers" class="form-control">
+                        <span class="input-group-text">km</span>
                     </div>
 
                     <ng-container *ngIf="this.message">
