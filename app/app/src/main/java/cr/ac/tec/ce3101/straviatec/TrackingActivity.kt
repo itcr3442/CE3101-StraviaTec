@@ -104,7 +104,7 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
                             distance += lastLocation.distanceTo(location)  //m
                             distanceText.text = String.format("%.2f Km", distance / 1000)
                             val elapsedTime = Instant.now()
-                            val speed = distance * 360 / (elapsedTime.toEpochMilli() - startTime.toEpochMilli())
+                            val speed = distance * 3600 / (elapsedTime.toEpochMilli() - startTime.toEpochMilli())
                             speedText.text = String.format("%.2f Km/h", speed)
                             locations.add(location)
                             route.points = locationsToPoints(locations)

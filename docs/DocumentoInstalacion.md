@@ -32,6 +32,8 @@ linestretch: 1.5
 \setcounter{page}{1}
 
 
+# Bases de datos
+
 # Servicio Web 
 
 # App Web
@@ -49,5 +51,11 @@ Se provee un archivo .apk que facilita la instalación de la aplicación en un c
 3. Si su celular presenta una característica de scan, probablemente le señale que la aplicación es sospechosa - esto es de esperarse, puesto que no está firmada, sin embargo no presenta ningún problema. Puede ignorar este mensaje. 
 
 4. La aplicación debería aparecer ahora disponible para ser ejecutada.
+
+5. Antes de continuar, chequee los permisos de la aplicación y habilite los permisos para obtener actualizaciones de localización tal como se muestra en la figura \ref{movil_permisos}
+
+![Configuración de permisos de la aplicación móvil \label{movil_permisos}](imgs/movil_permisos.jpg){height=60%}
+
+
 
 
