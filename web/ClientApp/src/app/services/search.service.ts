@@ -19,4 +19,9 @@ export class SearchService {
     let searchUserUrl = "Users/Search?query=" + query + "&page=" + page;
     return this.repo.getData<SearchResp>(searchUserUrl)
   }
+
+  public searchRacesPage(page: number, filterRegistered: boolean , nameLike: string): Observable<HttpResponse<SearchResp>> {
+    let searchUserUrl = "Races/Search?page=" + page + "&filterRegistered=" + filterRegistered + "&name" + nameLike;
+    return this.repo.getData<SearchResp>(searchUserUrl)
+  }
 }
