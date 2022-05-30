@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { RepositoryService } from 'src/app/services/repository.service';
-import { NgxMatDatetimePicker } from '@angular-material-components/datetime-picker';
 
 @Component({
   selector: 'app-register-activity',
