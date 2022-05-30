@@ -61,20 +61,6 @@ export class RegisterService {
   }
 
   /**
- * Método que realiza el request al servidor para obtener todos
- * los trabajadores para mostrarlos en la lista correspondiente.
- */
-  public getAllUsers = () => {
-
-    return this.repositoryService.getData("users")
-  }
-
-  public getUser = (id: string) => {
-
-    return this.repositoryService.getData("users/" + id)
-  }
-
-  /**
    * resetea el formgroup dejando todos sus campos vacíos
    * @param formGroup un formgroup a resetear
    */
@@ -85,9 +71,12 @@ export class RegisterService {
 
   }
 
-  public registerBags = (id: string, owner: string, weight: number, color: string) => {
-    let bag = { owner, weight, color }
-    console.log("Bag:", bag)
-    return this.repositoryService.create("flights/" + id + "/bag", bag)
+  public follow_user(followeeId: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.create<null>("Following/" + followeeId, null)
+  }
+
+
+  public unfollow_user(followeeId: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.delete<null>("Following/" + followeeId)
   }
 }

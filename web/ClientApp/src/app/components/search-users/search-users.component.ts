@@ -2,9 +2,12 @@ import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Button } from 'bootstrap';
-import { UserSearchByID } from 'src/app/interfaces/user';
+import { Relationships } from 'src/app/constants/user.constants';
+import { User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
+import { RegisterService } from 'src/app/services/register.service';
 import { RepositoryService } from 'src/app/services/repository.service';
+import { SearchResp, SearchService } from 'src/app/services/search.service';
 
 
 @Component({
@@ -20,179 +23,142 @@ export class SearchUsersComponent implements OnInit {
 
   message: string = "";
   currentPage: number = 1;
-  user_id_list !: string[];
-  users_page !: UserSearchWithID[];
-  amount_of_pages : number = 0;
-  isFirstPage : boolean = true;
-  isLastPage : boolean = true;
+  user_id_list: number[] = [];
+  users_page: User[] = [];
+  amount_of_pages: number = 0;
+  isFirstPage: boolean = true;
+  isLastPage: boolean = true;
 
   constructor(
-    private repo: RepositoryService,
-    private authRepo: AuthService,
+    private registerService: RegisterService,
+    private authService: AuthService,
+    private searchService: SearchService,
   ) { }
 
   ngOnInit(): void {
   }
 
+  get searchQuery(): string {
+    return this.searchUserForm.controls['username'].value
+  }
+
   onSearch() {
     this.message = "";
     this.currentPage = 1;
-    this.user_id_list = [];
     this.users_page = [];
     this.amount_of_pages = 0;
+
     if (this.searchUserForm.valid) {
-      let searchUserUrl = "Users/Search?query=" + this.searchUserForm.controls['username'].value + "&page=" + this.currentPage;
-      this.repo.getData(searchUserUrl)
-      .subscribe((res: HttpResponse<any>) => {
-        console.log("Result:",res);
-        this.user_id_list = res.body.page as string[];
-        this.users_page = Array(this.user_id_list.length);
-        this.amount_of_pages = res.body.pages;
-        console.log(this.user_id_list);
-        console.log(this.amount_of_pages);
-        this.getPageUsers();
-        this.pageButtonsSetup();
-      })
-    }else{
+      this.refreshPage()
+    } else {
       this.message = "Por favor ingrese un nombre válido"
     }
   }
 
-  getPageUsers() {
-    for (let j = 0; j < this.user_id_list.length; j++){
-      let searchUserUrl = "Users/" + this.user_id_list[j];
-      this.repo.getData(searchUserUrl)
-      .subscribe((res: HttpResponse<any>) => {
-        console.log("Result:",res);
-        let incompleteUser : UserSearchWithID = 
-        {
-          id:             this.user_id_list[j],
-          username:       res.body.username,
-          firstName:      res.body.firstName,
-          lastName:       res.body.lastName,
-          birthDate:      res.body.birthDate,
-          age:            res.body.age, 
-          nationality:    res.body.nationality,
-          relationship:   res.body.relationship,
-          isfollowing:    this.isFollowing(res.body.relationship)
-        };
-        this.users_page[j] = incompleteUser;
-        console.log(this.users_page[j]);
-      }
-      /*,
-      (error: HttpErrorResponse) => {
-        console.log("user not found: ", error)
-        let error_user : UserSearchWithID = 
-                      {
-                        id:             this.user_id_list[j],
-                        username:       "not_found",
-                        firstName:      "not_found",
-                        lastName:       "not_found",
-                        birthDate:      new Date(0),
-                        age:            0, 
-                        nationality:    "not_found",
-                        relationship:   "not_found"
-                      }
-        this.users_page[j] = error_user;
-        
-      }*/
-      )
+  refreshPage(): void {
+    this.searchService.searchUserPage(this.searchQuery, this.currentPage)
+      .subscribe((res: HttpResponse<SearchResp>) => {
+        if (res.body) {
+
+          let id_list = res.body.page;
+
+          this.users_page = Array(id_list.length);
+          this.amount_of_pages = res.body.pages;
+
+          console.log("onSearch id list:", id_list);
+          console.log("onSearch pages:", this.amount_of_pages);
+
+          this.user_id_list = id_list
+          this.getPageUsers(id_list);
+          this.pageButtonsSetup();
+        }
+      })
+  }
+
+  getPageUsers(id_list: number[]) {
+    for (let j = 0; j < id_list.length; j++) {
+
+      this.authService.getUser(id_list[j])
+        .subscribe((user: User | null) => {
+          if (user) {
+            console.log("getPageUsers res:", user);
+            this.users_page[j] = user;
+            console.log(this.users_page[j]);
+          }
+        }
+          // No hay que manejar error porque getUser ya maneja el 404
+        )
     }
     console.log("users:", this.users_page)
   }
 
-  onFollow(id:string, user: UserSearchWithID){
-    let searchUserUrl = "Following/" + id;
-    this.repo.create(searchUserUrl,"")
-    .subscribe((res: HttpResponse<any>) => {
-      console.log("Result:",res);
-    })
-    user.isfollowing = !user.isfollowing;
+  onFollow(id: number) {
+    this.registerService.follow_user(id)
+      .subscribe((res: HttpResponse<null>) => {
+        console.log("onFollow result:", res);
+      })
+
+    // TODO: refrescar página?
+    // user.isfollowing = !user.isfollowing;
   }
 
-  onUnfollow(id:string, user: UserSearchWithID){
-    let searchUserUrl = "Following/" + id;
-    this.repo.delete(searchUserUrl)
-    .subscribe((res: HttpResponse<any>) => {
-      console.log("Result:",res);
-    })
-    user.isfollowing = !user.isfollowing;
+  onUnfollow(id: number) {
+    this.registerService.unfollow_user(id)
+      .subscribe((res: HttpResponse<null>) => {
+        console.log("onUnfollow result:", res);
+      })
+    // TODO: refrescar página?
+    // user.isfollowing = !user.isfollowing;
   }
 
-  pageButtonsSetup(){
-    if (this.amount_of_pages == 1 ||this.amount_of_pages == 0){
+  pageButtonsSetup() {
+    if (this.amount_of_pages == 1 || this.amount_of_pages == 0) {
       this.isFirstPage = true;
       this.isLastPage = true;
-    } else if (this.currentPage == 1){
+    } else if (this.currentPage == 1) {
       this.isFirstPage = true;
       this.isLastPage = false;
-    } else if (this.amount_of_pages - this.currentPage == 0){
+    } else if (this.amount_of_pages - this.currentPage == 0) {
       this.isFirstPage = false;
       this.isLastPage = true;
-    } else{
+    } else {
       this.isFirstPage = false;
       this.isLastPage = false;
     }
   }
 
-  onPreviousPage(){
+  onPreviousPage() {
     this.currentPage = this.currentPage - 1;
-    if (this.currentPage == 0){
+    if (this.currentPage == 0) {
       this.currentPage = 1;
       this.pageButtonsSetup();
       return
     }
-    let searchUserUrl = "Users/Search?query=" + this.searchUserForm.controls['username'].value + "&page=" + this.currentPage;
-    this.repo.getData(searchUserUrl)
-    .subscribe((res: HttpResponse<any>) => {
-      console.log("Result:",res);
-      this.user_id_list = res.body.page as string[];
-      this.users_page = Array(this.user_id_list.length);
-      console.log(this.user_id_list);
-      this.getPageUsers();
-      this.pageButtonsSetup();
-    })
+
+    this.refreshPage()
   }
 
-  onNextPage(){
+  onNextPage() {
     this.currentPage = this.currentPage + 1;
-    if (this.currentPage > this.amount_of_pages){
+    if (this.currentPage > this.amount_of_pages) {
       this.currentPage = this.amount_of_pages;
       this.pageButtonsSetup();
       return
     }
-    let searchUserUrl = "Users/Search?query=" + this.searchUserForm.controls['username'].value + "&page=" + this.currentPage;
-    this.repo.getData(searchUserUrl)
-    .subscribe((res: HttpResponse<any>) => {
-      console.log("Result:",res);
-      this.user_id_list = res.body.page as string[];
-      this.users_page = Array(this.user_id_list.length);
-      console.log(this.user_id_list);
-      this.getPageUsers();
-      this.pageButtonsSetup();
-    })
+
+    this.refreshPage()
   }
 
-  isFollowing(relationship:string): boolean{
-    if(relationship == "Self"){
+  isFollowing(relationship: Relationships | null): boolean {
+    if (relationship == Relationships.Self) {
       return false
-    } else if(relationship == "None" || relationship == "FollowedBy"){
+    } else if (relationship == null) {
       return false
-    }else if(relationship == "Following" || relationship == "BothFollowing"){
+    } else if (relationship == Relationships.None || relationship == Relationships.FollowedBy) {
+      return false
+    } else if (relationship == Relationships.Following || relationship == Relationships.BothFollowing) {
       return true
     }
     return false; //no debería pasar;
   }
-}
-
-interface UserSearchWithID {
-  id:             string,
-  username:       string,
-  firstName:      string,
-  lastName:       string,
-  birthDate:      Date,
-  age:            number, 
-  nationality:    string,
-  relationship:   string,
-  isfollowing:      boolean,
 }

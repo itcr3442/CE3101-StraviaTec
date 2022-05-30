@@ -13,3 +13,11 @@ countries.registerLocale(require("i18n-iso-countries/langs/es.json"));
 // export function getInstanceModal(modal: HTMLElement) {
 //     return bootstrap.Modal.getInstance(modal)
 // }
+
+export enum Relationships {
+    None,
+    Self,
+    Following,
+    FollowedBy,
+    BothFollowing,
+}

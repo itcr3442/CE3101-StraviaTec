@@ -9,7 +9,6 @@ import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
 import { User, UserResp } from '../interfaces/user';
 import { Country, newc_alpha2 } from '../interfaces/country';
-import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 
 export interface LoginResponse {
   id: number,
@@ -119,6 +118,8 @@ export class AuthService {
       country,
       imageURL: null,
       type,
+      age: userResp.age,
+      relationship: userResp.relationship
     }
 
   }
