@@ -18,7 +18,7 @@
     <string name="empty_error">Field must have a value</string>
     <string name="sync_error">Synchronization error</string>
     <string name="url_entry">Custom airline address</string>
-    <string name="default_url">http://192.168.0.115:5000</string>
+    <string name="default_url">https://straviatec.azurewebsites.net/api/</string>
     <string name="url_button">Server Settings</string>
     <string name="offline_switch">Offline Mode</string>
     <string name="info">Info</string>

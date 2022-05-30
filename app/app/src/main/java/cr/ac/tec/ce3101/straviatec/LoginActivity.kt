@@ -89,6 +89,6 @@ class LoginActivity : AppCompatActivity() {
             findViewById<EditText>(R.id.serverSettingsText).text.toString(),
             User("Empty ", ""),
             this
-        ).synchronize(){}
+        ).synchronize()
     }
 }
