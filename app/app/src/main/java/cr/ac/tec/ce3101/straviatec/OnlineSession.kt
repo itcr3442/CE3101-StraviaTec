@@ -3,33 +3,48 @@ package cr.ac.tec.ce3101.straviatec
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.GsonBuilder
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+private class StraviaCookieJar : CookieJar {
+
+    private val cookies = mutableListOf<Cookie>()
+
+    override fun saveFromResponse(url: HttpUrl, cookieList: List<Cookie>) {
+        cookies.addAll(cookieList)
+    }
+
+    override fun loadForRequest(url: HttpUrl): List<Cookie> =
+        cookies
+}
+
 class OnlineSession(
     url: String,
     private val user: User,
     var cx: Context,
     private val cache: LocalDB =
-        Room.databaseBuilder(cx.applicationContext, LocalDB::class.java, "cache")
+        Room.databaseBuilder(cx.applicationContext, LocalDB::class.java, "cache.db")
             .allowMainThreadQueries().build(),
 ) : Session {
     private val service: StraviaService
 
     init {
         val gson = GsonBuilder().serializeNulls().create()
+        val client = OkHttpClient.Builder().cookieJar(StraviaCookieJar()).build()
         val retrofit =
-            Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create(gson))
+            Retrofit.Builder()
+                .baseUrl(url)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
         service = retrofit.create(StraviaService::class.java)
     }
 
-    fun synchronize(afterOp: () -> Unit){
+    fun synchronize(){
         val localUsers = cache.userDao().getAll()
         val activities = cache.activityDao().getAll()
 
@@ -40,8 +55,8 @@ class OnlineSession(
         localUsers.forEach { user ->
             run {
                 service.checkLogin(user).enqueue(
-                    object : Cb<String>() {
-                        override fun onResponse(call: Call<String>, response: Response<String>) {
+                    object : Cb<LoginResponse>() {
+                        override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                             if (response.code() == 200) {
                                 cache.userDao().insertAll(user)
                             }
@@ -55,7 +70,6 @@ class OnlineSession(
         activities.forEach { activity ->
             saveActivity(activity) {}
         }
-        afterOp()
     }
 
     override fun changeContext(cx: Context) {
@@ -75,13 +89,13 @@ class OnlineSession(
     }
 
     override fun login(auth: (Boolean) -> Unit) {
-        val loginFunc = {
             service.checkLogin(user).enqueue(
-                object : Cb<String>() {
-                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                object : Cb<LoginResponse>() {
+                    override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                         if (response.code() == 200) {
                             cache.userDao().deleteByUsername(user.username)
                             cache.userDao().insertAll(user)
+                            synchronize()
                             auth(true)
                         } else {
                             auth(false)
@@ -89,14 +103,12 @@ class OnlineSession(
                     }
                 }
             )
-        }
-        synchronize(loginFunc)
     }
 
     override fun saveActivity(activity: Activity, afterOp: (Boolean) -> Unit) {
         val user = activity.user
         //extract gpx
-        val gpx = RequestBody.create(MediaType.parse("text/xml"), activity.gpx);
+        val gpx = RequestBody.create(MediaType.parse("application/xml"), activity.gpx);
         val newActivity = NewActivity(
             activity.start, activity.end, activity.type, activity.length
         )
@@ -123,7 +135,7 @@ class OnlineSession(
                                 )
                                 afterOp(false)
                             }
-                            200 -> {
+                            200 , 204 -> {
                                 afterOp(true)
                             }
                             else -> {
@@ -138,8 +150,8 @@ class OnlineSession(
         val addActivity : ()-> Unit = {
             //try to add activity
             service.addActivity(newActivity).enqueue(
-                object : Cb<Id>() {
-                    override fun onResponse(call: Call<Id>, response: Response<Id>) {
+                object : Cb<ActivityId>() {
+                    override fun onResponse(call: Call<ActivityId>, response: Response<ActivityId>) {
                         when (response.code()) {
                             400 -> {
                                 // failed to add activity, bad info
@@ -160,8 +172,8 @@ class OnlineSession(
         }
         //refresh cookie based on user info
         service.checkLogin(user).enqueue(
-            object : Cb<String>() {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
+            object : Cb<LoginResponse>() {
+                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.code() != 200) {
                         simpleDialog(cx, "Error refreshing cookie")
                     }

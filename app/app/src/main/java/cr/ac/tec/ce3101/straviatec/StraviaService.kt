@@ -9,13 +9,13 @@ interface StraviaService {
      * Request to validate credentials of the user
      */
     @POST("Users/Login")
-    fun checkLogin(@Body user: User): Call<String>
+    fun checkLogin(@Body user: User): Call<LoginResponse>
 
     /**
      * Request to add a new activity without a gpx
      */
     @POST("Activities")
-    fun addActivity(@Body activity: NewActivity): Call<Id>
+    fun addActivity(@Body activity: NewActivity): Call<ActivityId>
 
     /**
      * Request to add a track gpx to an activity
@@ -28,8 +28,13 @@ interface StraviaService {
 /**
  * Simple object to receive an activity id
  */
-data class Id(
+data class ActivityId(
     val id: Int
+)
+
+data class LoginResponse(
+    val id: Int,
+    val type: String
 )
 
 /**

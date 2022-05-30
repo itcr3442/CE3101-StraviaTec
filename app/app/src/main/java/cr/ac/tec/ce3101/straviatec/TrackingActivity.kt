@@ -1,6 +1,7 @@
 package cr.ac.tec.ce3101.straviatec
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.IntentSender
 import android.graphics.Color
 import android.location.Location
@@ -95,18 +96,19 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
 
-                    if (this@TrackingActivity::lastLocation.isInitialized) {
-                        distance += lastLocation.distanceTo(location)  //m
-                        distanceText.text = String.format("%.2f Km", distance / 1000)
-                        val elapsedTime = Instant.now()
-                        val speed = distance * 360 / (elapsedTime.toEpochMilli() - startTime.toEpochMilli())
-                        speedText.text = String.format("%.2f Km/h", speed)
-                    }
                     if (this@TrackingActivity::mMap.isInitialized) {
                         var newPoint = LatLng(location.latitude, location.longitude)
-                        locations.add(location)
-                        route.points = locationsToPoints(locations)
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPoint, 20f))
+
+                        if (this@TrackingActivity::lastLocation.isInitialized && this@TrackingActivity::startTime.isInitialized) {
+                            distance += lastLocation.distanceTo(location)  //m
+                            distanceText.text = String.format("%.2f Km", distance / 1000)
+                            val elapsedTime = Instant.now()
+                            val speed = distance * 360 / (elapsedTime.toEpochMilli() - startTime.toEpochMilli())
+                            speedText.text = String.format("%.2f Km/h", speed)
+                            locations.add(location)
+                            route.points = locationsToPoints(locations)
+                        }
                     }
 
                     lastLocation = location
@@ -269,19 +271,21 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         finish()
+        val intent = Intent(this, TrackingActivity::class.java)
+        startActivity(intent)
     }
 
     /**
      * Generates a GPX format compliant string to send as xml to the server
      */
     private fun generateGPX(name: String, points: List<Location>): String {
-        val header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n";
+        val header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"StraviaTEC 0.1.0\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n";
         val name = "<name>$name</name><trkseg>\n"
         var segments = ""
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
         points.forEach{ location ->
-            segments += "<trkpt lat=\"" + location.latitude + "\" lon=\"" + location.longitude + "\"><time>" + df.format(
-                Date(location.getTime())
+            segments += "<trkpt lat=\"" + location.latitude + "\" lon=\"" + location.longitude + "\"><time>" + DateTimeFormatter.ISO_INSTANT.format(
+                Instant.ofEpochMilli(location.time)
             ) + "</time></trkpt>\n";
         }
         val footer = "</trkseg></trk></gpx>";

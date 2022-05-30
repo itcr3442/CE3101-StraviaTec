@@ -11,7 +11,7 @@ class OfflineSession(
     private val user: User,
     var cx: Context,
     private val cache: LocalDB =
-        Room.databaseBuilder(cx.applicationContext, LocalDB::class.java, "cache")
+        Room.databaseBuilder(cx.applicationContext, LocalDB::class.java, "cache.db")
             .allowMainThreadQueries().build(),
 ) : Session {
     override fun changeContext(cx: Context) {
