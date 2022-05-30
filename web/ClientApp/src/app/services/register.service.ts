@@ -82,7 +82,12 @@ export class RegisterService {
   
   /* TESTING NO TOCAR
   public register_user_race(raceId: number): Observable<HttpResponse<null>>{
-   return this.repositoryService.create<null>("Following/" + followeeId)
+   return this.repositoryService.create<null>("Races/" + raceId + /Registration, null)
   }
   */
+
+  public register_user_challenges(challId: number): Observable<HttpResponse<null>>{
+    return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
+  }
+
 }
