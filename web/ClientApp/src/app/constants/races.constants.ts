@@ -1,14 +1,4 @@
-
-export enum RaceTypes {
-     Running,
-     Swimming, 
-     Cycling, 
-     Hiking, 
-     Kayaking, 
-     Walking
-}
-
-export enum RaceStatuses {
+export enum RaceStatus {
     NotRegistered,
     WaitingConfirmation, 
     Registered, 

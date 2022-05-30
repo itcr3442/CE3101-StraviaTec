@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { User, UserResp } from '../interfaces/user';
 import { Country, newc_alpha2 } from '../interfaces/country';
 import { Race } from '../interfaces/race';
+import { Challenge } from '../interfaces/challenge';
 
 export interface LoginResponse {
   id: number,
@@ -100,23 +101,6 @@ export class AuthService {
 
   }
 
-  public getRace(id: number): Observable<Race | null> {
-    return this.repo.getData<Race>(`Races/${id}`).pipe(map((resp: HttpResponse<Race>) => {
-      if (resp.body) {
-        let raceResp: Race = resp.body;
-
-        return raceResp
-      }
-      else {
-        this.router.navigate(['/404'])
-        return null
-      }
-
-    }
-    ))
-
-  }
-
   private resp2user(userResp: UserResp): User {
     let birthDate = new Date(userResp.birthDate)
     // return throwError("Empty body in GET Api/User/{id}")
@@ -141,6 +125,41 @@ export class AuthService {
     }
 
   }
+
+  public getRace(id: number): Observable<Race | null> {
+    return this.repo.getData<Race>(`Races/${id}`).pipe(map((resp: HttpResponse<Race>) => {
+      if (resp.body) {
+        let raceResp: Race = resp.body;
+
+        return raceResp
+      }
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
+
+    }
+    ))
+
+  }
+
+  public getChallenge(id: number): Observable<Challenge | null> {
+    return this.repo.getData<Challenge>(`Challenges/${id}`).pipe(map((resp: HttpResponse<Challenge>) => {
+      if (resp.body) {
+        let challResp: Challenge = resp.body;
+
+        return challResp
+      }
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
+
+    }
+    ))
+
+  }
+
 
 
   /**

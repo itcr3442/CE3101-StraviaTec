@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Relationships } from 'src/app/constants/user.constants';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
-import { RepositoryService } from 'src/app/services/repository.service';
 import { SearchResp, SearchService } from 'src/app/services/search.service';
 import { Race } from 'src/app/interfaces/race';
 
@@ -26,6 +24,8 @@ export class UserRacesComponent implements OnInit {
   amount_of_pages: number = 0;
   isFirstPage: boolean = true;
   isLastPage: boolean = true;
+
+  test = new Date();
 
   constructor(
     private registerService: RegisterService,

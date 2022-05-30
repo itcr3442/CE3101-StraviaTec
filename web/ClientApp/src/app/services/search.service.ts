@@ -21,7 +21,12 @@ export class SearchService {
   }
 
   public searchRacesPage(page: number, filterRegistered: boolean , nameLike: string): Observable<HttpResponse<SearchResp>> {
-    let searchUserUrl = "Races/Search?page=" + page + "&filterRegistered=" + filterRegistered + "&name" + nameLike;
+    let searchUserUrl = "Races/Search?page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
+    return this.repo.getData<SearchResp>(searchUserUrl)
+  }
+
+  public searchChallengesPage(page: number, filterRegistered: boolean , nameLike: string): Observable<HttpResponse<SearchResp>> {
+    let searchUserUrl = "Challenges/Search?page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
     return this.repo.getData<SearchResp>(searchUserUrl)
   }
 }
