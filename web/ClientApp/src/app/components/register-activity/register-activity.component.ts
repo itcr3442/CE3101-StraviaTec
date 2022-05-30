@@ -33,6 +33,7 @@ export class RegisterActivityComponent implements OnInit {
   })
 
   message: string = "";
+  warnMessage: string = "";
   maxDate: string;
   minDate: string = this.toLocalTimeStr(new Date('1900'))
 
@@ -95,8 +96,20 @@ export class RegisterActivityComponent implements OnInit {
   }
 
   checkFormValidity(): boolean {
-    console.log(this.gpxFile?.type)
-    return this.registerForm.valid && this.datesValidity() && (this.gpxFile !== null) && (this.gpxFile.type === 'application/gpx+xml')
+    this.warnMessage = ""
+
+    if (!this.registerForm.valid) {
+      this.warnMessage = "Verifique que todos los campos fueron ingresados con formato correcto."
+    }
+    if (!this.datesValidity()) {
+      this.warnMessage = "Por favor ingrese fechas válidas y verifique que la fecha de inicio sea antes que la fecha de fin."
+      return false
+    }
+    if (!((this.gpxFile !== null) && (this.gpxFile.type === 'application/gpx+xml'))) {
+      this.warnMessage = "Por favor ingrese un archivo '.gpx' válido."
+      return false
+    }
+    return true
   }
 
   onSubmit() {
@@ -105,8 +118,6 @@ export class RegisterActivityComponent implements OnInit {
     if (this.checkFormValidity()) {
 
       this.message = "yay!!"
-    } else {
-      this.message = "nay >:C"
     }
   }
 

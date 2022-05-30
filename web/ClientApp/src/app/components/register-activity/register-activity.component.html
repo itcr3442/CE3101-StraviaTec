@@ -51,8 +51,13 @@
                     </div>
 
                     <ng-container *ngIf="this.message">
-                        <p class="warning">
+                        <p>
                             {{this.message}}
+                        </p>
+                    </ng-container>
+                    <ng-container *ngIf="this.warnMessage">
+                        <p class="warning">
+                            {{this.warnMessage}}
                         </p>
                     </ng-container>
                     <button type="submit" class="btn btn-primary">Registrar</button>

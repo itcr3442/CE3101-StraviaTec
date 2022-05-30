@@ -21,3 +21,4 @@ export enum Relationships {
     FollowedBy,
     BothFollowing,
 }
+export declare type RelationshipsType = keyof typeof Relationships;

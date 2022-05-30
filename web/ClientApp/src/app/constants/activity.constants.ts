@@ -6,3 +6,4 @@ export enum ActivityType {
     Kayaking,
     Walking,
 }
+export declare type ActivityTypeType = keyof typeof ActivityType;
