@@ -32,23 +32,29 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor = "let user of users_page" >
+                    <tr *ngFor="let user of users_page; index as i">
                         <td>{{user.username}}</td>
                         <td>{{user.firstName}}</td>
                         <td>{{user.lastName}}</td>
-                        <td>{{user.nationality}}</td>
+                        <td>{{user.country.alpha2 + user.country.flag}}</td>
                         <td>{{user.age}}</td>
                         <td>
-                            <div #ListItem1><button type="follow" class="btn btn-outline-success"  *ngIf="!user.isfollowing" (click)="onFollow(user.id,user)" >Follow</button></div>
-                            <div #ListItem2><button type="unfollow" class="btn btn-outline-danger" *ngIf="user.isfollowing" (click)="onUnfollow(user.id,user)" >Unfollow</button></div>
+                            <div #ListItem1><button type="follow" class="btn btn-outline-success"
+                                    *ngIf="!isFollowing(user.relationship)"
+                                    (click)="onFollow(user_id_list[i])">Follow</button></div>
+                            <div #ListItem2><button type="unfollow" class="btn btn-outline-danger"
+                                    *ngIf="isFollowing(user.relationship)"
+                                    (click)="onUnfollow(user_id_list[i])">Unfollow</button></div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    </div> 
+    </div>
     <div class="col-md-4">
-        <button type="follow" class="btn btn-outline-secondary" [disabled]="this.isFirstPage" (click)="onPreviousPage()">←</button>
-        <button type="follow" class="btn btn-outline-secondary" [disabled]="this.isLastPage" (click)="onNextPage()">→</button>
+        <button type="follow" class="btn btn-outline-secondary" [disabled]="this.isFirstPage"
+            (click)="onPreviousPage()">←</button>
+        <button type="follow" class="btn btn-outline-secondary" [disabled]="this.isLastPage"
+            (click)="onNextPage()">→</button>
     </div>
 </div>

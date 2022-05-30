@@ -104,6 +104,8 @@ export class RegisterFormComponent implements OnInit {
         country: this.country,
         imageURL: this.imageURL,
         type: this.userRole,
+        age: null,
+        relationship: null
       }
 
       console.log("User submitted:", user)
