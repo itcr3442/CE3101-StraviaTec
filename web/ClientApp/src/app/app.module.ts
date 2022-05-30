@@ -2,8 +2,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+// import * as gpx from 'leaflet-gpx';
 
 import { AuthGuard } from './guards/auth.guard';
+
+import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
+import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
+import { NotFoundHandlerInterceptor } from './interceptors/not-found-handler.interceptor';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -19,10 +25,6 @@ import { SettingsDropdownComponent } from './components/settings-dropdown/settin
 import { EditProfileFormComponent } from './components/edit-profile-form/edit-profile-form.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SearchUsersComponent } from './components/search-users/search-users.component';
-
-import { UnauthorizedHandlerInterceptor } from './interceptors/unauthorized-handler.interceptor';
-import { ForbiddenHandlerInterceptor } from './interceptors/forbidden-handler.interceptor';
-import { NotFoundHandlerInterceptor } from './interceptors/not-found-handler.interceptor';
 import { RegisterOrgComponent } from './components/register-org/register-org.component';
 import { RegisterActivityComponent } from './components/register-activity/register-activity.component';
 import { UserRacesComponent } from './components/user-races/user-races.component';
@@ -58,6 +60,7 @@ import { UserSubscribedComponent } from './components/user-subscribed/user-subsc
     ReactiveFormsModule,
     FormsModule,
     AppRoutingModule,
+    LeafletModule,
   ],
   providers: [AuthGuard,
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedHandlerInterceptor, multi: true },

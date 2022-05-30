@@ -1,1 +1,56 @@
-<p>user-races works!</p>
+<div class="container">
+    <div class="row mb-3">
+        <h3>Inscripción a Carreras</h3>
+    </div>
+    <form [formGroup]="searchRaceForm" (ngSubmit)="onSearch()">
+        <div class="col mb-4 form-group">
+            <label for="Nombre del Atleta">Ingrese el nombre de la carrera a buscar:</label>
+            <input formControlName="raceName" class="form-control" placeholder="Nombre de la Carrera">
+        </div>
+        <div class="col-md-4">
+            <button type="search" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+    <div class="row-md-4">
+        <ng-container *ngIf="this.message">
+            <p>
+                {{this.message}}
+            </p>
+        </ng-container>
+    </div>
+    <div class="row-md-4">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Carrera</th>
+                        <th>Inicio</th>
+                        <th>Finalización</th>
+                        <th>Precio</th>
+                        <th>Tipo de Deporte</th>
+                        <th>Inscripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let race of races_page; index as i">
+                        <td>{{race.name}}</td>
+                        <td>{{race.start}}</td>
+                        <td>{{race.end}}</td>
+                        <td>{{race.price}}</td>
+                        <td>{{race.type}}</td>
+                        <td>
+                            <div #ListItem1><button type="register" class="btn btn-outline-success"
+                                    (click)="onRegister(races_id_list[i])">Inscribirse</button></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <button type="left-arrow" class="btn btn-outline-secondary" [disabled]="this.isFirstPage"
+            (click)="onPreviousPage()">←</button>
+        <button type="right-arrow" class="btn btn-outline-secondary" [disabled]="this.isLastPage"
+            (click)="onNextPage()">→</button>
+    </div>
+</div>

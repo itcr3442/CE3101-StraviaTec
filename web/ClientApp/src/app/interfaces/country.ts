@@ -8,7 +8,6 @@ export interface Country {
 }
 
 
-
 export function newc_alpha2(alpha2: string): Country {
     return {
         alpha2,

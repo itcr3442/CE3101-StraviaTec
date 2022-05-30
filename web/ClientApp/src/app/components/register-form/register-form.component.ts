@@ -50,6 +50,10 @@ export class RegisterFormComponent implements OnInit {
   }
 
   upload(files: FileList) {
+    if (this.imageURL) {
+      URL.revokeObjectURL(this.imageURL)
+    }
+
     this.imageURL = URL.createObjectURL(files[0]);
     console.log("images:", files)
     console.log("image:", files[0])
