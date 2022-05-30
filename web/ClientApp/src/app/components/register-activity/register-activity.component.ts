@@ -12,8 +12,10 @@ import { map } from 'jquery';
   templateUrl: './register-activity.component.html',
   styleUrls: ['./register-activity.component.css']
 })
+
 export class RegisterActivityComponent implements OnInit {
 
+  // opciones para mapa inicial, no editar
   options = {
     layers: [
       tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '...' })
@@ -25,33 +27,34 @@ export class RegisterActivityComponent implements OnInit {
 
   registerForm = new FormGroup({
     startDate: new FormControl('', [Validators.required]),
-    minutes: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
-    hours: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
+    endDate: new FormControl('', [Validators.required]),
     activityType: new FormControl('', [Validators.required]),
     kilometers: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
   })
 
+  message: string = "";
+  maxDate: string;
+  minDate: string = this.toLocalTimeStr(new Date('1900'))
+
+  // Referencia al mapa
+  gpxMapReference: LeafMap | null = null
+
+  // Archivo gpx
+  gpxURL: string | null = null;
+  // layers del mapa, se usa solo para meter el layer del gpx
+  gpxLayer: Layer[] = [];
+  // el file mismo
+  gpxFile: File | null = null
+
+  activityTypes: (keyof typeof ActivityType)[] = [];
+  // Para acceder el enum dentro de html
   get activityTypeEnum(): typeof ActivityType {
     return ActivityType
   }
 
-  activityTypes: (keyof typeof ActivityType)[] = [];
-
-  startDateControl = new FormControl(null);
-  endDateControl = new FormControl(null);
-  message: string = "";
-  maxDate: string;
-  minDate: string = '1900-01-01'
-
-  mapReference: LeafMap | null = null
-
-  gpxURL: string | null = null;
-  gpxLayer: Layer[] = [];
-
   constructor() {
     let today = new Date()
-    this.maxDate = today.getFullYear() + "-" + (today.getMonth() + 1 + "").padStart(2, "0") + "-" + (today.getDate() + '').padStart(2, "0")
-
+    this.maxDate = this.toLocalTimeStr(today)
     for (let a in ActivityType) {
       if (typeof ActivityType[a] === 'number') this.activityTypes.push(a as (keyof typeof ActivityType));
     }
@@ -61,18 +64,49 @@ export class RegisterActivityComponent implements OnInit {
   }
 
   onMapReady(map: LeafMap) {
-    this.mapReference = map
+    this.gpxMapReference = map
+  }
+
+  updateDuration(): void {
+    let startDateCtrl = this.registerForm.controls['startDate']
+    let endDateCtrl = this.registerForm.controls['endDate']
+
+    if (this.datesValidity()) {
+      let startDate = new Date(startDateCtrl.value)
+      let endDate = new Date(endDateCtrl.value)
+      var durationInputValue = this.format_ms(endDate.getTime() - startDate.getTime());
+    }
+    else {
+      var durationInputValue = "";
+    }
+
+    let durationInput = document.getElementById("durationField") as HTMLInputElement
+    if (durationInput) {
+      durationInput.value = durationInputValue
+    }
+  }
+
+  datesValidity(): boolean {
+    let startDateCtrl = this.registerForm.controls['startDate']
+    let endDateCtrl = this.registerForm.controls['endDate']
+    let startDate = new Date(startDateCtrl.value)
+    let endDate = new Date(endDateCtrl.value)
+    return startDateCtrl.valid && endDateCtrl.valid && startDate > new Date(this.minDate) && endDate < new Date(this.maxDate) && startDate < endDate
+  }
+
+  checkFormValidity(): boolean {
+    console.log(this.gpxFile?.type)
+    return this.registerForm.valid && this.datesValidity() && (this.gpxFile !== null) && (this.gpxFile.type === 'application/gpx+xml')
   }
 
   onSubmit() {
     this.message = ""
 
-    if (this.registerForm.valid) {
+    if (this.checkFormValidity()) {
 
       this.message = "yay!!"
     } else {
       this.message = "nay >:C"
-
     }
   }
 
@@ -84,9 +118,11 @@ export class RegisterActivityComponent implements OnInit {
     this.gpxLayer = []
 
     this.gpxURL = URL.createObjectURL(files[0]);
+    this.gpxFile = files[0]
 
-    if (this.mapReference) {
-      let gpxMap = this.mapReference;
+    if (this.gpxMapReference) {
+      let gpxMap = this.gpxMapReference;
+      let self = this
 
       // @ts-ignore
       let layer = new L.GPX(this.gpxURL, {
@@ -98,10 +134,39 @@ export class RegisterActivityComponent implements OnInit {
         }
       }).on('loaded', function (e: LayerEvent) {
         gpxMap.fitBounds(e.target.getBounds());
+        let form = self.registerForm;
+
+        if (e.target.get_total_time() > 0) {
+
+          let startDateValue = self.toLocalTimeStr(e.target.get_start_time());
+          console.log("Start date:", startDateValue)
+          console.log("Start date month:", e.target.get_start_time().getMonth() + 1)
+
+          form.controls['startDate'].setValue(startDateValue);
+          form.controls['endDate'].setValue(self.toLocalTimeStr(e.target.get_end_time()));
+          self.updateDuration()
+        }
+        form.controls['kilometers'].setValue(e.target.get_distance().toFixed(3))
       })
 
       this.gpxLayer.push(layer)
     }
   }
 
+  toLocalTimeStr(date: Date) {
+    return date.getFullYear() + "-" + padTwo(date.getMonth() + 1) + "-" + padTwo(date.getDate()) + "T" + padTwo(date.getHours()) + ":" + padTwo(date.getMinutes()) + ":" + padTwo(date.getSeconds()) //+ "." + padTwo(date.getMilliseconds())
+  }
+
+  format_ms(ms: number): string {
+    let hours = ms / (1000 * 60 * 60)
+    let mins = (hours % 1) * 60
+    let secs = (mins % 1) * 60
+    let millis = Math.round((secs % 1) * 1000)
+    return padTwo(Math.floor(hours)) + ':' + padTwo(Math.floor(mins)) + ':' + padTwo(Math.round(secs))// + '.' + ('' + Math.floor(millis)).padStart(3, "0")
+  }
+
+}
+
+const padTwo = (n: number): string => {
+  return (n + "").padStart(2, "0")
 }
