@@ -13,7 +13,8 @@ export class RegisterActivityComponent implements OnInit {
 
   registerForm = new FormGroup({
     startDate: new FormControl('', [Validators.required]),
-    duration: new FormControl('', [Validators.required]),
+    minutes: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
+    hours: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
     activityType: new FormControl('', [Validators.required]),
     kilometers: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
   })
