@@ -37,15 +37,22 @@ nocite: |
 
 ## Modelo conceptual
 
+![Diagrama de modelo conceptual](imgs/diagramas-Conceptual.png)
+
 ## Modelo relacional
 
+![Diagrama de modelo relacional](imgs/diagramas-Relacional.png)
+
 ### Justificación de mapeo conceptual-relacional
+
 
 ## Estructuras de datos desarrolladas(Tablas)
 
 ## Descripción detallada de la arquitectura desarrollada
 
 ### Diagrama de arquitectura
+
+![Diagrama de Arquitectura](imgs/diagramas-Arquitectura.png)
 
 ### Aplicación REST API
 
