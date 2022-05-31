@@ -123,4 +123,8 @@ export class RegisterService {
     return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
   }
 
+  public register_user_groups(groupId: number): Observable<HttpResponse<null>>{
+    return this.repositoryService.create<null>("Groups/" + groupId + "/Registration", null)
+  }
+
 }

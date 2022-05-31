@@ -29,4 +29,9 @@ export class SearchService {
     let searchUserUrl = "Challenges/Search?page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
     return this.repo.getData<SearchResp>(searchUserUrl)
   }
+
+  public searchGroupsPage(query: string, page: number): Observable<HttpResponse<SearchResp>> {
+    let searchUserUrl = "Groups/Search?query=" + query + "&query=" + page;
+    return this.repo.getData<SearchResp>(searchUserUrl)
+  }
 }

@@ -11,6 +11,7 @@ import { User, UserResp, resp2user } from '../interfaces/user';
 import { Country, newc_alpha2 } from '../interfaces/country';
 import { Race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
+import { GroupResp, groupResp2GroupDisplay, GroupSearchDisplay } from '../interfaces/group';
 
 export interface LoginResponse {
   id: number,
@@ -124,6 +125,23 @@ export class AuthService {
         let challResp: Challenge = resp.body;
 
         return challResp
+      }
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
+
+    }
+    ))
+
+  }
+
+  public getGroup(id: number, authService: AuthService): Observable<GroupSearchDisplay | null> {
+    return this.repo.getData<GroupResp>(`Groups/${id}`).pipe(map((resp: HttpResponse<GroupResp>) => {
+      if (resp.body) {
+        let groupResp: GroupResp = resp.body;
+
+        return groupResp2GroupDisplay(groupResp,authService)
       }
       else {
         this.router.navigate(['/404'])

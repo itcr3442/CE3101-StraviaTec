@@ -5,7 +5,7 @@
     <form [formGroup]="searChallForm" (ngSubmit)="onSearch()">
         <div class="col mb-4 form-group">
             <label for="Nombre del Atleta">Ingrese el nombre del reto a buscar:</label>
-            <input formControlName="challName" class="form-control" placeholder="Nombre de la Carrera">
+            <input formControlName="challName" class="form-control" placeholder="Nombre del Reto">
         </div>
         <div class="col-md-4">
             <button type="search" class="btn btn-primary">Buscar</button>
@@ -23,7 +23,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Carrera</th>
+                        <th>Reto</th>
                         <th>Inicio</th>
                         <th>Finalización</th>
                         <th>Días Restantes</th>
