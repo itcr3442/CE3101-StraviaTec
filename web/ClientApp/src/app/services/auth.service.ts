@@ -7,7 +7,7 @@ import { RoleLevels, RoleLevelType, countries } from '../constants/user.constant
 import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
-import { User, UserResp } from '../interfaces/user';
+import { User, UserResp, resp2user } from '../interfaces/user';
 import { Country, newc_alpha2 } from '../interfaces/country';
 import { Race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
@@ -89,7 +89,7 @@ export class AuthService {
       if (resp.body) {
         let userResp: UserResp = resp.body;
 
-        return this.resp2user(userResp)
+        return resp2user(userResp)
       }
       else {
         this.router.navigate(['/404'])
@@ -98,31 +98,6 @@ export class AuthService {
 
     }
     ))
-
-  }
-
-  private resp2user(userResp: UserResp): User {
-    let birthDate = new Date(userResp.birthDate)
-    // return throwError("Empty body in GET Api/User/{id}")
-
-    console.log("User Resp:", userResp)
-
-    let alpha2: string = userResp.nationality
-    let country: Country = newc_alpha2(alpha2)
-
-    let type: RoleLevels = RoleLevels[userResp.type]
-
-    return {
-      username: userResp.username,
-      firstName: userResp.firstName,
-      lastName: userResp.lastName,
-      birthDate,
-      country,
-      imageURL: null,
-      type,
-      age: userResp.age,
-      relationship: userResp.relationship
-    }
 
   }
 

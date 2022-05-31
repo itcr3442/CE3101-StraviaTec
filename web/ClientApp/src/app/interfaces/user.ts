@@ -1,5 +1,5 @@
-import { Relationships, RoleLevels, RoleLevelType } from '../constants/user.constants'
-import { Country } from './country'
+import { Relationships, RelationshipsType, RoleLevels, RoleLevelType } from '../constants/user.constants'
+import { Country, newc_alpha2 } from './country'
 
 // Interfaz que generalmente representa toda la información completa de un usuario
 export interface User {
@@ -23,7 +23,7 @@ export interface UserResp {
     nationality: string,
     type: RoleLevelType
     age: number,
-    relationship: Relationships
+    relationship: RelationshipsType
 }
 
 
@@ -36,4 +36,27 @@ export interface NullableUser {
     country: Country | null,
     // imageURL: string | null,
     // type: RoleLevels 
+}
+
+export function resp2user(userResp: UserResp): User {
+    let birthDate = new Date(userResp.birthDate)
+
+    let alpha2: string = userResp.nationality
+    let country: Country = newc_alpha2(alpha2)
+
+    let type: RoleLevels = RoleLevels[userResp.type]
+    let relationship: Relationships = Relationships[userResp.relationship]
+
+    return {
+        username: userResp.username,
+        firstName: userResp.firstName,
+        lastName: userResp.lastName,
+        birthDate,
+        country,
+        imageURL: null,
+        type,
+        age: userResp.age,
+        relationship
+    }
+
 }

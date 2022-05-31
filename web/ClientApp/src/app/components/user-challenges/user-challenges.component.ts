@@ -127,12 +127,11 @@ export class UserChallengesComponent implements OnInit {
   }
 
   onRegister(id: number){
-    /* testing no touch >:(
-    this.registerService.register_race(id)
+    this.registerService.register_user_challenges(id)
       .subscribe((res: HttpResponse<null>) => {
-        console.log("onFollow result:", res);
+        console.log("onRegister result:", res);
       })
-    */
+    this.refreshPage()
   }
 
 }

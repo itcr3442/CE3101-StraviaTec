@@ -97,9 +97,9 @@ export class RegisterFormComponent implements OnInit {
 
   onSubmit() {
     console.log("Role:", this.userRole)
+    this.message = ""
+    this.successMsgOn = false
     if (this.validateForm()) {
-      this.message = ""
-      this.successMsgOn = false
       let user: User = {
         username: this.username,
         firstName: this.firstName,
