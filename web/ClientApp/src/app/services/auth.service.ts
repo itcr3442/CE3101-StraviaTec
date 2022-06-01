@@ -9,7 +9,7 @@ import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
 import { User, UserResp, resp2user } from '../interfaces/user';
 import { Country, newc_alpha2 } from '../interfaces/country';
-import { Race } from '../interfaces/race';
+import { Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
 import { GroupResp, groupResp2GroupDisplay, GroupSearchDisplay } from '../interfaces/group';
 
@@ -103,11 +103,11 @@ export class AuthService {
   }
 
   public getRace(id: number): Observable<Race | null> {
-    return this.repo.getData<Race>(`Races/${id}`).pipe(map((resp: HttpResponse<Race>) => {
+    return this.repo.getData<RaceResp>(`Races/${id}`).pipe(map((resp: HttpResponse<RaceResp>) => {
       if (resp.body) {
-        let raceResp: Race = resp.body;
+        let raceResp: RaceResp = resp.body;
 
-        return raceResp
+        return resp2race(raceResp)
       }
       else {
         this.router.navigate(['/404'])
@@ -141,7 +141,7 @@ export class AuthService {
       if (resp.body) {
         let groupResp: GroupResp = resp.body;
 
-        return groupResp2GroupDisplay(groupResp,authService)
+        return groupResp2GroupDisplay(groupResp, authService)
       }
       else {
         this.router.navigate(['/404'])
