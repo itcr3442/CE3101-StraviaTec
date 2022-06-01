@@ -11,6 +11,13 @@ import { RoleLevels } from '../constants/user.constants';
 import { HttpResponse } from '@angular/common/http';
 import { Id } from '../interfaces/id';
 import { ActivityType } from '../constants/activity.constants';
+import { Race } from '../interfaces/race';
+import { RaceCategory } from '../constants/races.constants';
+
+export enum gpxType {
+  Race,
+  Activity
+}
 
 @Injectable({
   providedIn: 'root'
@@ -107,10 +114,35 @@ export class RegisterService {
 
   }
 
-  public put_gpx(id: number, gpx: File): Observable<HttpResponse<null>> {
+  public put_gpx(id: number, gpx: File, type: gpxType): Observable<HttpResponse<null>> {
+
+    let baseUrl: string = type === gpxType.Activity ? 'Activities' : 'Races';
 
     return this.repositoryService.replace<null>(
-      "Activities/" + id + "/Track", gpx, false, "application/xml")
+      baseUrl + id + "/Track", gpx, false, "application/xml")
+  }
+
+  public register_race(race: Race): Observable<HttpResponse<Id>> {
+
+    let new_race = {
+      name: race.name,
+      day: race.day.toUTCString(),
+      type: ActivityType[race.type],
+      price: race.price,
+      privateGroups: race.privateGroups,
+      categories: race.categories.map((category: RaceCategory) => { return RaceCategory[category] })
+    }
+
+    console.log("New race: " + JSON.stringify(new_race))
+
+    return this.repositoryService.create<Id>(
+      "Races", new_race)
+
+  }
+
+  public delete_race(id: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.delete<null>(
+      "Races/" + id)
   }
 
   /* TESTING NO TOCAR
@@ -119,11 +151,11 @@ export class RegisterService {
   }
   */
 
-  public register_user_challenges(challId: number): Observable<HttpResponse<null>>{
+  public register_user_challenges(challId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
   }
 
-  public register_user_groups(groupId: number): Observable<HttpResponse<null>>{
+  public register_user_groups(groupId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Groups/" + groupId + "/Registration", null)
   }
 
