@@ -31,6 +31,7 @@ import { UserRacesComponent } from './components/user-races/user-races.component
 import { UserChallengesComponent } from './components/user-challenges/user-challenges.component';
 import { UserGroupsComponent } from './components/user-groups/user-groups.component';
 import { UserSubscribedComponent } from './components/user-subscribed/user-subscribed.component';
+import { RaceAdminComponent } from './components/race-admin/race-admin.component';
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import { UserSubscribedComponent } from './components/user-subscribed/user-subsc
     UserChallengesComponent,
     UserGroupsComponent,
     UserSubscribedComponent,
+    RaceAdminComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

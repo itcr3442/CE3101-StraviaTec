@@ -1,1 +1,57 @@
-<p>user-groups works!</p>
+<div class="container">
+    <div class="row mb-3">
+        <h3>Asociación a Grupos</h3>
+    </div>
+    <form [formGroup]="searchGroupForm" (ngSubmit)="onSearch()">
+        <div class="col mb-4 form-group">
+            <label for="Nombre del Atleta">Ingrese el nombre de a buscar:</label>
+            <input formControlName="groupName" class="form-control" placeholder="Nombre del grupo">
+        </div>
+        <div class="col-md-4">
+            <button type="search" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+    <div class="row-md-4">
+        <ng-container *ngIf="this.message">
+            <p>
+                {{this.message}}
+            </p>
+        </ng-container>
+    </div>
+    <div class="row-md-4">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Grupo</th>
+                        <th>Administrador</th>
+                        <th>Asociación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let group of groups_page; index as i">
+                        <!-- PONER ESTO CUANDO YA HAYAN USUARIOS 
+                            Y FUNCIONE SU BÚSQUEDA CORRECTAMENTE
+
+                        <td>{{group.name}}</td>
+                        <td>{{group.admin.username + "/" + group.admin.firstName + "  " + group.admin.lastName}}</td>
+                        
+                        -->
+                        <td>{{this.groupname}}</td>
+                        <td>{{this.username + "/" + this.firstname + " " + this.lastname}}</td>
+                        <td>
+                            <div #ListItem1><button type="register" class="btn btn-outline-success"
+                                    (click)="onRegister(groups_id_list[i])">Asociarse</button></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <button type="left-arrow" class="btn btn-outline-secondary" [disabled]="this.isFirstPage"
+            (click)="onPreviousPage()">←</button>
+        <button type="right-arrow" class="btn btn-outline-secondary" [disabled]="this.isLastPage"
+            (click)="onNextPage()">→</button>
+    </div>
+</div>

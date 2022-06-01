@@ -81,9 +81,7 @@ export class UserChallengesComponent implements OnInit {
             this.challenges_page[j] = chall;
             console.log(this.challenges_page[j]);
           }
-        }
-          // No hay que manejar error porque getUser ya maneja el 404
-        )
+        })
     }
     console.log("challenges:", this.challenges_page)
   }

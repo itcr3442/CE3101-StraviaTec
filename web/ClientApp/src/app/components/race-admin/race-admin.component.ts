@@ -7,14 +7,16 @@ import * as L from 'leaflet-gpx';
 import { gpxType, RegisterService } from 'src/app/services/register.service';
 import { Activity } from 'src/app/interfaces/activity';
 import { Id } from 'src/app/interfaces/id';
+import { Race } from 'src/app/interfaces/race';
+import { RaceCategory, RaceStatus } from 'src/app/constants/races.constants';
 
 @Component({
-  selector: 'app-register-activity',
-  templateUrl: './register-activity.component.html',
-  styleUrls: ['./register-activity.component.css']
+  selector: 'app-race-admin',
+  templateUrl: './race-admin.component.html',
+  styleUrls: ['./race-admin.component.css']
 })
+export class RaceAdminComponent implements OnInit {
 
-export class RegisterActivityComponent implements OnInit {
 
   // opciones para mapa inicial, no editar
   options = {
@@ -25,18 +27,19 @@ export class RegisterActivityComponent implements OnInit {
     center: latLng(9.855319, -83.910799)
   };
 
-
   registerForm = new FormGroup({
-    startDate: new FormControl('', [Validators.required]),
-    endDate: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
+    day: new FormControl('', [Validators.required]),
     activityType: new FormControl('', [Validators.required]),
-    kilometers: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')]),
+    private: new FormControl(false, [Validators.required]),
+    price: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')])
   })
 
+  formTitle: string = "Registrar nueva carrera"
   message: string = "";
   warnMessage: string = "";
   maxDate: string;
-  minDate: string = this.toLocalTimeStr(new Date('1900'))
+  minDate: string;
 
   // Referencia al mapa
   gpxMapReference: LeafMap | null = null
@@ -54,11 +57,22 @@ export class RegisterActivityComponent implements OnInit {
     return ActivityType
   }
 
+  categoryTypes: (keyof typeof RaceCategory)[] = [];
+  // Para acceder el enum dentro de html
+  get raceCategoryEnum(): typeof RaceCategory {
+    return RaceCategory
+  }
+
   constructor(private registerService: RegisterService) {
     let today = new Date()
-    this.maxDate = this.toLocalTimeStr(today)
+    this.minDate = this.toTimeStr(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0))
+    this.maxDate = this.toTimeStr(new Date(today.getFullYear() + 5, today.getMonth(), today.getDate() + 1, 0, 0, 0))
+
     for (let a in ActivityType) {
       if (typeof ActivityType[a] === 'number') this.activityTypes.push(a as (keyof typeof ActivityType));
+    }
+    for (let c in RaceCategory) {
+      if (typeof RaceCategory[c] === 'number') this.categoryTypes.push(c as (keyof typeof RaceCategory));
     }
   }
 
@@ -69,40 +83,15 @@ export class RegisterActivityComponent implements OnInit {
     this.gpxMapReference = map
   }
 
-  updateDuration(): void {
-    let startDateCtrl = this.registerForm.controls['startDate']
-    let endDateCtrl = this.registerForm.controls['endDate']
-
-    if (this.datesValidity()) {
-      let startDate = new Date(startDateCtrl.value)
-      let endDate = new Date(endDateCtrl.value)
-      var durationInputValue = this.format_ms(endDate.getTime() - startDate.getTime());
-    }
-    else {
-      var durationInputValue = "";
-    }
-
-    let durationInput = document.getElementById("durationField") as HTMLInputElement
-    if (durationInput) {
-      durationInput.value = durationInputValue
-    }
-  }
-
-  datesValidity(): boolean {
-    let startDateCtrl = this.registerForm.controls['startDate']
-    let endDateCtrl = this.registerForm.controls['endDate']
-    let startDate = new Date(startDateCtrl.value)
-    let endDate = new Date(endDateCtrl.value)
-    return startDateCtrl.valid && endDateCtrl.valid && startDate > new Date(this.minDate) && endDate < new Date(this.maxDate) && startDate < endDate
-  }
-
   checkFormValidity(): boolean {
+    // TODO: completar
     this.warnMessage = ""
 
     if (!this.registerForm.valid) {
       this.warnMessage = "Verifique que todos los campos fueron ingresados con formato correcto."
     }
-    if (!this.datesValidity()) {
+    let startDateCtrl = this.registerForm.controls['startDate']
+    if (!(startDateCtrl.valid && new Date(startDateCtrl.value) > new Date(this.minDate))) {
       this.warnMessage = "Por favor ingrese fechas válidas y verifique que la fecha de inicio sea antes que la fecha de fin."
       return false
     }
@@ -118,26 +107,29 @@ export class RegisterActivityComponent implements OnInit {
 
     if (this.checkFormValidity()) {
 
-      let activity: Activity = {
-        user: 0,
-        start: new Date(this.registerForm.controls['startDate'].value),
-        end: new Date(this.registerForm.controls['endDate'].value),
-        length: this.registerForm.controls['kilometers'].value,
-        type: this.registerForm.controls['activityType'].value
+      // TODO: actually grab stuff from form
+      let race: Race = {
+        name: "a",
+        day: new Date(),
+        type: ActivityType.Cycling,
+        privateGroups: [],
+        price: 0,
+        status: RaceStatus.NotRegistered, // field doesn't matter
+        categories: []
       }
 
       // console.log("Activity submitted:", activity)
-
-      this.registerService.register_activity(activity).subscribe(
+      return
+      this.registerService.register_race(race).subscribe(
         (postResp: HttpResponse<Id>) => {
           if (postResp.body) {
-            console.log("Register Activity Resp:", postResp)
+            console.log("Register Race Resp:", postResp)
             this.registerService.resetForm(this.registerForm)
-            this.message = "Su actividad se ha registrado correctamente."
+            this.message = "La carrera se ha registrado correctamente."
 
             // put gpx track
             if (this.gpxFile !== null) {
-              this.registerService.put_gpx(postResp.body.id, this.gpxFile, gpxType.Activity).subscribe(
+              this.registerService.put_gpx(postResp.body.id, this.gpxFile, gpxType.Race).subscribe(
                 (gpxResp: HttpResponse<null>) => {
                   console.log("PUT GPX resp:", gpxResp)
                 },
@@ -150,12 +142,12 @@ export class RegisterActivityComponent implements OnInit {
                   }
                   console.log("Error while uploading gpx:", err);
 
-                  //Delete previously posted activity
+                  //Delete previously posted race
                   if (postResp.body)
-                    this.registerService.delete_activity(postResp.body.id).subscribe((deleteResp: HttpResponse<null>) => {
+                    this.registerService.delete_race(postResp.body.id).subscribe((deleteResp: HttpResponse<null>) => {
                       console.log("delete resp:", deleteResp),
                         (err: HttpErrorResponse) => {
-                          console.log("Error deleting activity without gpx:", err)
+                          console.log("Error deleting race without gpx:", err)
                         }
                     })
 
@@ -197,7 +189,6 @@ export class RegisterActivityComponent implements OnInit {
 
     if (this.gpxMapReference) {
       let gpxMap = this.gpxMapReference;
-      let self = this
 
       // @ts-ignore
       let layer = new L.GPX(this.gpxURL, {
@@ -209,39 +200,14 @@ export class RegisterActivityComponent implements OnInit {
         }
       }).on('loaded', function (e: LayerEvent) {
         gpxMap.fitBounds(e.target.getBounds());
-        let form = self.registerForm;
-
-        if (e.target.get_total_time() > 0) {
-
-          let startDateValue = self.toLocalTimeStr(e.target.get_start_time());
-          console.log("Start date:", startDateValue)
-          console.log("Start date month:", e.target.get_start_time().getMonth() + 1)
-
-          form.controls['startDate'].setValue(startDateValue);
-          form.controls['endDate'].setValue(self.toLocalTimeStr(e.target.get_end_time()));
-          self.updateDuration()
-        }
-        form.controls['kilometers'].setValue((e.target.get_distance() / 1000).toFixed(3))
       })
 
       this.gpxLayer.push(layer)
     }
   }
 
-  toLocalTimeStr(date: Date) {
-    return date.getFullYear() + "-" + padTwo(date.getMonth() + 1) + "-" + padTwo(date.getDate()) + "T" + padTwo(date.getHours()) + ":" + padTwo(date.getMinutes()) + ":" + padTwo(date.getSeconds()) //+ "." + padTwo(date.getMilliseconds())
+  toTimeStr(date: Date) {
+    return date.getFullYear() + "-" + (date.getMonth() + 1 + "").padStart(2, "0") + "-" + (date.getDate() + "").padStart(2, "0")
   }
 
-  format_ms(ms: number): string {
-    let hours = ms / (1000 * 60 * 60)
-    let mins = (hours % 1) * 60
-    let secs = (mins % 1) * 60
-    // let millis = Math.round((secs % 1) * 1000)
-    return padTwo(Math.floor(hours)) + ':' + padTwo(Math.floor(mins)) + ':' + padTwo(Math.round(secs))// + '.' + ('' + Math.floor(millis)).padStart(3, "0")
-  }
-
-}
-
-const padTwo = (n: number): string => {
-  return (n + "").padStart(2, "0")
 }

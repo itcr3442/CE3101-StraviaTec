@@ -88,6 +88,7 @@ export class SearchUsersComponent implements OnInit {
         }
           // No hay que manejar error porque getUser ya maneja el 404
         )
+        
     }
     console.log("users:", this.users_page)
   }

@@ -128,7 +128,7 @@ export class UserRacesComponent implements OnInit {
     this.refreshPage()
   }
 
-  onRegister(id: number){
+  onRegister(id: number) {
     /* testing no touch >:(
     this.registerService.register_race(id)
       .subscribe((res: HttpResponse<null>) => {

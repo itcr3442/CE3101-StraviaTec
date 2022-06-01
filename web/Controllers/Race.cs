@@ -37,11 +37,11 @@ public class RaceController : ControllerBase
         return Ok(new Resp.GetRace
         {
             Name = "proyecto",
-            Start = DateTime.Today,
-            End = DateTime.Today.AddDays(1),
+            Day = DateTime.Today,
             Type = ActivityType.Cycling,
             PrivateGroups = new int[] { },
             Price = 69.42M,
+            Categories = new Category [] { Category.Junior, Category.MasterC },
             Status = RaceStatus.WaitingConfirmation,
         });
     }

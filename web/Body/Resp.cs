@@ -99,15 +99,15 @@ public record GetRace
     [Required]
     public string Name { get; set; } = null!;
     [Required]
-    public DateTime Start { get; set; }
-    [Required]
-    public DateTime End { get; set; }
+    public DateTime Day { get; set; }
     [Required]
     public ActivityType Type { get; set; }
     [Required]
     public int[] PrivateGroups { get; set; } = null!;
     [Required]
     public decimal Price { get; set; }
+    [Required]
+    public Category[] Categories { get; set; } = null!;
     [Required]
     public RaceStatus Status { get; set; }
 }
