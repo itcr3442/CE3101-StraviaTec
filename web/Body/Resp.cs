@@ -107,6 +107,8 @@ public record GetRace
     [Required]
     public decimal Price { get; set; }
     [Required]
+    public Category[] Categories { get; set; } = null!;
+    [Required]
     public RaceStatus Status { get; set; }
 }
 
