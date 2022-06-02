@@ -20,3 +20,7 @@ code {
   text-align: left;
   color: #f10b0b;
 }
+
+label {
+  font-size: 125%;
+}
