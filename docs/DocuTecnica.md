@@ -23,7 +23,7 @@ linestretch: 1.5
 bibliography: bibliografia.bib
 csl: ieee.csl
 nocite: | 
-  @microsoft-2022A, @microsoft-2022B, @microsoft-2020, @google-2021, @google-2022, @elmasri-2016, @unknown-author-2021, @android-room
+  @microsoft-2022A, @microsoft-2022B, @microsoft-2022C, @microsoft-2020, @google-2021, @google-2022, @google-developers-2022, @android-developers-2022, @elmasri-2016, @unknown-author-2021, @android-room, @topografix-2004
 ...
 
 \maketitle
@@ -595,7 +595,51 @@ compleja. Se puede notar que:
 
 ## Conclusiones
 
+- Se aplicaron los conceptos de modelo conceptual y relacional en la etapa de 
+  diseño de solución del proyecto.
+
+- Se implementó exitosamente una de base de datos en SQL Server.
+
+- Se logró utilizar la herramienta de MongoDB para la creación de una base de 
+  datos NoSQL que almacena la información sobre comentarios.
+
+- Se implementó una capa de servicios que permite hacer de la separación de las 
+  bases de datos un detalle de implementación transparente para el usuario final. 
+
+- Para el caso de la aplicación móvil, Se hizo uso efectivo de la biblioteca 
+  Room para la manipulación de una base de datos empotrada basada en SQLite.
+
+- Para el caso de la aplicación web, se hizo uso exitoso de Angular, Bootstrap, 
+  HTML5, CSS y la biblioteca jspdf (generación de reportes).
+
+- Se hizo uso correcto de Azure para el despliegue de las bases de datos, 
+  el servicio REST y la aplicación web.
+
+- Se cumplió con la solicitud de documentación para usuario final, es decir, se
+  confeccionaron tanto manuales de instalación como manuales de operación para 
+  los usuarios finales.
+
 ## Recomendaciones
+
+- Hacer uso de Room para la implementación de bases de datos empotradas para 
+  aplicaciones móviles que se desarrollen para el sistema operativo Android.
+
+- Hay consideraciones adicionales a la hora de realizar un mapeo de un modelo
+  conceptual, por ejemplo, consideraciones de desempeño de un sistema. Por
+  ejemplo, si un atributo de una entidad es relativamente pesado (fotos y otros
+  formatos de archivo), es conveniente separar este atributo en una relación
+  propia, pues de no hacer esto, existe un impacto en el desempeño de consultas
+  que no requieren estos datos. 
+
+- Hacer un uso frecuente de las herramientas de colaboración como git pues 
+  facilitan sustancialmente el trabajo en grupo.
+
+- Para implementar aplicaciones web, se recomienda considerar Angular como un 
+  posible framework para realizar esta implementación.
+
+- En el caso de tener un "tech stack" del ecosistema de Microsoft para software 
+  que se busca desplegar en la nube, Azure es un buen servicio a considerar 
+  para este _use case_.
 
 ## Bibliografía
 
