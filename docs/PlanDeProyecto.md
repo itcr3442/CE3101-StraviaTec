@@ -276,20 +276,68 @@ $$~~~~~$$
 - 27 ABR
     + El profesor asigna el proyecto. 
 - 29 ABR
-    + Realizo una investigación breve sobre la aplicación en la que se basa el proyecto, para hacerme una mejor idea de lo que se espera en la interfaz gráfica de la aplicación móvil
+    + Realizo una investigación breve sobre la aplicación en la que se basa el 
+    proyecto, para hacerme una mejor idea de lo que se espera en la interfaz 
+    gráfica de la aplicación móvil
 - 30 ABR
     + Confecciono mi propuesta para modelo conceptual del proyecto
-    + El equipo se reúne para discutir experiencias de primer proyecto y para coordinar aspectos básicos para la ejecución del proyecto.
+    + El equipo se reúne para discutir experiencias de primer proyecto y para 
+    coordinar aspectos básicos para la ejecución del proyecto.
 - 2 MAY
-    + El equipo se reúne para coordinar aspectos de trabajo en equipo tal como división de reglas, roles de trabajos y definición de cronograma.
+    + El equipo se reúne para coordinar aspectos de trabajo en equipo tal como 
+    división de reglas, roles de trabajos y definición de cronograma.
     + Se crean repositorio y archivos de colaboración grupal.
-    + Se analizan propuestas de modelo conceptual y se escoge una para su implementación
+    + Se analizan propuestas de modelo conceptual y se escoge una para su 
+    implementación
 - 3 MAY
     + Se transcriben secciones de introducciones y metas de proyecto.
 - 4 MAY
-    + Se transcribe justificación de elección de modelo conceptual para la implementación de proyecto.
+    + Se transcribe justificación de elección de modelo conceptual para la 
+    implementación de proyecto.
 - 5 MAY 
     + Se crea el proyecto base para el desarrollo de la app móvil.
+- 10 MAY
+    + Se investigó sobre el como se podía integrar los servicios de localización 
+    en una aplicación móvil.
+- 12 MAY
+    + Se investigó sobre el formato gpx para decidir que información debía 
+    registrar la aplicación móvil.
+- 14 MAY
+    + Se investigó sobre el uso de google maps para la muestra de localización
+    en aplicaciones móviles para android.
+- 16 MAY
+    + Se agrega la mayor parte de funcionalidad de seguimiento de localización
+    de usuario en la aplicación móvil. 
+    + Se implementa la lógica de registro progresivo de datos que permite la
+    generación de un archivo gpx.
+    + Se realiza una implementación temprana de una función que genera un texto
+    conforme a la especificación del formato gpx
+- 20 MAY
+    + Se realizan correcciones ortográficas en el código y comentarios de la 
+    aplicación móvil.
+    + Se remueven actividades y código no necesarios que se habían creado en 
+    una etapa inicial del desarrollo. 
+    + Se implementa la lógica de sincronización.
+- 23 MAY
+    + Se implenta la lógica de guardado de actividades en la base de datos
+    empotrada de la aplicación móvil.
+    + Se escribe la mayor parte de la documentación interna de la aplicación
+    móvil.
+- 29 MAY
+    + Se realizan las primeras pruebas de integración, y en base a estas, se
+    implentan correciones en la aplicación móvil para evitar comportamiento
+    inconsistente. 
+- 30 MAY
+    + Se confecciona el diagrama de arquitectura final del sistema para motivos
+    de documentación.
+    + Se agregan nuevos diagramas de modelo conceptual y relacional que
+    reflejan de mejor manera la implementación final del proyecto.
+- 31 MAY
+    + Se describe el proceso de mapeo de modelo conceptual a relacional en la 
+    documentación técnica ejecutiva. 
+- 1 JUN
+    + Se documentan las estructuras de datos (tablas) implementadas en el
+    proyecto.
 
 ### Jose Retana
 
