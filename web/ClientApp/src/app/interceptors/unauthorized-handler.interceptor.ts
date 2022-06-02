@@ -31,7 +31,7 @@ export class UnauthorizedHandlerInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(er => {
         if (er.status === 401) {
-          this.authService.logout();
+          this.authService.logout(false);
           this.router.navigate(['/401'])
         }
         return throwError(er);

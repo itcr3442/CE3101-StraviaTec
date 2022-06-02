@@ -158,7 +158,7 @@ export class AuthService {
   /**
    * Remueve los cookies que mantienen la sesión del usuario y manda un request de logout al API
    */
-  public logout() {
+  public logout(goToLogin: boolean = true) {
     return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
       (error: HttpErrorResponse) => {
         console.log("Log out error:", error)
@@ -166,7 +166,7 @@ export class AuthService {
 
     ).add(() => {
       this.cookies.delete_cookie(UserCookieName, '/')
-      this.router.navigate(['/login'])
+      if (goToLogin) this.router.navigate(['/login'])
     })
   }
 
