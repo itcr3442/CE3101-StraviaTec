@@ -24,3 +24,9 @@ code {
 label {
   font-size: 125%;
 }
+
+.form-control {
+
+  /* height: 50px; */
+  background-color: #eeeeee69;
+}

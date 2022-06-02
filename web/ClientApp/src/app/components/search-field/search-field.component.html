@@ -1,0 +1,52 @@
+<div class="dropdown">
+
+    <div id="searchInputGroup" class="input-group" data-bs-toggle="dropdown">
+        <input id="searchInput" type="text" class="form-control" [disabled]="selected">
+        <button class="btn btn-outline-secondary" type="button" id="search-button"
+            (click)="selected ? unselect() : search()">
+            <span *ngIf="!selected" class="bi-search"></span>
+            <span *ngIf="selected" class="bi-x-lg"></span>
+        </button>
+    </div>
+
+
+    <ul class="dropdown-menu">
+        <li *ngFor="let in of counter(); let i = index"><button class="dropdown-item" type="button"
+                (click)="select(i)">{{searchResultNames[i]}}</button></li>
+    </ul>
+
+</div>
+<!-- 
+<div class="container">
+
+    <div class="row d-flex">
+
+        <div class="col-md-12">
+
+
+            <div class="dropdown">
+
+                <div class="input-group">
+
+                    <input type="text" class="form-control">
+                    <button class="btn btn-outline-secondary" type="button" id="search-button"
+                        data-bs-toggle="dropdown">
+                        <span class="bi-search"></span>
+                    </button>
+                </div>
+
+
+                <ul class="dropdown-menu">
+                     <li *ngFor="let in of counter(); let i = index"><button class="dropdown-item"
+                            type="button">a</button></li>
+<li><button class="dropdown-item" type="button">Another action</button></li>
+<li><button class="dropdown-item" type="button">Something else here</button></li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+</div> -->
