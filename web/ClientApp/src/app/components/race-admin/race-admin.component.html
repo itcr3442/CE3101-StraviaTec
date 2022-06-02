@@ -13,8 +13,8 @@
                 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
                     <div class="mb-3 form-group">
-                        <label for="startDate">Nombre de la carrera</label>
-                        <input type="text" id="raceName" formControlName="day" class="form-control">
+                        <label for="raceName">Nombre de la carrera</label>
+                        <input type="text" id="raceName" formControlName="name" class="form-control">
                     </div>
 
                     <div class="mb-3 form-group">
@@ -24,7 +24,7 @@
                     </div>
 
                     <div class="mb-3 form-group">
-                        <label for="startDate">Fecha de la carrera</label>
+                        <label for="raceDay">Fecha de la carrera</label>
                         <input min={{this.minDate}} max={{this.maxDate}} type="date" id="raceDay" formControlName="day"
                             class="form-control">
                     </div>
@@ -38,13 +38,36 @@
                         </select>
                     </div>
 
-                    <div class="mb-3 form-group">
-                        <label for="activityTypeSelect">Categorías disponibles</label>
-                        <select id="activityTypeSelect" class="form-select" formControlName="activityType">
-                            <option *ngFor="let cat of categoryTypes" [value]="raceCategoryEnum[cat]">
-                                {{cat}}
-                            </option>
-                        </select>
+                    <label for="category-row-0">Categorías disponibles</label>
+                    <div class="row mb-3 card" *ngFor='let in of categoryCounter(); let i = index'>
+                        <div class="card-header">{{"Categoría #" + (i + 1)}}</div>
+                        <div id="category-row-{{i}}" class="row card-body">
+                            <div class="col">
+                                <select id="category-{{i}}" class="form-select">
+                                    <option *ngFor="let cat of categoryTypes" [value]="raceCategoryEnum[cat]">
+                                        {{cat}}
+                                    </option>
+                                </select>
+                                <!-- <input type="text" id="-{{i}}" class="form-control" placeholder="Código IBAN"> -->
+
+                            </div>
+                            <ng-container *ngIf="i == totalCategories - 1">
+                                <div class="col-md-{{totalCategories === 1 ? 2 : 3}}">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary"
+                                                (click)="addCategory()">+</button>
+                                        </div>
+                                        <ng-container *ngIf="totalCategories > 1">
+                                            <div class="col-md-6">
+                                                <button type="button" class="btn btn-danger"
+                                                    (click)="decreaseCategory()">-</button>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
                     </div>
 
                     <label for="kilometers">Precio</label>
@@ -53,7 +76,41 @@
                         <span class="input-group-text">CRC</span>
                     </div>
 
-                    <!-- FALTA: privacidad, grupos, cuentas bancarias -->
+                    <label for="bank-row-0">Cuentas de bancos</label>
+                    <div class="row mb-3 card" *ngFor='let in of bankCounter() ;let i = index'>
+                        <div class="card-header">{{"Cuenta Bancaria #" + (i + 1)}}</div>
+                        <div id="bank-row-{{i}}" class="row card-body">
+                            <div class="col">
+                                <input type="text" id="iban-{{i}}" class="form-control" placeholder="Código IBAN">
+                            </div>
+                            <ng-container *ngIf="i == totalBanks - 1">
+                                <div class="col-md-{{totalBanks === 1 ? 2 : 3}}">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary" (click)="addBank()">+</button>
+                                        </div>
+                                        <ng-container *ngIf="totalBanks > 1">
+                                            <div class="col-md-6">
+                                                <button type="button" class="btn btn-danger"
+                                                    (click)="decreaseBank()">-</button>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <!-- FALTA: privacidad, grupos -->
+
+                    <!-- <div class="mb-3 form-check">
+                        <label class="form-check-label" for="privacyCheck">
+                            Privado
+                        </label>
+                        <input class="form-check-input" formControlName="isPrivate" type="checkbox" value=""
+                            (change)="onPrivacyChange($event)" id="privacyCheck">
+
+                    </div> -->
 
                     <ng-container *ngIf="this.message">
                         <p>
@@ -65,6 +122,7 @@
                             {{this.warnMessage}}
                         </p>
                     </ng-container>
+
                     <button type="submit" class="btn btn-primary">Registrar</button>
                 </form>
             </div>
