@@ -77,7 +77,18 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult History(int id)
     {
-        return Ok(new int[] { 69, 420 });
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = @"
+            SELECT   id
+            FROM     activities 
+            WHERE    athlete=@id
+            ORDER BY end_time DESC";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
@@ -87,7 +98,13 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Groups(int id)
     {
-        return Ok(new int[] { 69, 420 });
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = "SELECT group_id FROM group_members WHERE member=@id ORDER BY group_id";
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
@@ -97,7 +114,20 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Races(int id)
     {
-        return Ok(new int[] { 69, 420 });
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = @"
+            SELECT    race
+            FROM      race_participants
+            LEFT JOIN activities
+            ON        activity = id
+            WHERE     race.athlete = @id
+            ORDER BY  activity IS NULL DESC, end_time DESC";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
@@ -107,7 +137,27 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Challenges(int id)
     {
-        return Ok(new int[] { 69, 420 });
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = @"
+            SELECT    challenge
+            FROM      challenge_participants
+            LEFT JOIN
+            (
+              SELECT   athlete, MAX(end_time)
+              FROM     challenge_activities
+              JOIN     activities
+              ON       activity = id
+              GROUP BY athlete
+            ) AS latest
+            ON       latest.athlete = challenge_participants.athlete
+            WHERE    latest.athlete = @id
+            ORDER BY end_time IS NULL DESC, end_time DESC";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
@@ -117,7 +167,13 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Followers(int id)
     {
-        return Ok(new int[] { 69, 420 });
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = "SELECT follower FROM friends WHERE followee=@id ORDER BY follower";
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
@@ -127,7 +183,13 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Following(int id)
     {
-        return Ok(new int[] { 69, 420 });
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = "SELECT followee FROM friends WHERE follower=@id ORDER BY followee";
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
     }
 
     private ISqlConn _db;
