@@ -30,3 +30,13 @@ label {
   /* height: 50px; */
   background-color: #eeeeee69;
 }
+
+.profile-image {
+
+  background-position: center;
+  background-size: cover;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+
+}

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { countries, RoleLevels } from 'src/app/constants/user.constants';
+import { countries, maxImageSize } from 'src/app/constants/user.constants';
 import { Country } from 'src/app/interfaces/country';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 import { User } from 'src/app/interfaces/user';
@@ -25,6 +25,7 @@ export class EditProfileFormComponent implements OnInit {
   message: string = ""
   countryList: Country[];
   imageURL: string | null = null;
+  imageFile: File | null = null;
 
   @Input() user: User | null = null;
 
@@ -39,13 +40,6 @@ export class EditProfileFormComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  // upload(files: FileList) {
-  //   this.imageURL = URL.createObjectURL(files[0]);
-  //   console.log("images:", files)
-  //   console.log("image:", files[0])
-  //   console.log("imageURL:", this.imageURL)
-  // }
 
   ngOnChanges(): void {
     if (this.user !== null) {
@@ -72,6 +66,25 @@ export class EditProfileFormComponent implements OnInit {
   }
   get birthDate(): string {
     return this.registerForm.controls['birthDate'].value
+  }
+
+  upload(files: FileList) {
+    this.imageFile = files[0];
+    this.imageURL = URL.createObjectURL(this.imageFile);
+
+    if (this.imageFile.size > maxImageSize) {
+      this.clearImage()
+      this.message = "Tamaño de imagen excedió límite de 4MB."
+    }
+  }
+
+  clearImage() {
+    console.log("Clearing")
+    if (this.imageURL) URL.revokeObjectURL(this.imageURL)
+    this.imageFile = null
+
+    let fileInputEl: HTMLInputElement = document.getElementById('pfp') as HTMLInputElement
+    fileInputEl.value = ''
   }
 
   validateForm(): boolean {

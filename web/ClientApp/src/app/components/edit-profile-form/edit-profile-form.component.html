@@ -1,5 +1,21 @@
 <form [formGroup]="registerForm">
 
+    <div class="row mb-3 form-group">
+        <div class="col-md-3">
+            <!-- Remplazar src con dirección de imagen de cada usuario cuando GET funcione -->
+            <img src="https://i.pinimg.com/originals/d6/44/e0/d644e089d455eca4ddd9150a5ec6af70.jpg"
+                class="profile-image" height=200 alt="profile picture"
+                onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+
+        </div>
+
+        <div class="col-md-9">
+            <label for="id">Cambiar foto de perfil</label>
+            <input id="pfp" class="form-control" type="file" accept="image/jpeg"
+                (change)="upload($any($event.target).files)" />
+        </div>
+    </div>
+
     <div class="mb-3 form-group">
         <label for="id">Usuario</label>
         <input type="id" id="id" formControlName="username" class="form-control">
