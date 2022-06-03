@@ -51,6 +51,7 @@ export class SearchFieldComponent implements OnInit {
     let searchInput: HTMLInputElement = document.getElementById('searchInput') as HTMLInputElement
     let query = searchInput.value
 
+    // pain no tener match
     if (this.searchable === Searchables.Users) {
       var searchResponse = this.searchService.searchUserPage(query, 0)
     }

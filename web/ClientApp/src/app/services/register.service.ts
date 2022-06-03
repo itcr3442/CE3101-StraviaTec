@@ -38,7 +38,6 @@ export class RegisterService {
       "type": RoleLevels[user.type]
     }
 
-
     console.log("New user: " + JSON.stringify(new_user))
 
     // return of({ id: 69 })
@@ -46,6 +45,13 @@ export class RegisterService {
       "Users", new_user)
 
   }
+
+  public put_pfp(id: number, image: File): Observable<HttpResponse<null>> {
+
+    return this.repositoryService.replace<null>(
+      `Users/${id}/Photo`, image, false, "image/jpeg")
+  }
+
 
   public delete_self() {
     return this.repositoryService.delete<null>(
