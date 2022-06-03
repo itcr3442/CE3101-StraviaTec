@@ -85,9 +85,12 @@ public class GroupController : ControllerBase
     [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : NotFound();
+        using (var cmd = _db.Cmd("DELETE FROM groups WHERE group_id=@id"))
+        {
+            return await cmd.Param("id", id).Exec() > 0 ? NoContent() : NotFound();
+        }
     }
 
     private readonly ISqlConn _db;
