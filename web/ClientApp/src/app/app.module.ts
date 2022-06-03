@@ -33,6 +33,7 @@ import { UserGroupsComponent } from './components/user-groups/user-groups.compon
 import { UserSubscribedComponent } from './components/user-subscribed/user-subscribed.component';
 import { RaceAdminComponent } from './components/race-admin/race-admin.component';
 import { SearchFieldComponent } from './components/search-field/search-field.component';
+import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
 
 
 @NgModule({
@@ -57,6 +58,7 @@ import { SearchFieldComponent } from './components/search-field/search-field.com
     UserSubscribedComponent,
     RaceAdminComponent,
     SearchFieldComponent,
+    UserDashboardComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
