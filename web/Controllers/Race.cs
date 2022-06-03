@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
@@ -14,6 +16,7 @@ namespace web.Controllers;
 public class RaceController : ControllerBase
 {
     [HttpPost]
+    [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Resp.Ref))]
@@ -90,6 +93,7 @@ public class RaceController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -100,6 +104,7 @@ public class RaceController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)

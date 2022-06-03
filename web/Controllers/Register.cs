@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
@@ -104,6 +106,7 @@ public class ReceiptController : ControllerBase
 
 [ApiController]
 [Route("Api/Races/{raceId}/Receipts/{userId}/[action]")]
+[Authorize(Policy = "Organizer")]
 [ProducesResponseType(StatusCodes.Status204NoContent)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 public class ConfirmationController : ControllerBase

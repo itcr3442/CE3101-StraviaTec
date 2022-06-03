@@ -66,6 +66,11 @@ builder.Services.AddSingleton<IConnectionStrings, ConnectionStrings>()
         };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Organizer", policy => policy.RequireClaim("type", new[] { "Organizer" }));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

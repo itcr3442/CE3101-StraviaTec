@@ -1,11 +1,14 @@
 using System;
 using System.IO;
 using System.Net.Mime;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using web.Body.Common;
 
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
+
+using web.Body.Common;
 
 namespace web.Controllers;
 
@@ -14,6 +17,7 @@ namespace web.Controllers;
 public class GroupController : ControllerBase
 {
     [HttpPost]
+    [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Resp.Ref))]
@@ -29,6 +33,7 @@ public class GroupController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,6 +58,7 @@ public class GroupController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id)
