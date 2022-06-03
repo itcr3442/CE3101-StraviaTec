@@ -12,14 +12,30 @@ namespace web.Controllers;
 [Route("Api/[action]")]
 public class DashboardController : ControllerBase
 {
+    public DashboardController(ISqlConn db) => _db = db;
+
     [HttpGet]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     public ActionResult Feed()
     {
-        return Ok(new int[] { 69, 420 });
+        string query = @"
+            SELECT   id
+            FROM     activities
+            JOIN     friends
+            ON       athlete = followee
+            WHERE    follower = @id
+            ORDER BY end_time DESC
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", this.LoginId()).Rows<int>().ToArray());
+        }
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]
