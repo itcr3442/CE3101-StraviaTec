@@ -16,6 +16,8 @@ namespace web.Controllers;
 [Route("Api/Groups")]
 public class GroupController : ControllerBase
 {
+    public GroupController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -49,11 +51,33 @@ public class GroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
+        int admin;
+        int[] members;
+
+        using (var txn = _db.Txn())
+        {
+            using (var cmd = txn.Cmd("SELECT admin FROM groups WHERE id=@id"))
+            {
+                int? row = cmd.Param("id", id).Row<int>();
+                if (row == null)
+                {
+                    return NotFound();
+                }
+
+                admin = row.Value;
+            }
+
+            using (var cmd = txn.Cmd("SELECT member FROM group_members WHERE group_id=@id"))
+            {
+                members = cmd.Param("id", id).Rows<int>().ToArray();
+            }
+        }
+
         return Ok(new Resp.GetGroup
         {
-            Admin = 69,
-            Members = new int[] { 69, 420 },
-            AmMember = true,
+            Admin = admin,
+            Members = members,
+            AmMember = members.Contains(this.LoginId()),
         });
     }
 
@@ -65,6 +89,8 @@ public class GroupController : ControllerBase
     {
         return Random.Shared.Next(2) == 0 ? NoContent() : NotFound();
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]
