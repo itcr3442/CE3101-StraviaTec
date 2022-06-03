@@ -71,7 +71,6 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -92,7 +91,6 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -108,7 +106,6 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -131,7 +128,6 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -161,7 +157,6 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -177,7 +172,6 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
