@@ -70,18 +70,14 @@ public class ProfileController : ControllerBase
         });
     }
 
-    [HttpGet("{page}")]
+    [HttpGet]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Paged))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult History(int id, int page)
+    public ActionResult History(int id)
     {
-        return Ok(new Resp.Paged
-        {
-            Pages = 1,
-            Page = new int[] { 69, 420 },
-        });
+        return Ok(new int[] { 69, 420 });
     }
 
     private ISqlConn _db;

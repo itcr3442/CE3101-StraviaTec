@@ -42,22 +42,6 @@ public record HomeStats
     public int? LatestActivity { get; set; }
 }
 
-public record Paged
-{
-    [Required]
-    public int Pages { get; set; }
-    [Required]
-    public int[] Page { get; set; } = null!;
-}
-
-public record Comments
-{
-    [Required]
-    public int Pages { get; set; }
-    [Required]
-    public Comment[] Page { get; set; } = null!;
-}
-
 public record Comment
 {
     [Required]

@@ -11,46 +11,30 @@ namespace web.Controllers;
 [ApiController]
 [Route("Api/[action]/Search")]
 [Produces(MediaTypeNames.Application.Json)]
-[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Paged))]
+[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
 public class SearchController : ControllerBase
 {
     [HttpGet]
-    public ActionResult Users(string query, int page)
+    public ActionResult Users(string query)
     {
-        return Ok(new Resp.Paged
-        {
-            Pages = 10,
-            Page = new int[] { 69, 420 },
-        });
+		return Ok(new int[] { 69, 420 });
     }
 
     [HttpGet]
-    public ActionResult Groups(string query, int page)
+    public ActionResult Groups(string query)
     {
-        return Ok(new Resp.Paged
-        {
-            Pages = 1,
-            Page = new int[] { 69420 },
-        });
+		return Ok(new int[] { 69420 });
+	}
+
+    [HttpGet]
+    public ActionResult Races(bool? filterRegistered, string? nameLike)
+    {
+		return Ok(new int[] { 69420 });
     }
 
     [HttpGet]
-    public ActionResult Races(int page, bool? filterRegistered, string? nameLike)
+    public ActionResult Challenges(bool? filterRegistered, string? nameLike)
     {
-        return Ok(new Resp.Paged
-        {
-            Pages = 1,
-            Page = new int[] { 69420 },
-        });
-    }
-
-    [HttpGet]
-    public ActionResult Challenges(int page, bool? filterRegistered, string? nameLike)
-    {
-        return Ok(new Resp.Paged
-        {
-            Pages = 1,
-            Page = new int[] { 69420 },
-        });
+		return Ok(new int[] { 69420 });
     }
 }

@@ -12,17 +12,13 @@ namespace web.Controllers;
 [Route("Api/[action]")]
 public class DashboardController : ControllerBase
 {
-    [HttpGet("{page}")]
+    [HttpGet]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Paged))]
-    public ActionResult Feed(int page)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    public ActionResult Feed()
     {
-        return Ok(new Resp.Paged
-        {
-            Pages = 1,
-            Page = new int[] { 69, 420 },
-        });
+		return Ok(new int[] { 69, 420 });
     }
 }
 
