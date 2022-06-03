@@ -29,16 +29,16 @@ public class CommentsController : ControllerBase
     public ActionResult Comments(int activityId)
     {
         return Ok(new Resp.Comment[] {
-				new Resp.Comment {
-					User = 69,
-					Time = DateTime.Now,
-					Content = "kk",
-				},
-				new Resp.Comment {
-					User = 70,
-					Time = DateTime.Now,
-					Content = "kk2",
-				}
-			});
+                new Resp.Comment {
+                    User = 69,
+                    Time = DateTime.Now,
+                    Content = "kk",
+                },
+                new Resp.Comment {
+                    User = 70,
+                    Time = DateTime.Now,
+                    Content = "kk2",
+                }
+            });
     }
 }

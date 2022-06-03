@@ -17,24 +17,24 @@ public class SearchController : ControllerBase
     [HttpGet]
     public ActionResult Users(string query)
     {
-		return Ok(new int[] { 69, 420 });
+        return Ok(new int[] { 69, 420 });
     }
 
     [HttpGet]
     public ActionResult Groups(string query)
     {
-		return Ok(new int[] { 69420 });
-	}
+        return Ok(new int[] { 69420 });
+    }
 
     [HttpGet]
     public ActionResult Races(bool? filterRegistered, string? nameLike)
     {
-		return Ok(new int[] { 69420 });
+        return Ok(new int[] { 69420 });
     }
 
     [HttpGet]
     public ActionResult Challenges(bool? filterRegistered, string? nameLike)
     {
-		return Ok(new int[] { 69420 });
+        return Ok(new int[] { 69420 });
     }
 }

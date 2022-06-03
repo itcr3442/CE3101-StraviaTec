@@ -18,7 +18,7 @@ public class DashboardController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     public ActionResult Feed()
     {
-		return Ok(new int[] { 69, 420 });
+        return Ok(new int[] { 69, 420 });
     }
 }
 

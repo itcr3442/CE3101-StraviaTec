@@ -80,5 +80,55 @@ public class ProfileController : ControllerBase
         return Ok(new int[] { 69, 420 });
     }
 
+    [HttpGet]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Groups(int id)
+    {
+        return Ok(new int[] { 69, 420 });
+    }
+
+    [HttpGet]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Races(int id)
+    {
+        return Ok(new int[] { 69, 420 });
+    }
+
+    [HttpGet]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Challenges(int id)
+    {
+        return Ok(new int[] { 69, 420 });
+    }
+
+    [HttpGet]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Followers(int id)
+    {
+        return Ok(new int[] { 69, 420 });
+    }
+
+    [HttpGet]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Following(int id)
+    {
+        return Ok(new int[] { 69, 420 });
+    }
+
     private ISqlConn _db;
 }
