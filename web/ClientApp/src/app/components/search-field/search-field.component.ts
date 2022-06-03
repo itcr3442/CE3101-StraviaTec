@@ -1,6 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
-import { Dropdown } from 'bootstrap';
 import { Observable } from 'rxjs';
 import { SearchResp, SearchService } from 'src/app/services/search.service';
 
@@ -38,12 +37,17 @@ export class SearchFieldComponent implements OnInit {
   }
 
   showDropDown(): void {
-    let dropdownToggleEl = document.getElementById('searchInputGroup') as HTMLElement
-    let dropdown: Dropdown = new Dropdown(dropdownToggleEl)
+    let dropdownToggleEl = document.getElementById('dropdownLinkToggle') as HTMLElement
+    //@ts-ignore
+    let dropdown: Dropdown = new bootstrap.Dropdown(dropdownToggleEl)
+
     dropdown.show()
   }
 
-  search() {
+  search(e: Event) {
+    // Para que bootstrap no cancele el evento
+    e.stopPropagation()
+
     let searchInput: HTMLInputElement = document.getElementById('searchInput') as HTMLInputElement
     let query = searchInput.value
 
@@ -64,10 +68,10 @@ export class SearchFieldComponent implements OnInit {
     }
 
     searchResponse.subscribe((resp: HttpResponse<SearchResp>) => {
-      console.log(resp)
+      console.log("search resp:", resp)
     },
       (err: HttpErrorResponse) => {
-        console.log('err')
+        console.log('error search:', err)
       })
     this.showDropDown()
   }
