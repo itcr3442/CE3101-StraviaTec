@@ -76,9 +76,19 @@ public class TrackController : ControllerBase
     [Consumes(MediaTypeNames.Application.Xml)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult PutRacesTrack(int id)
+    public async Task<ActionResult> PutRacesTrack(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
+        if (!this.RequireOrganizer())
+        {
+            return Forbid();
+        }
+
+        using (var txn = _db.Txn())
+        {
+            string delete = "DELETE FROM race_tracks WHERE race=@id";
+            string insert = "INSERT INTO race_tracks(race, track) VALUES(@id, @track)";
+            return await WriteTrack(txn, delete, insert, id);
+        }
     }
 
     private ISqlConn _db;
