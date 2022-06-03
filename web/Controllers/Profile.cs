@@ -118,8 +118,8 @@ public class ProfileController : ControllerBase
             FROM      race_participants
             LEFT JOIN activities
             ON        activity = id
-            WHERE     race.athlete = @id
-            ORDER BY  activity IS NULL DESC, end_time DESC";
+            WHERE     race_participants.athlete = @id
+            ORDER BY CASE WHEN activity IS NULL THEN 1 ELSE 0 END DESC, end_time DESC";
 
         using (var cmd = _db.Cmd(query))
         {
@@ -140,7 +140,7 @@ public class ProfileController : ControllerBase
             FROM      challenge_participants
             LEFT JOIN
             (
-              SELECT   athlete, MAX(end_time)
+              SELECT   athlete, MAX(end_time) AS latest_time
               FROM     challenge_activities
               JOIN     activities
               ON       activity = id
@@ -148,7 +148,7 @@ public class ProfileController : ControllerBase
             ) AS latest
             ON       latest.athlete = challenge_participants.athlete
             WHERE    latest.athlete = @id
-            ORDER BY end_time IS NULL DESC, end_time DESC";
+            ORDER BY CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END DESC, latest_time DESC";
 
         using (var cmd = _db.Cmd(query))
         {
