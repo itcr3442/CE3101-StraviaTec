@@ -29,7 +29,7 @@ builder.Services.AddSingleton<IConnectionStrings, ConnectionStrings>()
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
         options.LoginPath = PathString.Empty;
 
