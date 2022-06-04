@@ -80,7 +80,7 @@ public class ActivityController : ControllerBase
             var result = cmd.Param("id", id).Row<(int, DateTime, DateTime, string, decimal)>();
             if (result == null)
             {
-                return Unauthorized();
+                return NotFound();
             }
 
             row = result.Value;
