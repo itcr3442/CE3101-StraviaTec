@@ -15,6 +15,8 @@ namespace web.Controllers;
 [Route("Api/Races")]
 public class RaceController : ControllerBase
 {
+    public RaceController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -107,8 +109,41 @@ public class RaceController : ControllerBase
     [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        return NoContent();
+        int deleted;
+        using (var txn = _db.Txn())
+        {
+            using (var cmd = _db.Cmd("DELETE FROM race_tracks WHERE race=@id"))
+            {
+                deleted = await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM race_categories WHERE race=@id"))
+            {
+                deleted = await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM race_private_groups WHERE race=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM race_participants WHERE race=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM races WHERE id=@id"))
+            {
+                deleted = await cmd.Param("id", id).Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return deleted > 0 ? NoContent() : NotFound();
     }
+
+    private readonly ISqlConn _db;
 }
