@@ -42,7 +42,7 @@ export class RepositoryService {
    */
   public create<T>(route: string, body: any, skipErrors: SkipErrors = {}, contentType: string = 'application/json'): Observable<HttpResponse<T>> {
     let url = this.createCompleteRoute(route)
-    console.log("route:", url)
+    // console.log("route:", url)
     return this.http.post<T>(url, body, { headers: this.generateHeaders(contentType), observe: 'response', context: this.generateContext(skipErrors) });
   }
 
