@@ -17,38 +17,105 @@ public class SearchController : ControllerBase
     public SearchController(ISqlConn db) => _db = db;
 
     [HttpGet]
-    public ActionResult Users(string query)
+    public ActionResult Users(string? query)
     {
-        string sql = @"
-            SELECT   TOP 50 id
-            FROM     users
-            WHERE    username=@query OR FREETEXT((first_name, last_name), @query)
-            ORDER BY id
-            ";
+        (string selectSql, string orderBy) =
+            SearchSelect("users", query, "(first_name, last_name)");
 
-        using (var cmd = _db.Cmd(sql))
+        using (var cmd = _db.Cmd($"{selectSql} ORDER BY {orderBy}"))
         {
+            if (query != null)
+            {
+                cmd.Param("query", query);
+            }
+
             return Ok(cmd.Param("query", query).Rows<int>().ToArray());
         }
     }
 
     [HttpGet]
-    public ActionResult Groups(string query)
+    public ActionResult Groups(string? query)
     {
-        return Ok(new int[] { 69420 });
+        (string selectSql, string orderBy) = SearchSelect("groups", query, "name");
+
+        using (var cmd = _db.Cmd($"{selectSql} ORDER BY {orderBy}"))
+        {
+            if (query != null)
+            {
+                cmd.Param("query", query);
+            }
+
+            return Ok(cmd.Param("query", query).Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
-    public ActionResult Races(bool? filterRegistered, string? nameLike)
+    public ActionResult Races(string? query)
     {
-        return Ok(new int[] { 69420 });
+        return RaceChallengeSearch("race", query);
     }
 
     [HttpGet]
-    public ActionResult Challenges(bool? filterRegistered, string? nameLike)
+    public ActionResult Challenges(string? query)
     {
-        return Ok(new int[] { 69420 });
+        return RaceChallengeSearch("challenge", query);
     }
 
     private readonly ISqlConn _db;
+
+    [NonAction]
+    private ActionResult RaceChallengeSearch(string ty, string? query)
+    {
+        string table = "${ty}s";
+        int self = this.LoginId();
+
+        (string selectSql, string orderBy)
+            = SearchSelect(table, query, "name", selfJoin: true);
+
+        string sql = $@"
+            {selectSql}
+            LEFT JOIN {ty}_private_groups
+            ON        id = {ty}
+            LEFT JOIN group_members
+            ON        {ty}_private_groups.group_id = group_members.group_id
+            WHERE     member IS NULL OR member = @id
+            GROUP BY  {table}.id
+            ORDER BY  {orderBy}
+            ";
+
+        using (var cmd = _db.Cmd(sql))
+        {
+            if (query != null)
+            {
+                cmd.Param("query", query);
+            }
+
+            return Ok(cmd.Param("id", self).Rows<int>().ToArray());
+        }
+    }
+
+    [NonAction]
+    private (string selectSql, string orderBy) SearchSelect
+    (
+        string table,
+        string? query,
+        string column,
+        bool selfJoin = false
+    )
+    {
+        string head = "SELECT TOP 50 [key] FROM";
+
+        if (query == null)
+        {
+            return (selectSql: $"{head} {table}", orderBy: "id ASC");
+        }
+
+        string selectSql = $"{head} FROM FREETEXTTABLE({table}, {column}, @query)";
+        if (selfJoin)
+        {
+            selectSql += $"JOIN {table} ON [key] = {table}.id";
+        }
+
+        return (selectSql, orderBy: "rank DESC");
+    }
 }
