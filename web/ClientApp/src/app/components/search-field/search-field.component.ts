@@ -71,11 +71,11 @@ export class SearchFieldComponent implements OnInit {
 
     searchResponse.subscribe((resp: HttpResponse<SearchResp>) => {
       console.log("search resp:", resp)
+      this.showDropDown()
     },
       (err: HttpErrorResponse) => {
         console.log('error search:', err)
       })
-    this.showDropDown()
   }
 
   select(i: number) {

@@ -1,7 +1,7 @@
 <div class="dropdown">
 
     <div id="searchInputGroup" class="input-group">
-        <input id="searchInput" type="text" class="form-control" [disabled]="selected">
+        <input id="searchInput" type="text" class="form-control" [disabled]="selected" placeholder="Búsqueda">
         <button class="btn btn-outline-secondary" type="button" id="search-button"
             (click)="selected ? unselect() : search($event)">
             <fa-icon *ngIf="!selected" [icon]="searchIcon"></fa-icon>
