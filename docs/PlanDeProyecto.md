@@ -384,6 +384,8 @@ $$~~~~~$$
     + Se inició creando la página de gestión ed carreras y se cambiaron las interfaces de carreras para manejar correctamente las carreras enviadas por el API.
 - 02/06/2022
     + Se creó la barra de búsqueda que será utilizada para los forms que se requiera escoger grupos/carrera/retos. Se terminó la funcionalidad de imágenes en los forms de registro pero se notó que no se está autenticado a la hora de registrar por lo que se removió. Se agregó categorías y cuentas bancarias + validación al form de gestionar carreras.
+- 03/06/2022
+    + Agregada funcionalidad de imágenes en form de registro, luego me di cuenta de los malavares que tendría que hacer para que funcione realmente (hacer login immediato, put imagen, logout) y quité todo lo relacionado con agregar imagen a la hora de registrar. Luego agregué funcionalidad de imágenes a form de editar usuarios, junto con validación de 4MB y círculo de cargar mientras cargan los datos. Se mejoró la forma que nav-menu obtiene los estados de autenticación y roles. Se agregó el componente de dashboard y se dejó funcionando en teoría, aunque no se puede comprobar porque al momento de escritura no se pueden seguir otros usuarios.
 
 # Aprendizaje continuo
 
