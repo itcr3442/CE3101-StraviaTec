@@ -328,10 +328,73 @@ public class UserController : ControllerBase
             return Forbid();
         }
 
-        //TODO: Eliminar referencias en otras tablas
-        using (var cmd = _db.Cmd("DELETE FROM users WHERE id=@id"))
+        using (var txn = _db.Txn())
         {
-            await cmd.Param("id", self).Exec();
+            using (var cmd = txn.Cmd("DELETE FROM photos WHERE user_id=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM friends WHERE follower=@id OR followee=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM race_participants WHERE athlete=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM challenge_participants WHERE athlete=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM receipts WHERE athlete=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM group_members WHERE member=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            string query = @"
+                DELETE activity_tracks
+                FROM   activities
+                JOIN   activity_tracks
+                ON     activity = id
+                WHERE  athlete = @id
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            query = @"
+                DELETE challenge_activities
+                FROM   activities
+                JOIN   challenge_activities
+                ON     activity = id
+                WHERE  athlete = @id
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM activities WHERE athlete=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM users WHERE id=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
         }
 
         await HttpContext.SignOutAsync();

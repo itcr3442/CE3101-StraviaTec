@@ -118,6 +118,21 @@ public class ActivityController : ControllerBase
                 }
             }
 
+            using (var cmd = txn.Cmd("UPDATE race_participants SET activity=NULL WHERE activity=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM activity_tracks WHERE activity=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM challenge_activities WHERE activity=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
             using (var cmd = txn.Cmd("DELETE FROM activities WHERE id=@id"))
             {
                 await cmd.Param("id", id).Exec();

@@ -87,9 +87,32 @@ public class GroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
-        using (var cmd = _db.Cmd("DELETE FROM groups WHERE group_id=@id"))
+        using (var txn = _db.Txn())
         {
-            return await cmd.Param("id", id).Exec() > 0 ? NoContent() : NotFound();
+            using (var cmd = _db.Cmd("DELETE FROM challenge_private_groups WHERE group_id=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM race_private_groups WHERE group_id=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM group_members WHERE group_id=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM group_members WHERE group_id=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM groups WHERE id=@id"))
+            {
+                return await cmd.Param("id", id).Exec() > 0 ? NoContent() : NotFound();
+            }
         }
     }
 
@@ -126,18 +149,32 @@ public class MembershipController : ControllerBase
 
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
-        string query = @"
-            DELETE FROM group_members
-            WHERE       group_id=@group_id AND member=@member
-            ";
+        int self = this.LoginId();
 
-        using (var cmd = _db.Cmd(query))
+        using (var txn = _db.Txn())
         {
-            cmd.Param("group_id", id).Param("member", this.LoginId());
-            return await cmd.Exec() > 0 ? NoContent() : NotFound();
+            using (var cmd = txn.Cmd("SELECT COUNT(id) FROM groups WHERE admin=@id"))
+            {
+                if ((cmd.Param("id", id).Row<int>() ?? 0) > 0)
+                {
+                    return Forbid();
+                }
+            }
+
+            string query = @"
+                DELETE FROM group_members
+                WHERE       group_id=@group_id AND member=@member
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("group_id", id).Param("member", self);
+                return await cmd.Exec() > 0 ? NoContent() : NotFound();
+            }
         }
     }
 
