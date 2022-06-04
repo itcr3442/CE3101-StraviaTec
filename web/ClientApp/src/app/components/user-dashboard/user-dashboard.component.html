@@ -1,1 +1,89 @@
-<p>user-dashboard works!</p>
+<div class="container row">
+    <div class="row mb-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-8">Following</div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <ul class="list-group sticky-md-top" style="top: 1.5rem;">
+
+                <div class="card mb-4">
+                    <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+                    <img src="https://localhost:44442/Api/Users/0/Photo" class="center profile-image mt-2"
+                        alt="profile picture" onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+
+                    <h4 class="card-title text-center mt-2">NOMBRE</h4>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                Sigue
+                            </div>
+                            <div class="col-md-4 text-center">
+                                Seguidores
+                            </div>
+                            <div class="col-md-4 text-center">
+                                Actividades
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Última actividad
+                    </div>
+                </div>
+
+                <!-- Puedo meter más cards 👀 -->
+            </ul>
+
+        </div>
+
+        <div class="col-md-8">
+
+            <ul class="list-group">
+                <div class="card mb-4">
+                    <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+
+                    <div class="card-body">
+                        <div></div>
+                        <div class="row align-items-center mb-2">
+                            <div class="col-2" style="min-width: 120px;">
+                                <a class="thumbnail">
+                                    <img src="https://localhost:44442/Api/Users/0/Photo"
+                                        class="img-responsive profile-image ml-2" alt="profile picture"
+                                        onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+                                </a>
+                            </div>
+                            <div class="col">
+                                <h5>NOMBRE</h5>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-2 text-center" style="min-width: 120px;">
+                                <!-- símbolo de actividad -->
+                                <fa-icon [icon]="icons.cycling" size="3x"></fa-icon>
+                            </div>
+                            <div class="col">
+                                <h4 class="card-title">TIPO DE ACTIVIDAD</h4>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-2" style="min-width: 120px;"></div>
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <label for="mik">Distancia</label>
+                                        <p id='mik'>mik</p>
+                                    </div>
+                                    <div class="col-5">Tiempo</div>
+                                    <div class="col-2">Ver Ruta</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+
+        </div>
+    </div>
+
+</div>
