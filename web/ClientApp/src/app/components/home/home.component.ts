@@ -1,4 +1,4 @@
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RoleLevels } from 'src/app/constants/user.constants';
 import { AuthService } from 'src/app/services/auth.service';
@@ -13,6 +13,8 @@ export class HomeComponent {
   constructor(private authService: AuthService, private repo: RepositoryService) { }
 
   RoleLevels = RoleLevels; //  accessible in html
+
+  url: string | null = null;
 
   get authenticated(): boolean {
     return this.authService.isLoggedIn()
@@ -32,7 +34,22 @@ export class HomeComponent {
 
   test() {
     console.log("test")
-    // this.repo.getData('Categories/Available').subscribe((resp: HttpResponse))
+    if (!!this.url) {
+      URL.revokeObjectURL(this.url)
+      this.url = null
+      console.log("url borrado")
+    }
+    else {
+      this.repo.getData<File>('Users/0/Photo').subscribe((
+        resp: HttpResponse<File>) => {
+        console.log("GET photo resp:", resp)
+        if (resp.body) {
+          this.url = URL.createObjectURL(resp.body)
+          console.log("Object URL:", this.url)
+        }
+      },
+        (err: HttpErrorResponse) => console.log("Error GET foto:", err))
+    }
   }
 
   categories() {
