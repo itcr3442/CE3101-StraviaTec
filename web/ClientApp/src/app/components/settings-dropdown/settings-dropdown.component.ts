@@ -120,6 +120,7 @@ export class SettingsDropdownComponent implements OnInit {
 
               console.log("upload image resp:", resp)
               this.loading = false
+              window.location.reload()
             },
               (err: HttpErrorResponse) => {
                 console.log("Upload img error:", err)
