@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { faSearch, faTimes, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
-import { SearchResp, SearchService } from 'src/app/services/search.service';
+import { SearchService } from 'src/app/services/search.service';
 
 export enum Searchables {
   Users,
@@ -23,8 +23,8 @@ export class SearchFieldComponent implements OnInit {
   @Input() searchFor: SearchablesType = 'Users';
 
   searchable: Searchables;
-  searchResultIds: Array<number> = [69, 420, 1337]
-  searchResultNames: Array<string> = ['69', 'lechuga', 'leet']
+  searchResultIds: Array<number> = []
+  searchResultNames: Array<string> = []
   selected: boolean = false
 
   selectedId: number | null = null
@@ -54,22 +54,23 @@ export class SearchFieldComponent implements OnInit {
 
     // pain no tener match
     if (this.searchable === Searchables.Users) {
-      var searchResponse = this.searchService.searchUserPage(query, 0)
+      var searchResponse = this.searchService.searchUserPage(query)
     }
     else if (this.searchable === Searchables.Races) {
-      var searchResponse = this.searchService.searchUserPage(query, 0)
+      var searchResponse = this.searchService.searchRacesPage(query)
 
     } else if (this.searchable === Searchables.Groups) {
-      var searchResponse = this.searchService.searchUserPage(query, 0)
+      var searchResponse = this.searchService.searchGroupsPage(query)
 
     } else if (this.searchable === Searchables.Challenges) {
-      var searchResponse = this.searchService.searchUserPage(query, 0)
+      var searchResponse = this.searchService.searchChallengesPage(query)
 
     } else {
-      var searchResponse = {} as Observable<HttpResponse<SearchResp>>
+      console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
+      var searchResponse = {} as Observable<HttpResponse<number[]>>
     }
 
-    searchResponse.subscribe((resp: HttpResponse<SearchResp>) => {
+    searchResponse.subscribe((resp: HttpResponse<number[]>) => {
       console.log("search resp:", resp)
       this.showDropDown()
     },

@@ -3,7 +3,7 @@ import { HttpResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
-import { SearchResp, SearchService } from 'src/app/services/search.service';
+import { SearchService } from 'src/app/services/search.service';
 import { GroupSearchDisplay, GroupResp } from 'src/app/interfaces/group';
 import { User } from 'src/app/interfaces/user';
 import { RoleLevels } from 'src/app/constants/user.constants';
@@ -16,7 +16,7 @@ import { Country } from 'src/app/interfaces/country'
 export class UserGroupsComponent implements OnInit {
 
   searchGroupForm = new FormGroup({
-    groupName: new FormControl('', [Validators.required]),
+    groupName: new FormControl(''),
   })
 
   message: string = "";
@@ -62,14 +62,14 @@ export class UserGroupsComponent implements OnInit {
   }
 
   refreshPage(): void {
-    this.searchService.searchGroupsPage(this.searchQuery, this.currentPage)
-      .subscribe((res: HttpResponse<SearchResp>) => {
+    this.searchService.searchGroupsPage(this.searchQuery)
+      .subscribe((res: HttpResponse<number[]>) => {
         if (res.body) {
 
-          let id_list = res.body.page;
+          let id_list = res.body;
 
           this.groups_page = Array(id_list.length);
-          this.amount_of_pages = res.body.pages;
+          this.amount_of_pages = 1;
 
           console.log("onSearch id list:", id_list);
           console.log("onSearch pages:", this.amount_of_pages);

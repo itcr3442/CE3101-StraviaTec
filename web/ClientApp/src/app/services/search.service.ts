@@ -3,11 +3,6 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RepositoryService } from './repository.service';
 
-export interface SearchResp {
-  pages: number,
-  page: number[]
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -15,23 +10,23 @@ export class SearchService {
 
   constructor(private repo: RepositoryService) { }
 
-  public searchUserPage(query: string, page: number): Observable<HttpResponse<SearchResp>> {
-    let searchUserUrl = "Users/Search?query=" + query + "&page=" + page;
-    return this.repo.getData<SearchResp>(searchUserUrl)
+  public searchUserPage(query: string): Observable<HttpResponse<number[]>> {
+    let searchUserUrl = "Users/Search?query=" + query;// + "&page=" + page;
+    return this.repo.getData<number[]>(searchUserUrl)
   }
 
-  public searchRacesPage(page: number, filterRegistered: boolean , nameLike: string): Observable<HttpResponse<SearchResp>> {
-    let searchUserUrl = "Races/Search?page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
-    return this.repo.getData<SearchResp>(searchUserUrl)
+  public searchRacesPage(query: string): Observable<HttpResponse<number[]>> {
+    let searchUserUrl = "Races/Search?query=" + query; //page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
+    return this.repo.getData<number[]>(searchUserUrl)
   }
 
-  public searchChallengesPage(page: number, filterRegistered: boolean , nameLike: string): Observable<HttpResponse<SearchResp>> {
-    let searchUserUrl = "Challenges/Search?page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
-    return this.repo.getData<SearchResp>(searchUserUrl)
+  public searchChallengesPage(query: string): Observable<HttpResponse<number[]>> {
+    let searchUserUrl = "Challenges/Search?query=" + query; //page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
+    return this.repo.getData<number[]>(searchUserUrl)
   }
 
-  public searchGroupsPage(query: string, page: number): Observable<HttpResponse<SearchResp>> {
-    let searchUserUrl = "Groups/Search?query=" + query + "&query=" + page;
-    return this.repo.getData<SearchResp>(searchUserUrl)
+  public searchGroupsPage(query: string): Observable<HttpResponse<number[]>> {
+    let searchUserUrl = "Groups/Search?query=" + query; // + "&query=" + page;
+    return this.repo.getData<number[]>(searchUserUrl)
   }
 }

@@ -3,7 +3,7 @@ import { HttpResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
-import { SearchResp, SearchService } from 'src/app/services/search.service';
+import { SearchService } from 'src/app/services/search.service';
 import { Race } from 'src/app/interfaces/race';
 
 @Component({
@@ -14,7 +14,7 @@ import { Race } from 'src/app/interfaces/race';
 export class UserRacesComponent implements OnInit {
 
   searchRaceForm = new FormGroup({
-    raceName: new FormControl('', [Validators.required]),
+    raceName: new FormControl(''),
   })
 
   message: string = "";
@@ -54,14 +54,14 @@ export class UserRacesComponent implements OnInit {
   }
 
   refreshPage(): void {
-    this.searchService.searchRacesPage(this.currentPage, true, this.searchQuery)
-      .subscribe((res: HttpResponse<SearchResp>) => {
+    this.searchService.searchRacesPage(this.searchQuery)
+      .subscribe((res: HttpResponse<number[]>) => {
         if (res.body) {
 
-          let id_list = res.body.page;
+          let id_list = res.body;
 
           this.races_page = Array(id_list.length);
-          this.amount_of_pages = res.body.pages;
+          this.amount_of_pages = 1;
 
           console.log("onSearch id list:", id_list);
           console.log("onSearch pages:", this.amount_of_pages);

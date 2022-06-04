@@ -7,7 +7,7 @@ import { User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
 import { RepositoryService } from 'src/app/services/repository.service';
-import { SearchResp, SearchService } from 'src/app/services/search.service';
+import { SearchService } from 'src/app/services/search.service';
 
 
 @Component({
@@ -18,7 +18,7 @@ import { SearchResp, SearchService } from 'src/app/services/search.service';
 export class SearchUsersComponent implements OnInit {
 
   searchUserForm = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    username: new FormControl(''),
   })
 
   message: string = "";
@@ -56,14 +56,14 @@ export class SearchUsersComponent implements OnInit {
   }
 
   refreshPage(): void {
-    this.searchService.searchUserPage(this.searchQuery, this.currentPage)
-      .subscribe((res: HttpResponse<SearchResp>) => {
+    this.searchService.searchUserPage(this.searchQuery)
+      .subscribe((res: HttpResponse<number[]>) => {
         if (res.body) {
 
-          let id_list = res.body.page;
+          let id_list = res.body;
 
           this.users_page = Array(id_list.length);
-          this.amount_of_pages = res.body.pages;
+          this.amount_of_pages = 1;
 
           console.log("onSearch id list:", id_list);
           console.log("onSearch pages:", this.amount_of_pages);
@@ -88,7 +88,7 @@ export class SearchUsersComponent implements OnInit {
         }
           // No hay que manejar error porque getUser ya maneja el 404
         )
-        
+
     }
     console.log("users:", this.users_page)
   }
