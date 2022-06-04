@@ -29,10 +29,10 @@ export class UserGroupsComponent implements OnInit {
 
   //Eliminar luego de pruebas
 
-    username: string = "Xxjuanpitorico42069xX";
-    firstname: string = "Juanpito";
-    lastname: string = "Rico";
-    groupname: string = "GrupoPichudo";
+  username: string = "Xxjuanpitorico42069xX";
+  firstname: string = "Juanpito";
+  lastname: string = "Rico";
+  groupname: string = "GrupoPichudo";
 
   //
   constructor(
@@ -77,7 +77,7 @@ export class UserGroupsComponent implements OnInit {
           this.groups_id_list = id_list
           this.getPageGroups(id_list);
           this.pageButtonsSetup();
-          
+
         }
       })
   }
@@ -89,7 +89,7 @@ export class UserGroupsComponent implements OnInit {
 
     for (let j = 0; j < id_list.length; j++) {
 
-      this.authService.getGroup(id_list[j],this.authService)
+      this.authService.getGroup(id_list[j])
         .subscribe((group: GroupSearchDisplay | null) => {
           if (group) {
             console.log("getPageGroups res:", group);
@@ -139,7 +139,7 @@ export class UserGroupsComponent implements OnInit {
     this.refreshPage()
   }
 
-  onRegister(id: number){
+  onRegister(id: number) {
     /* NO TOCAR >:(
     this.registerService.register_user_groups(id)
       .subscribe((res: HttpResponse<null>) => {
