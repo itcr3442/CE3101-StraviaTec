@@ -64,4 +64,7 @@ export class HomeComponent {
     this.repo.getData<Array<number>>('Challenges/Available').subscribe((resp: HttpResponse<Array<number>>) =>
       console.log("Challenges Available:", resp.body))
   }
+  selected(event: { name: string, id: number }) {
+    console.log(`Se seleccionó el usuario: ${event.name} - ${event.id}`)
+  }
 }

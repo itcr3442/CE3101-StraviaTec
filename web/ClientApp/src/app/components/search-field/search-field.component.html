@@ -12,8 +12,15 @@
     <a class="btn" id="dropdownLinkToggle" data-bs-toggle="dropdown" data-bs-reference="parent" hidden></a>
 
     <ul class="dropdown-menu">
-        <li *ngFor="let in of counter(); let i = index"><button class="dropdown-item" type="button"
-                (click)="select(i)">{{searchResultNames[i]}}</button></li>
+        <div *ngIf="loading === true" class="spinner-border ml-2 mt-2" role="status">
+            <span class="visually-hidden">Cargando resultados...</span>
+        </div>
+        <ng-container *ngIf="loading === false">
+            <li *ngFor="let in of counter(); let i = index"><button class="dropdown-item" type="button"
+                    (click)="select(i)">{{searchResultNames[i]}}</button></li>
+        </ng-container>
+        <li *ngIf="loading === null" style="left: 1rem; right: 1rem">No se encontraron resultados para su búsqueda...
+        </li>
     </ul>
 
 </div>
