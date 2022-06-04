@@ -14,10 +14,22 @@ namespace web.Controllers;
 [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
 public class SearchController : ControllerBase
 {
+    public SearchController(ISqlConn db) => _db = db;
+
     [HttpGet]
     public ActionResult Users(string query)
     {
-        return Ok(new int[] { 69, 420 });
+        string sql = @"
+            SELECT   TOP 50 id
+            FROM     users
+            WHERE    username=@query OR FREETEXT((first_name, last_name), @query)
+            ORDER BY id
+            ";
+
+        using (var cmd = _db.Cmd(sql))
+        {
+            return Ok(cmd.Param("query", query).Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
@@ -37,4 +49,6 @@ public class SearchController : ControllerBase
     {
         return Ok(new int[] { 69420 });
     }
+
+    private readonly ISqlConn _db;
 }
