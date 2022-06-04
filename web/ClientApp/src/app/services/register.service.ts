@@ -49,7 +49,7 @@ export class RegisterService {
   public put_pfp(id: number, image: File): Observable<HttpResponse<null>> {
 
     return this.repositoryService.replace<null>(
-      `Users/${id}/Photo`, image, false, "image/jpeg")
+      `Users/${id}/Photo`, image, {}, "image/jpeg")
   }
 
 
@@ -125,7 +125,7 @@ export class RegisterService {
     let baseUrl: string = type === gpxType.Activity ? 'Activities' : 'Races';
 
     return this.repositoryService.replace<null>(
-      `${baseUrl}/${id}/Track`, gpx, false, "application/xml")
+      `${baseUrl}/${id}/Track`, gpx, {}, "application/xml")
   }
 
   public register_race(race: Race): Observable<HttpResponse<Id>> {

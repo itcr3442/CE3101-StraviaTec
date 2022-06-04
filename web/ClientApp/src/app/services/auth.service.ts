@@ -37,14 +37,14 @@ export class AuthService {
       password
     }
 
-    return this.repo.create<LoginResponse>("Users/Login", credentials, true)
+    return this.repo.create<LoginResponse>("Users/Login", credentials, { skip401: true })
   }
 
   /**
    * Remueve los cookies que mantienen la sesión del usuario y manda un request de logout al API
    */
   public logout(goToLogin: boolean = true) {
-    return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
+    return this.repo.create<null>("Users/Logout", null, { skip401: true }).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
       (error: HttpErrorResponse) => {
         console.log("Log out error:", error)
       }
@@ -182,6 +182,6 @@ export class AuthService {
   }
 
   public getFeed(): Observable<HttpResponse<number[]>> {
-    return this.repo.getData<number[]>('Feed')
+    return this.repo.getData<number[]>('Feed', { skip404: true })
   }
 }
