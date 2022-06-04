@@ -16,6 +16,8 @@ namespace web.Controllers;
 [Route("Api/Challenges")]
 public class ChallengeController : ControllerBase
 {
+    public ChallengeController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -67,8 +69,36 @@ public class ChallengeController : ControllerBase
     [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        return NoContent();
+        int deleted;
+        using (var txn = _db.Txn())
+        {
+            using (var cmd = _db.Cmd("DELETE FROM challenge_activities WHERE challenge=@id"))
+            {
+                deleted = await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM challenge_private_groups WHERE challenge=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM challenge_participants WHERE challenge=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = _db.Cmd("DELETE FROM challenges WHERE id=@id"))
+            {
+                deleted = await cmd.Param("id", id).Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return deleted > 0 ? NoContent() : NotFound();
     }
+
+    private readonly ISqlConn _db;
 }
