@@ -11,6 +11,7 @@ import { User, UserResp, resp2user } from '../interfaces/user';
 import { Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
 import { GroupResp, groupResp2GroupDisplay, GroupSearchDisplay } from '../interfaces/group';
+import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
 
 export interface LoginResponse {
   id: number,
@@ -37,6 +38,21 @@ export class AuthService {
     }
 
     return this.repo.create<LoginResponse>("Users/Login", credentials, true)
+  }
+
+  /**
+   * Remueve los cookies que mantienen la sesión del usuario y manda un request de logout al API
+   */
+  public logout(goToLogin: boolean = true) {
+    return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
+      (error: HttpErrorResponse) => {
+        console.log("Log out error:", error)
+      }
+
+    ).add(() => {
+      this.cookies.delete_cookie(UserCookieName, '/')
+      if (goToLogin) this.router.navigate(['/login'])
+    })
   }
 
   /**
@@ -95,7 +111,6 @@ export class AuthService {
         this.router.navigate(['/404'])
         return null
       }
-
     }
     ))
 
@@ -149,25 +164,24 @@ export class AuthService {
 
     }
     ))
-
   }
 
+  public getActivity(id: number): Observable<Activity | null> {
+    return this.repo.getData<ActivityResp>(`Activities/${id}`).pipe(map((resp: HttpResponse<ActivityResp>) => {
+      if (resp.body) {
+        let activityResp: ActivityResp = resp.body;
 
-
-  /**
-   * Remueve los cookies que mantienen la sesión del usuario y manda un request de logout al API
-   */
-  public logout(goToLogin: boolean = true) {
-    return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
-      (error: HttpErrorResponse) => {
-        console.log("Log out error:", error)
+        return resp2activity(activityResp)
       }
-
-    ).add(() => {
-      this.cookies.delete_cookie(UserCookieName, '/')
-      if (goToLogin) this.router.navigate(['/login'])
-    })
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
+    }
+    ))
   }
 
-
+  public getFeed(): Observable<HttpResponse<number[]>> {
+    return this.repo.getData<number[]>('Feed')
+  }
 }
