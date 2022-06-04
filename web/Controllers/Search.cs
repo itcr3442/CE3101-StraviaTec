@@ -29,7 +29,7 @@ public class SearchController : ControllerBase
                 cmd.Param("query", query);
             }
 
-            return Ok(cmd.Param("query", query).Rows<int>().ToArray());
+            return Ok(cmd.Rows<int>().ToArray());
         }
     }
 
@@ -45,7 +45,7 @@ public class SearchController : ControllerBase
                 cmd.Param("query", query);
             }
 
-            return Ok(cmd.Param("query", query).Rows<int>().ToArray());
+            return Ok(cmd.Rows<int>().ToArray());
         }
     }
 
@@ -66,7 +66,7 @@ public class SearchController : ControllerBase
     [NonAction]
     private ActionResult RaceChallengeSearch(string ty, string? query)
     {
-        string table = "${ty}s";
+        string table = $"{ty}s";
         int self = this.LoginId();
 
         (string selectSql, string orderBy)
@@ -79,7 +79,7 @@ public class SearchController : ControllerBase
             LEFT JOIN group_members
             ON        {ty}_private_groups.group_id = group_members.group_id
             WHERE     member IS NULL OR member = @id
-            GROUP BY  {table}.id
+            GROUP BY  {table}_.id{(query != null && query != "" ? ", rank" : "")}
             ORDER BY  {orderBy}
             ";
 
@@ -103,17 +103,19 @@ public class SearchController : ControllerBase
         bool selfJoin = false
     )
     {
-        string head = "SELECT TOP 50 [key] FROM";
+        string head = "SELECT TOP 50";
 
-        if (query == null)
+        if (query == null || query == "")
         {
-            return (selectSql: $"{head} {table}", orderBy: "id ASC");
+            return (selectSql: $"{head} id FROM {table} AS {table}_", orderBy: "id ASC");
         }
 
-        string selectSql = $"{head} FROM FREETEXTTABLE({table}, {column}, @query)";
+        string result = selfJoin ? $"{table}_.id" : "[key]";
+        string selectSql = $"{head} {result} FROM FREETEXTTABLE({table}, {column}, @query)";
+
         if (selfJoin)
         {
-            selectSql += $"JOIN {table} ON [key] = {table}.id";
+            selectSql += $" JOIN {table} AS {table}_ ON [key] = {result}";
         }
 
         return (selectSql, orderBy: "rank DESC");

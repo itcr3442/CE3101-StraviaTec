@@ -1023,6 +1023,9 @@ GO
 
 CREATE FULLTEXT CATALOG search;
 CREATE UNIQUE INDEX idx_users_id ON users(id);
+CREATE UNIQUE INDEX idx_groups_id ON groups(id);
+CREATE UNIQUE INDEX idx_races_id ON races(id);
+CREATE UNIQUE INDEX idx_challenges_id ON challenges(id);
 
 GO
 
@@ -1030,6 +1033,18 @@ CREATE FULLTEXT INDEX ON users
 ( first_name LANGUAGE 5130 -- es-CR
 , last_name  LANGUAGE 5130 -- es-Cr
 ) KEY INDEX idx_users_id ON search;
+
+CREATE FULLTEXT INDEX ON groups
+( name LANGUAGE 5130 -- es-CR
+) KEY INDEX idx_groups_id ON search;
+
+CREATE FULLTEXT INDEX ON races
+( name LANGUAGE 5130 -- es-CR
+) KEY INDEX idx_races_id ON search;
+
+CREATE FULLTEXT INDEX ON challenges
+( name LANGUAGE 5130 -- es-CR
+) KEY INDEX idx_challenges_id ON search;
 
 GO
 
