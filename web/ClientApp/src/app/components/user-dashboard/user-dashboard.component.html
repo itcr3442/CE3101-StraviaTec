@@ -40,47 +40,62 @@
         <div class="col-md-8">
 
             <ul class="list-group">
-                <div class="card mb-4">
-                    <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+                <ng-container *ngIf="loadingFeed===null">
+                    <p>Parece que ninguno de tus amigos ha subido una actividad, sigue a más personas!</p>
+                </ng-container>
+                <ng-container *ngIf="loadingFeed===true">
+                    <div class="spinner-border ml-6 mt-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </ng-container>
 
-                    <div class="card-body">
-                        <div></div>
-                        <div class="row align-items-center mb-2">
-                            <div class="col-2" style="min-width: 120px;">
-                                <a class="thumbnail">
-                                    <img src="https://localhost:44442/Api/Users/0/Photo"
-                                        class="img-responsive profile-image ml-2" alt="profile picture"
-                                        onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
-                                </a>
+                <ng-container *ngIf="loadingFeed===false">
+                    <div *ngFor="let ua of feedList; index as i" class="card mb-4">
+                        <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+
+                        <div class="card-body">
+                            <div></div>
+                            <div class="row align-items-center mb-2">
+                                <div class="col-2" style="min-width: 120px;">
+                                    <a class="thumbnail">
+                                        <img src="{{'https://localhost:44442/Api/Users/'+ua.activity.user}}"
+                                            class="img-responsive profile-image ml-2" alt="profile picture"
+                                            onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <h5>{{ua.user.firstName + ' ' + ua.user.lastName}}</h5>
+                                </div>
                             </div>
-                            <div class="col">
-                                <h5>NOMBRE</h5>
+                            <div class="row align-items-center">
+                                <div class="col-2 text-center" style="min-width: 120px;">
+                                    <!-- símbolo de actividad -->
+                                    <fa-icon [icon]="getIconForType(ua.activity.type)" size="3x"></fa-icon>
+                                </div>
+                                <div class="col">
+                                    <h4 class="card-title">{{this.activityTypes[ua.activity.type]}}</h4>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row align-items-center">
-                            <div class="col-2 text-center" style="min-width: 120px;">
-                                <!-- símbolo de actividad -->
-                                <fa-icon [icon]="icons.cycling" size="3x"></fa-icon>
-                            </div>
-                            <div class="col">
-                                <h4 class="card-title">TIPO DE ACTIVIDAD</h4>
-                            </div>
-                        </div>
-                        <div class="row align-items-center">
-                            <div class="col-2" style="min-width: 120px;"></div>
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col-5">
-                                        <label for="mik">Distancia</label>
-                                        <p id='mik'>mik</p>
+                            <div class="row align-items-center">
+                                <div class="col-2" style="min-width: 120px;"></div>
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <label for="distance-{{i}}">Distancia</label>
+                                            <p id="distance-{{i}}">{{ua.activity.length}}</p>
+                                        </div>
+                                        <div class="col-5">Tiempo
+                                            <label for="duration-{{i}}">Tiempo</label>
+                                            <p id="duration-{{i}}">{{getDuration(ua.activity)}}</p>
+                                        </div>
+                                        <div class="col-2">Ver Ruta
+                                        </div>
                                     </div>
-                                    <div class="col-5">Tiempo</div>
-                                    <div class="col-2">Ver Ruta</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </ng-container>
             </ul>
 
         </div>
