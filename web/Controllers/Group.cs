@@ -24,14 +24,36 @@ public class GroupController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Resp.Ref))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult New(Req.NewGroup req)
+    public async Task<ActionResult> New(Req.NewGroup req)
     {
-        if (Random.Shared.Next(2) == 0)
+        int id;
+        using (var txn = _db.Txn())
         {
-            return BadRequest();
+            string query = @"
+                INSERT INTO groups(name, admin)
+                OUTPUT INSERTED.ID
+                VALUES(@name, @admin)
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                id = cmd.Param("name", req.Name).Param("admin", req.Admin).InsertId();
+            }
+
+            query = @"
+                INSERT INTO group_members(group_id, member)
+                VALUES(@id, @admin)
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                await cmd.Param("id", id).Param("admin", req.Admin).Exec();
+            }
+
+            txn.Commit();
         }
 
-        return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
+        return CreatedAtAction(nameof(Get), new { id = id }, new Resp.Ref(id));
     }
 
     [HttpPatch("{id}")]
@@ -40,9 +62,48 @@ public class GroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult Patch(int id, Req.PatchGroup req)
+    public async Task<ActionResult> Patch(int id, Req.PatchGroup req)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
+        using (var txn = _db.Txn())
+        {
+            if (req.Name != null)
+            {
+                using (var cmd = txn.Cmd("UPDATE groups SET name=@name WHERE id=@id"))
+                {
+                    await cmd.Param("id", id).Param("name", req.Name).Exec();
+                }
+            }
+
+            if (req.Admin != null)
+            {
+                using (var cmd = txn.Cmd("UPDATE groups SET admin=@admin WHERE id=@id"))
+                {
+                    await cmd.Param("id", id).Param("admin", req.Admin).Exec();
+                }
+
+                string query = @"
+                    DELETE FROM group_members
+                    WHERE       group_id=@id AND admin=@admin
+                    ";
+
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("id", id).Param("admin", req.Admin).Exec();
+                }
+
+                query = @"
+                    INSERT INTO group_members(group_id, admin)
+                    VALUES(@id, @admin)
+                    ";
+
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("id", id).Param("admin", req.Admin).Exec();
+                }
+            }
+        }
+
+        return NoContent();
     }
 
     [HttpGet("{id}")]
