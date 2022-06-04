@@ -62,9 +62,48 @@ public class GroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult Patch(int id, Req.PatchGroup req)
+    public async Task<ActionResult> Patch(int id, Req.PatchGroup req)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
+        using (var txn = _db.Txn())
+        {
+            if (req.Name != null)
+            {
+                using (var cmd = txn.Cmd("UPDATE groups SET name=@name WHERE id=@id"))
+                {
+                    await cmd.Param("id", id).Param("name", req.Name).Exec();
+                }
+            }
+
+            if (req.Admin != null)
+            {
+                using (var cmd = txn.Cmd("UPDATE groups SET admin=@admin WHERE id=@id"))
+                {
+                    await cmd.Param("id", id).Param("admin", req.Admin).Exec();
+                }
+
+                string query = @"
+                    DELETE FROM group_members
+                    WHERE       group_id=@id AND admin=@admin
+                    ";
+
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("id", id).Param("admin", req.Admin).Exec();
+                }
+
+                query = @"
+                    INSERT INTO group_members(group_id, admin)
+                    VALUES(@id, @admin)
+                    ";
+
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("id", id).Param("admin", req.Admin).Exec();
+                }
+            }
+        }
+
+        return NoContent();
     }
 
     [HttpGet("{id}")]
