@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+// import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 // import * as gpx from 'leaflet-gpx';
 
 import { AuthGuard } from './guards/auth.guard';
@@ -67,6 +69,7 @@ import { UserDashboardComponent } from './components/user-dashboard/user-dashboa
     FormsModule,
     AppRoutingModule,
     LeafletModule,
+    FontAwesomeModule,
   ],
   providers: [AuthGuard,
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedHandlerInterceptor, multi: true },

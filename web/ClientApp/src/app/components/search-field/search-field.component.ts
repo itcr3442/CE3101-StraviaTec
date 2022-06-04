@@ -1,5 +1,6 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
+import { faSearch, faTimes, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { SearchResp, SearchService } from 'src/app/services/search.service';
 
@@ -96,6 +97,14 @@ export class SearchFieldComponent implements OnInit {
 
   get resultsAmount(): number {
     return this.searchResultNames.length
+  }
+
+  get xIcon(): IconDefinition {
+    return faTimes
+  }
+
+  get searchIcon(): IconDefinition {
+    return faSearch
   }
 
   counter() {

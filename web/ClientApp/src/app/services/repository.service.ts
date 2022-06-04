@@ -78,7 +78,7 @@ export class RepositoryService {
       ...(contentType ? { 'Content-Type': contentType } : {}),
       ...(environment.production ? {} : { "Access-Control-Allow-Origin": "*" })
     })
-    console.log("headers:", headers)
+    // console.log("headers:", headers)
     return headers
 
   }
