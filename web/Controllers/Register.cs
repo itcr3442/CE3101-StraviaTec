@@ -123,10 +123,42 @@ public class RegistrationController : ControllerBase
     [ActionName("Challenges")] // Evita colisión de prototipos
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult UnregisterChallenge(int id)
+    public async Task<ActionResult> UnregisterChallenge(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
+        int self = this.LoginId();
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                DELETE FROM challenge_participants
+                WHERE       challenge=@challenge AND athlete=@athlete
+                ";
+
+            using (var cmd = _db.Cmd(query))
+            {
+                cmd.Param("challenge", id).Param("athlete", self);
+                if (await cmd.Exec() == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            query = @"
+                DELETE challenge_activities
+                FROM   challenge_activities
+                JOIN   activities
+                ON     activity = activities.id
+                WHERE  challenge=@challenge AND athlete=@athlete
+                ";
+
+            using (var cmd = _db.Cmd(query))
+            {
+                await cmd.Param("challenge", id).Param("athlete", self).Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return NoContent();
     }
 
     private readonly ISqlConn _db;
