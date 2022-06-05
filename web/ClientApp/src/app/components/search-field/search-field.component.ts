@@ -60,60 +60,69 @@ export class SearchFieldComponent implements OnInit {
     this.searchResultNames = []
   }
 
+  get getSearchList(): Observable<HttpResponse<number[]>> {
+    let searchInput: HTMLInputElement = document.getElementById('searchInput') as HTMLInputElement
+    let query = searchInput.value
+
+    switch (this.searchable) {
+      case Searchables.Users: {
+        return this.searchService.searchUserPage(query)
+      }
+      case Searchables.Races: {
+        return this.searchService.searchRacesPage(query)
+
+      } case Searchables.Groups: {
+        return this.searchService.searchGroupsPage(query)
+
+      } case Searchables.Challenges: {
+        return this.searchService.searchChallengesPage(query)
+
+      } default: {
+        console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
+        return {} as Observable<HttpResponse<number[]>>
+      }
+    }
+  }
+
+  get getFn(): (id: number) => Observable<NameHaver | null> {
+    switch (this.searchable) {
+      case Searchables.Users: {
+        return (id: number) => {
+          return this.authService.getUser(id).pipe(map((user: User | null) => {
+            if (!!user) {
+              // console.log("Found user:", user)
+              return { name: `${user.firstName} ${user.lastName} (@${user.username})` }
+            }
+            return null
+          }
+          ))
+        }
+      } case Searchables.Races: {
+        return this.authService.getRace
+
+      } case Searchables.Groups: {
+        return this.authService.getGroup
+
+      } case Searchables.Challenges: {
+        return this.authService.getChallenge
+      }
+      default: {
+        console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
+        return (_: number) => { return of({ name: "" }) }
+      }
+    }
+  }
+
   search(e: Event) {
     this.loading = true
 
     // Para que bootstrap no cancele el evento
     e.stopPropagation()
 
-    let searchInput: HTMLInputElement = document.getElementById('searchInput') as HTMLInputElement
-    let query = searchInput.value
-
-    // pain no tener match
-    if (this.searchable === Searchables.Users) {
-      var searchResponse = this.searchService.searchUserPage(query)
-    }
-    else if (this.searchable === Searchables.Races) {
-      var searchResponse = this.searchService.searchRacesPage(query)
-
-    } else if (this.searchable === Searchables.Groups) {
-      var searchResponse = this.searchService.searchGroupsPage(query)
-
-    } else if (this.searchable === Searchables.Challenges) {
-      var searchResponse = this.searchService.searchChallengesPage(query)
-
-    } else {
-      console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
-      var searchResponse = {} as Observable<HttpResponse<number[]>>
-    }
-
-    searchResponse.subscribe((searchResp: HttpResponse<number[]>) => {
+    this.getSearchList.subscribe((searchResp: HttpResponse<number[]>) => {
       // console.log("search resp:", searchResp)
       if (!!searchResp.body) {
-        if (this.searchable === Searchables.Users) {
-          var getFn: (id: number) => Observable<NameHaver | null> = (id: number) => {
-            return this.authService.getUser(id).pipe(map((user: User | null) => {
-              if (!!user) {
-                // console.log("Found user:", user)
-                return { name: `${user.firstName} ${user.lastName} (@${user.username})` }
-              }
-              return null
-            }
-            ))
-          }
-        }
-        else if (this.searchable === Searchables.Races) {
-          var getFn: (id: number) => Observable<NameHaver | null> = this.authService.getRace
 
-        } else if (this.searchable === Searchables.Groups) {
-          var getFn: (id: number) => Observable<NameHaver | null> = this.authService.getGroup
-
-        } else if (this.searchable === Searchables.Challenges) {
-          var getFn: (id: number) => Observable<NameHaver | null> = this.authService.getChallenge
-        } else {
-          console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
-          var getFn: (id: number) => Observable<NameHaver | null> = (_: number) => { return of({ name: "" }) }
-        }
 
         this.resetSearch()
 
@@ -122,8 +131,9 @@ export class SearchFieldComponent implements OnInit {
         }
         else {
           searchResp.body.forEach((id: number, index: number) => {
-            getFn(id).subscribe((getResp: NameHaver | null) => {
+            this.getFn(id).subscribe((getResp: NameHaver | null) => {
               if (!!getResp) {
+                let status = (<any>getResp).status;
                 this.loading = false
                 this.searchResultIds.splice(index, 0, id)
                 this.searchResultNames.splice(index, 0, getResp.name)
