@@ -111,8 +111,9 @@ export class UserGroupsComponent implements OnInit {
     this.registerService.register_user_groups(id)
       .subscribe((res: HttpResponse<null>) => {
         console.log("onRegister result:", res);
+        this.message = "Se ha registrado exitosamente al grupo deseado"
       })
-    this.message
+    
     this.refreshPage()
   }
 }

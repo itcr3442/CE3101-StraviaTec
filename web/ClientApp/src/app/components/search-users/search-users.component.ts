@@ -98,18 +98,19 @@ export class SearchUsersComponent implements OnInit {
     this.registerService.follow_user(id)
       .subscribe((res: HttpResponse<null>) => {
         console.log("onFollow result:", res);
+        this.message = "Se ha seguido exitosamente al ususario deseado"
       })
     this.refreshPage()
-    this.message = "Se ha seguido exitosamente al ususario deseado"
   }
 
   onUnfollow(id: number) {
     this.registerService.unfollow_user(id)
       .subscribe((res: HttpResponse<null>) => {
         console.log("onUnfollow result:", res);
+        this.message = "Se ha dejado de seguir exitosamente al ususario deseado"
       })
     this.refreshPage()
-    this.message = "Se ha dejado de seguir exitosamente al ususario deseado"
+  
   }
 
 

@@ -90,8 +90,8 @@ export class UserChallengesComponent implements OnInit {
     this.registerService.register_user_challenges(id)
       .subscribe((res: HttpResponse<null>) => {
         console.log("onRegister result:", res);
+        this.message = "Se ha inscrito exitosamente al reto deseado."
       })
-    this.message = "Se ha inscrito exitosamente al reto deseado."
     this.refreshPage()
   }
 

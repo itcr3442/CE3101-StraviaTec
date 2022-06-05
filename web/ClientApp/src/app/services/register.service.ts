@@ -151,9 +151,15 @@ export class RegisterService {
       "Races/" + id)
   }
 
+
   public register_user_race(raceId: number, userCategory: string): Observable<HttpResponse<null>>{
    return this.repositoryService.create<null>("Races/" + raceId + "/Registration?category=" + userCategory, null)
   }
+
+  public register_race_receipt(raceId: number, receipt: File|null): Observable<HttpResponse<null>>{
+    return this.repositoryService.replace<null>("Races/" + raceId + "/Receipts", receipt, {}, "application/pdf")
+  }
+ 
 
   public register_user_challenges(challId: number): Observable<HttpResponse<null>>{
     return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
