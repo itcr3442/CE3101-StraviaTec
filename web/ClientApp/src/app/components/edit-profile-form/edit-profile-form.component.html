@@ -3,13 +3,13 @@
     <div class="row mb-3 form-group">
         <div class="col-md-3">
             <!-- Remplazar src con dirección de imagen de cada usuario cuando GET funcione -->
-            <img src="https://localhost:44442/Api/Users/0/Photo" class="profile-image" height=200 alt="profile picture"
+            <img src="{{this.baseURL +'Api/Users/0/Photo'}}" class="profile-image" height=200 alt="profile picture"
                 onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
 
         </div>
 
         <div class="col-md-9">
-            <label for="id">Cambiar foto de perfil</label>
+            <label for="pfp">Cambiar foto de perfil</label>
             <input id="pfp" class="form-control" type="file" accept="image/jpeg"
                 (change)="upload($any($event.target).files)" />
         </div>

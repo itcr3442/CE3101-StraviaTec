@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ApplicationRef, Component, Inject, OnInit } from '@angular/core';
-import { faBicycle, faHiking, faQuestionCircle, faRunning, faSwimmer, faWalking, faWater, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faBicycle, faComment, faHiking, faPaperPlane, faQuestionCircle, faRunning, faSwimmer, faWalking, faWater, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import * as L from 'leaflet-gpx';
 import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent, GPX, LatLngBoundsExpression } from 'leaflet';
 import { Observable } from 'rxjs';
@@ -9,6 +9,8 @@ import { Activity } from 'src/app/interfaces/activity';
 import { User, UserStats } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormattingService } from 'src/app/services/formatting.service';
+import { CommentResp, Comment } from 'src/app/interfaces/comment';
+import { RegisterService } from 'src/app/services/register.service';
 
 interface UserActivity {
   actId: number,
@@ -29,7 +31,9 @@ export class UserDashboardComponent implements OnInit {
     kayaking: faWater,
     hiking: faHiking,
     swimming: faSwimmer,
-    walking: faWalking
+    walking: faWalking,
+    comment: faComment,
+    send: faPaperPlane
   }
 
   feedList: Array<UserActivity> = []
@@ -58,8 +62,12 @@ export class UserDashboardComponent implements OnInit {
   gpxBounds: LatLngBoundsExpression | null = null
   loadingGpx: boolean = false;
 
+  // activityCommments: 
+  comments: Array<{ comment: Comment, userId: number }> = []
+  commentsActId: number | null = null
 
-  constructor(private authService: AuthService, private formatter: FormattingService, private appRef: ApplicationRef, @Inject('BASE_URL') baseUrl: string) {
+
+  constructor(private authService: AuthService, private registerService: RegisterService, private formatter: FormattingService, private appRef: ApplicationRef, @Inject('BASE_URL') baseUrl: string) {
     this.loadingFeed = true
     this.baseURL = baseUrl
 
@@ -200,6 +208,40 @@ export class UserDashboardComponent implements OnInit {
   onMapReady(map: LeafMap) {
     this.gpxMapReference = map
   }
+
+  postComment() {
+    let input = document.getElementById('new-comment-input') as HTMLInputElement
+    if (this.commentsActId)
+      this.registerService.post_comment(this.commentsActId, input.value).subscribe(
+        (_: HttpResponse<null>) => {
+          // console.log("post comment resp:", resp)
+          this.appRef.tick()
+        }
+      )
+  }
+
+  loadComments(actId: number) {
+    this.comments = []
+    this.commentsActId = actId
+    this.authService.getComments(actId).subscribe(
+      (commentsResp: HttpResponse<CommentResp[]>) => {
+        if (commentsResp.body) {
+          commentsResp.body.forEach((commentResp: CommentResp, index: number) => {
+            let time = new Date(commentResp.time)
+            this.comments.splice(index, 0, { comment: { user: this.userInfo!, time, content: commentResp.content }, userId: commentResp.user })
+            // this.authService.getUser(commentResp.user).subscribe(
+            //   (user: User | null) => {
+            //     if (!!user) {
+            //       this.comments.splice(index, 0, { user, time, content: commentResp.content })
+            //     }
+            //   })
+          });
+        }
+      },
+      (err: HttpErrorResponse) => console.log("Error in loadComments():", err)
+    )
+  }
+
 
   loadGpx(actId: number) {
     this.loadingGpx = true

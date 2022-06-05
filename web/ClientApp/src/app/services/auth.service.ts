@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, race } from 'rxjs';
 import { RoleLevels, RoleLevelType, } from '../constants/user.constants';
 import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
@@ -12,6 +12,7 @@ import { Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
 import { GroupResp} from '../interfaces/group';
 import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
+import { CommentResp } from '../interfaces/comment';
 
 export interface LoginResponse {
   id: number,
@@ -181,6 +182,10 @@ export class AuthService {
       }
     }
     ))
+  }
+
+  public getComments(activityId: number): Observable<HttpResponse<CommentResp[]>> {
+    return this.repo.getData<CommentResp[]>(`Activities/${activityId}/Comments`)
   }
 
   public getHistory(id: number): Observable<HttpResponse<number[]>> {

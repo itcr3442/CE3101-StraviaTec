@@ -152,21 +152,25 @@ export class RegisterService {
   }
 
 
-  public register_user_race(raceId: number, userCategory: string): Observable<HttpResponse<null>>{
-   return this.repositoryService.create<null>("Races/" + raceId + "/Registration?category=" + userCategory, null)
+  public register_user_race(raceId: number, userCategory: string): Observable<HttpResponse<null>> {
+    return this.repositoryService.create<null>("Races/" + raceId + "/Registration?category=" + userCategory, null)
   }
 
-  public register_race_receipt(raceId: number, receipt: File|null): Observable<HttpResponse<null>>{
+  public register_race_receipt(raceId: number, receipt: File | null): Observable<HttpResponse<null>> {
     return this.repositoryService.replace<null>("Races/" + raceId + "/Receipts", receipt, {}, "application/pdf")
   }
- 
 
-  public register_user_challenges(challId: number): Observable<HttpResponse<null>>{
+
+  public register_user_challenges(challId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
-   }
+  }
 
   public register_user_groups(groupId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Groups/" + groupId + "/Registration", null)
+  }
+
+  public post_comment(activityId: number, content: string): Observable<HttpResponse<null>> {
+    return this.repositoryService.create<null>(`Activities/${activityId}/Comments`, { content: content })
   }
 
 }
