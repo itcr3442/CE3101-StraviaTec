@@ -133,20 +133,30 @@ public class ReceiptController : ControllerBase
 {
     public ReceiptController(ISqlConn db) => _db = db;
 
-    [HttpPost]
+    [HttpPut]
+    [FileUpload(MediaTypeNames.Application.Pdf)]
     [Consumes(MediaTypeNames.Application.Pdf)]
     [RequestSizeLimit(1048576)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult New(int raceId, IFormFile receipt)
+    public async Task<ActionResult> Put(int raceId)
     {
-        if (Random.Shared.Next(3) == 0)
+        int self = this.LoginId();
+
+        string query = @"
+            UPDATE receipts
+            SET    receipt=@receipt
+            WHERE  race=@race AND athlete=@athlete
+            ";
+
+        int modified;
+        using (var cmd = _db.Cmd(query))
         {
-            return Conflict();
+            cmd.Param("race", raceId).Param("athlete", self).Param("receipt", Request.Body);
+            modified = await cmd.Exec();
         }
 
-        return CreatedAtAction(nameof(Get), new { raceId = raceId, userId = 69 });
+        return modified > 0 ? NoContent() : NotFound();
     }
 
     [HttpGet]
