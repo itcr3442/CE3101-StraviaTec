@@ -16,7 +16,7 @@ import { Id } from "src/app/interfaces/id";
 })
 export class RegisterFormComponent implements OnInit {
   registerForm = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required, Validators.pattern('[a-z]+')]),
     password: new FormControl('', [Validators.required]),
     firstName: new FormControl('', [Validators.required]),
     lastName: new FormControl('', [Validators.required]),
@@ -79,7 +79,7 @@ export class RegisterFormComponent implements OnInit {
   validateForm(): boolean {
     //validate date
     if (!this.registerForm.valid) {
-      this.message = "Por favor verifique que ingresó todos los campos correctamente";
+      this.message = "Por favor verifique que ingresó todos los campos correctamente y el usuario es una cadena de solo letras minúsuculas.";
       return false
     }
     if (this.birthDate > this.maxDate || this.birthDate < this.minDate) {
