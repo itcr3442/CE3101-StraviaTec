@@ -840,12 +840,12 @@ CREATE TABLE activity_types
 
 CREATE TABLE activities
 (
-  id         int      NOT NULL IDENTITY PRIMARY KEY,
-  athlete    int      NOT NULL REFERENCES users(id),
-  start_time datetime NOT NULL,
-  end_time   datetime NOT NULL,
-  type       int      NOT NULL REFERENCES activity_types(id),
-  length     decimal  NOT NULL,
+  id         int            NOT NULL IDENTITY PRIMARY KEY,
+  athlete    int            NOT NULL REFERENCES users(id),
+  start_time datetime       NOT NULL,
+  end_time   datetime       NOT NULL,
+  type       int            NOT NULL REFERENCES activity_types(id),
+  length     decimal(18, 9) NOT NULL,
 
   CHECK(start_time < end_time),
 );
@@ -897,11 +897,11 @@ CREATE TABLE sponsor_logos
 
 CREATE TABLE races
 (
-  id      int         NOT NULL IDENTITY PRIMARY KEY,
-  name    varchar(64) NOT NULL UNIQUE,
-  on_date date        NOT NULL,
-  type    int         NOT NULL REFERENCES activity_types(id),
-  price   decimal     NOT NULL,
+  id      int            NOT NULL IDENTITY PRIMARY KEY,
+  name    varchar(64)    NOT NULL UNIQUE,
+  on_date date           NOT NULL,
+  type    int            NOT NULL REFERENCES activity_types(id),
+  price   decimal(18, 9) NOT NULL,
 
   CHECK(LEN(name) > 0),
   CHECK(price > 0),
@@ -975,12 +975,12 @@ CREATE INDEX idx_bank_accounts_race ON bank_accounts(race);
 
 CREATE TABLE challenges
 (
-  id         int         NOT NULL IDENTITY PRIMARY KEY,
-  name       varchar(64) NOT NULL UNIQUE,
-  start_time datetime    NOT NULL,
-  end_time   datetime    NOT NULL,
-  type       int         NOT NULL REFERENCES activity_types(id),
-  goal       decimal     NOT NULL,
+  id         int            NOT NULL IDENTITY PRIMARY KEY,
+  name       varchar(64)    NOT NULL UNIQUE,
+  start_time datetime       NOT NULL,
+  end_time   datetime       NOT NULL,
+  type       int            NOT NULL REFERENCES activity_types(id),
+  goal       decimal(18, 9) NOT NULL,
 
   CHECK(LEN(name) > 0),
   CHECK(start_time < end_time),
