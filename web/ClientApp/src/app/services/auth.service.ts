@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { User, UserResp, resp2user, UserStats } from '../interfaces/user';
 import { Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
-import { GroupResp, groupResp2GroupDisplay, GroupSearchDisplay } from '../interfaces/group';
+import { GroupResp} from '../interfaces/group';
 import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
 
 export interface LoginResponse {
@@ -152,12 +152,12 @@ export class AuthService {
 
   }
 
-  public getGroup(id: number): Observable<GroupSearchDisplay | null> {
+  public getGroup(id: number): Observable<GroupResp | null> {
     return this.repo.getData<GroupResp>(`Groups/${id}`).pipe(map((resp: HttpResponse<GroupResp>) => {
       if (resp.body) {
         let groupResp: GroupResp = resp.body;
 
-        return groupResp2GroupDisplay(groupResp, this)
+        return groupResp
       }
       else {
         this.router.navigate(['/404'])

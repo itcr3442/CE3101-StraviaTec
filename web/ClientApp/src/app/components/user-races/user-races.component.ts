@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
 import { SearchService } from 'src/app/services/search.service';
-import { Race } from 'src/app/interfaces/race';
+import { getUserCategory, Race } from 'src/app/interfaces/race';
+import { User } from 'src/app/interfaces/user';
+import { ActivityType } from 'src/app/constants/activity.constants';
+import { RaceCategory, RaceStatus } from 'src/app/constants/races.constants';
 
 @Component({
   selector: 'app-user-races',
@@ -17,13 +20,19 @@ export class UserRacesComponent implements OnInit {
     raceName: new FormControl(''),
   })
 
+  raceFileForm = new FormGroup({
+  })
+
   message: string = "";
+  modalMessage: string = "";
   currentPage: number = 1;
   races_id_list: number[] = [];
   races_page: Race[] = [];
   amount_of_pages: number = 0;
   isFirstPage: boolean = true;
   isLastPage: boolean = true;
+  modalRaceId: number = 0;
+  pdfFile: File | null = null
 
   test = new Date();
 
@@ -42,6 +51,7 @@ export class UserRacesComponent implements OnInit {
 
   onSearch() {
     this.message = "";
+    this.modalMessage = ""
     this.currentPage = 1;
     this.races_page = [];
     this.amount_of_pages = 0;
@@ -68,7 +78,6 @@ export class UserRacesComponent implements OnInit {
 
           this.races_id_list = id_list
           this.getPageRaces(id_list);
-          this.pageButtonsSetup();
         }
       })
   }
@@ -83,58 +92,80 @@ export class UserRacesComponent implements OnInit {
             this.races_page[j] = race;
             console.log(this.races_page[j]);
           }
-        }
-          // No hay que manejar error porque getUser ya maneja el 404
-        )
+        })
     }
+   /* CARRERA DE PRUEBA PARA PROBAR MODAL Y DEMÁS
+    this.races_id_list = [1]
+    this.races_page = [{  
+      name: "-",
+      day: new Date(),
+      type: ActivityType.Cycling,
+      privateGroups: [1],
+      price: 69420,
+      status: RaceStatus.WaitingConfirmation,
+      categories: [RaceCategory.Elite]}];
+    */
+
     console.log("races:", this.races_page)
   }
 
-  pageButtonsSetup() {
-    if (this.amount_of_pages == 1 || this.amount_of_pages == 0) {
-      this.isFirstPage = true;
-      this.isLastPage = true;
-    } else if (this.currentPage == 1) {
-      this.isFirstPage = true;
-      this.isLastPage = false;
-    } else if (this.amount_of_pages - this.currentPage == 0) {
-      this.isFirstPage = false;
-      this.isLastPage = true;
+  onRegister(raceId: number){
+    this.modalRaceId = raceId
+    this.pdfFile = null
+    console.log("currentRaceID:", this.modalRaceId)
+  }
+
+  onConfirmRegister() {
+    this.modalMessage = ""
+    if (this.pdfFile !== null){
+        this.authService.getUser(0)
+        .subscribe((user: User | null) => {
+        if (user) {
+          this.registerService.register_user_race(this.modalRaceId,getUserCategory(user.age))
+          .subscribe((res: HttpResponse<null>) => {
+            console.log("registerUserToRaceResp:", res)
+
+            this.registerService.register_race_receipt(this.modalRaceId,this.pdfFile)
+            .subscribe((res2: HttpResponse<null>) =>{
+              this.hideModal()
+              this.message = "Se ha inscrito correctamente a la carrera deseada"
+            })
+            
+          })
+        }},
+        (error: 409) => {
+          console.log("Conflict error:", error)
+          this.hideModal()
+          this.message = "No es posible inscribirse a esta carrera ya que no se cumplen con los requisitos de edad."
+        }
+        )
     } else {
-      this.isFirstPage = false;
-      this.isLastPage = false;
+      this.modalMessage = "Ingrese un archivo pdf válido."
     }
   }
 
-  onPreviousPage() {
-    this.currentPage = this.currentPage - 1;
-    if (this.currentPage == 0) {
-      this.currentPage = 1;
-      this.pageButtonsSetup();
-      return
+  hideModal() {
+    let myModalEl: HTMLElement | null = document.getElementById('inscriptionModal');
+    if (!!myModalEl) {
+      // @ts-ignore
+      let modal: bootstrap.Modal | null = bootstrap.Modal.getInstance(myModalEl)
+      // console.log("modal:", modal)
+      modal?.hide();
+    }
+  }
+
+  upload(files: FileList) {
+    this.pdfFile = files[0]
+  }
+
+  isRegistered(raceStatus: RaceStatus){
+    if (raceStatus == RaceStatus.NotRegistered){
+      return false
+    } else {
+      return true
     }
 
-    this.refreshPage()
-  }
+  }  
 
-  onNextPage() {
-    this.currentPage = this.currentPage + 1;
-    if (this.currentPage > this.amount_of_pages) {
-      this.currentPage = this.amount_of_pages;
-      this.pageButtonsSetup();
-      return
-    }
-
-    this.refreshPage()
-  }
-
-  onRegister(id: number) {
-    /* testing no touch >:(
-    this.registerService.register_race(id)
-      .subscribe((res: HttpResponse<null>) => {
-        console.log("onFollow result:", res);
-      })
-    */
-  }
 
 }

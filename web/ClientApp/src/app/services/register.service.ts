@@ -12,7 +12,7 @@ import { HttpResponse } from '@angular/common/http';
 import { Id } from '../interfaces/id';
 import { ActivityType } from '../constants/activity.constants';
 import { Race } from '../interfaces/race';
-import { RaceCategory } from '../constants/races.constants';
+import { RaceCategory, RaceCategoryType } from '../constants/races.constants';
 
 export enum gpxType {
   Race,
@@ -151,15 +151,19 @@ export class RegisterService {
       "Races/" + id)
   }
 
-  /* TESTING NO TOCAR
-  public register_user_race(raceId: number): Observable<HttpResponse<null>>{
-   return this.repositoryService.create<null>("Races/" + raceId + /Registration, null)
-  }
-  */
 
-  public register_user_challenges(challId: number): Observable<HttpResponse<null>> {
-    return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
+  public register_user_race(raceId: number, userCategory: string): Observable<HttpResponse<null>>{
+   return this.repositoryService.create<null>("Races/" + raceId + "/Registration?category=" + userCategory, null)
   }
+
+  public register_race_receipt(raceId: number, receipt: File|null): Observable<HttpResponse<null>>{
+    return this.repositoryService.replace<null>("Races/" + raceId + "/Receipts", receipt, {}, "application/pdf")
+  }
+ 
+
+  public register_user_challenges(challId: number): Observable<HttpResponse<null>>{
+    return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
+   }
 
   public register_user_groups(groupId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Groups/" + groupId + "/Registration", null)

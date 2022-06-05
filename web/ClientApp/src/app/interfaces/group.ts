@@ -11,11 +11,12 @@ export interface GroupResp {
 
 export interface GroupSearchDisplay {
     name: string,
-    admin: User,
+    adminDisplay: string,
     members: number[],
     amMember: boolean,
 }
 
+/*
 export function groupResp2GroupDisplay(groupResp: GroupResp, authService: AuthService): GroupSearchDisplay {
     let groupAdmin!: User;
     authService.getUser(groupResp.admin)
@@ -27,12 +28,12 @@ export function groupResp2GroupDisplay(groupResp: GroupResp, authService: AuthSe
 
     return {
         name: groupResp.name,
-        admin: groupAdmin,
+        admin: groupAdmin.firstName + " " + groupAdmin.lastName,
         members: groupResp.members,
         amMember: groupResp.amMember,
     }
 
 }
-
+*/
 
 

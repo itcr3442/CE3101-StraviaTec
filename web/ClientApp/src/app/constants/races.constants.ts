@@ -18,3 +18,4 @@ export enum RaceCategory {
 }
 
 export declare type RaceCategoryType = keyof typeof RaceCategory;
+
