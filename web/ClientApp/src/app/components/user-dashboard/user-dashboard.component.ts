@@ -1,7 +1,8 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ApplicationRef, Component, Inject, OnInit } from '@angular/core';
 import { faBicycle, faHiking, faQuestionCircle, faRunning, faSwimmer, faWalking, faWater, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent } from 'leaflet';
+import * as L from 'leaflet-gpx';
+import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent, GPX, LatLngBoundsExpression } from 'leaflet';
 import { Observable } from 'rxjs';
 import { ActivityType } from 'src/app/constants/activity.constants';
 import { Activity } from 'src/app/interfaces/activity';
@@ -10,6 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { FormattingService } from 'src/app/services/formatting.service';
 
 interface UserActivity {
+  actId: number,
   user: User,
   activity: Activity
 }
@@ -30,9 +32,9 @@ export class UserDashboardComponent implements OnInit {
     walking: faWalking
   }
 
-  idList: Array<number> = []
   feedList: Array<UserActivity> = []
-  selfList: Array<Activity> = []
+  // Lista de layers gpx donde corresponden con las personas cargadas
+  selfList: Array<{ actId: number, activity: Activity }> = []
   loadingFeed: boolean;
 
   userInfo: User | null = null
@@ -53,6 +55,8 @@ export class UserDashboardComponent implements OnInit {
   gpxMapReference: LeafMap | null = null
   // layers del mapa, se usa solo para meter el layer del gpx
   gpxLayer: Layer[] = [];
+  gpxBounds: LatLngBoundsExpression | null = null
+  loadingGpx: boolean = false;
 
 
   constructor(private authService: AuthService, private formatter: FormattingService, private appRef: ApplicationRef, @Inject('BASE_URL') baseUrl: string) {
@@ -66,6 +70,19 @@ export class UserDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.refreshUser()
     this.refreshStats()
+
+    var myModalEl: HTMLElement = document.getElementById('routeModal') as HTMLElement
+
+    let self = this
+    myModalEl.addEventListener('shown.bs.modal', function () {
+      setTimeout(function () {
+        if (self.gpxMapReference) {
+          self.gpxMapReference.invalidateSize();
+          if (self.gpxBounds)
+            self.gpxMapReference.fitBounds(self.gpxBounds);
+        }
+      }, 1);
+    });
   }
 
   getIconForType(type: ActivityType): IconDefinition {
@@ -129,9 +146,6 @@ export class UserDashboardComponent implements OnInit {
     )
   }
 
-
-
-
   refreshSelf(): void {
     this.authService.getHistory(0).subscribe(
       (resp: HttpResponse<number[]>) => {
@@ -140,7 +154,7 @@ export class UserDashboardComponent implements OnInit {
           resp.body.forEach((actId: number, index: number) => {
             this.authService.getActivity(actId).subscribe((activity: Activity | null) => {
               if (activity) {
-                this.selfList.splice(index, 0, activity)
+                this.selfList.splice(index, 0, { actId, activity })
                 this.rerenderFeed()
               }
             })
@@ -161,8 +175,7 @@ export class UserDashboardComponent implements OnInit {
               if (activity) {
                 this.authService.getUser(activity.user).subscribe((user: User | null) => {
                   if (user) {
-                    this.feedList.splice(index, 0, { user, activity })
-                    this.idList.splice(index, 0, actId)
+                    this.feedList.splice(index, 0, { user, activity, actId })
                     this.rerenderFeed()
                   }
                 })
@@ -186,7 +199,23 @@ export class UserDashboardComponent implements OnInit {
   }
 
   loadGpx(actId: number) {
-
+    this.gpxLayer = []
+    this.gpxBounds = null
+    if (!!this.gpxMapReference) {
+      let self = this
+      // @ts-ignore
+      let layer = new L.GPX(`${this.baseURL}Api/Activities/${actId}/Track`, {
+        async: true,
+        marker_options: {
+          startIconUrl: 'assets/gpx-icons/pin-icon-start.png',
+          endIconUrl: 'assets/gpx-icons/pin-icon-end.png',
+          shadowUrl: 'assets/gpx-icons/pin-shadow.png'
+        }
+      }).on('loaded', function (e: LayerEvent) {
+        self.gpxBounds = e.target.getBounds()
+      })
+      this.gpxLayer.push(layer)
+    }
   }
 
 }

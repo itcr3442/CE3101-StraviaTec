@@ -79,7 +79,8 @@
                                 </div>
                                 <div class="row">
                                     <a class="btn btn-success" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#routeModal">Ver ruta</a>
+                                        data-bs-target="#routeModal"
+                                        (click)="loadGpx(this.userStats.latestActivity)">Ver ruta</a>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +143,7 @@
                                         </div>
                                         <div class="col">
                                             <a class="btn btn-success" type="button" data-bs-toggle="modal"
-                                                data-bs-target="#routeModal" (click)="loadGpx(idList[i])">Ver
+                                                data-bs-target="#routeModal" (click)="loadGpx(ua.actId)">Ver
                                                 Ruta</a>
                                         </div>
                                         <!-- <div class="col"></div> -->
@@ -160,34 +161,35 @@
                         <p>Parece que no has registrado ninguna actividad, <a [routerLinkActive]="['link-active']"
                                 [routerLink]="['/register=act']">ve a registrar una!</a></p>
                     </ng-container>
-                    <div *ngFor="let activity of selfList; index as i" class="card mb-4">
+                    <div *ngFor="let a of selfList; index as i" class="card mb-4">
                         <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
 
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-2 text-center" style="min-width: 120px;">
                                     <!-- símbolo de actividad -->
-                                    <fa-icon [icon]="getIconForType(activity.type)" size="3x">
+                                    <fa-icon [icon]="getIconForType(a.activity.type)" size="3x">
                                     </fa-icon>
                                 </div>
 
                                 <div class="col">
                                     <div class="row">
                                         <h4 class="card-title">
-                                            {{this.activityTypes[activity.type]}}</h4>
+                                            {{this.activityTypes[a.activity.type]}}</h4>
 
                                     </div>
                                     <div class=" row">
                                         <div class="col-5">
                                             <label for="distance-{{i}}">Distancia</label>
-                                            <p id="distance-{{i}}">{{activity.length}}</p>
+                                            <p id="distance-{{i}}">{{a.activity.length}}</p>
                                         </div>
                                         <div class="col-5">
                                             <label for="duration-{{i}}">Tiempo</label>
-                                            <p id="duration-{{i}}">{{getDuration(activity)}}</p>
+                                            <p id="duration-{{i}}">{{getDuration(a.activity)}}</p>
                                         </div>
                                         <div class="col-2"><a class="btn btn-success" type="button"
-                                                data-bs-toggle="modal" data-bs-target="#routeModal">Ver
+                                                data-bs-toggle="modal" data-bs-target="#routeModal"
+                                                (click)="loadGpx(a.actId)">Ver
                                                 ruta</a>
                                         </div>
                                     </div>
@@ -204,7 +206,7 @@
 
 </div>
 
-<hr class="bg-danger border-2 border-top border-danger">
+<hr class=" bg-danger border-2 border-top border-danger">
 
 <ng-template #loadingSpinner>
     <div class="spinner-border ml-6 mt-2" role="status">
@@ -217,7 +219,8 @@
     <div class="modal-dialog">
         <div class="modal-content" id="route-modal">
             <div class="modal-header">
-                <h5 class="modal-title" id="editProfileLabel">Mapa GPX</h5>
+                <h5 class="modal-title" id="editProfileLabel">Mapa GPX
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
