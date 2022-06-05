@@ -178,7 +178,27 @@ public class ReceiptController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Download(int raceId, int userId)
     {
-        return File(Stream.Null, MediaTypeNames.Application.Pdf, "recibo.pdf");
+        (int effective, int self) = this.OrSelf(userId);
+
+        string query = @"
+            SELECT receipt
+            FROM   receipts
+            WHERE  race=@race AND athlete=@athlete
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            using (var stream = cmd.Param("race", raceId).Param("athlete", effective).Stream())
+            {
+                var receipt = stream.Take();
+                if (receipt == null)
+                {
+                    return NotFound();
+                }
+
+                return File(receipt, MediaTypeNames.Application.Pdf);
+            }
+        }
     }
 
     private readonly ISqlConn _db;

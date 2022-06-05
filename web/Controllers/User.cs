@@ -412,7 +412,7 @@ public class PhotoController : ControllerBase
 
     [HttpGet]
     [Produces(MediaTypeNames.Image.Jpeg)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
