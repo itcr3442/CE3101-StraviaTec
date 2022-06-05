@@ -82,7 +82,6 @@ export class EditProfileFormComponent implements OnInit {
   }
 
   clearImage() {
-    console.log("Clearing")
     if (this.imageURL) URL.revokeObjectURL(this.imageURL)
     this.imageFile = null
 
@@ -91,11 +90,11 @@ export class EditProfileFormComponent implements OnInit {
   }
 
   validateForm(): boolean {
-    //validate date
     if (!this.registerForm.valid) {
-      this.message = "Por favor verifique que ingresó todos los campos correctamente";
+      this.message = "Por favor verifique que ingresó todos los campos correctamente.";
       return false
     }
+    //validate date
     if (this.birthDate > this.maxDate || this.birthDate < this.minDate) {
       this.message = "Por favor introduzca una fecha de nacimiento válida. Solo se permiten usuarios mayores de 13 años."
       return false
