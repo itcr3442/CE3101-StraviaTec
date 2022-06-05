@@ -196,7 +196,7 @@ public class MembershipController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> New(int id, Req.NewGroup req)
+    public async Task<ActionResult> New(int id)
     {
         string query = @"
             INSERT INTO group_members(group_id, member)
