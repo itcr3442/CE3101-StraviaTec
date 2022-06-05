@@ -6,6 +6,8 @@ import { SearchService } from 'src/app/services/search.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/interfaces/user';
 import { map } from 'rxjs/operators';
+import { RaceStatus, RaceStatusType } from 'src/app/constants/races.constants';
+import { ChallengeStatus, ChallengeStatusType } from 'src/app/constants/challengers.constants';
 
 interface NameHaver {
   name: string
@@ -28,6 +30,9 @@ declare type SearchablesType = keyof typeof Searchables
 export class SearchFieldComponent implements OnInit {
 
   @Input() searchFor: SearchablesType = 'Users';
+  @Input() raceStatusFilter: RaceStatusType | undefined = undefined;
+  @Input() challStatusFilter: ChallengeStatusType | undefined = undefined
+  @Input() groupStatusFilter:  boolean | undefined = undefined;
   @Output() selectEvent = new EventEmitter<{ name: string, id: number }>();
 
   searchable: Searchables;
@@ -133,10 +138,70 @@ export class SearchFieldComponent implements OnInit {
           searchResp.body.forEach((id: number, index: number) => {
             this.getFn(id).subscribe((getResp: NameHaver | null) => {
               if (!!getResp) {
-                let status = (<any>getResp).status;
-                this.loading = false
-                this.searchResultIds.splice(index, 0, id)
-                this.searchResultNames.splice(index, 0, getResp.name)
+                switch (this.searchable){
+                  case Searchables.Races:{
+                    let status = (<any>getResp).status;
+                    switch (this.raceStatusFilter){
+                      case undefined:{
+                        this.loading = false
+                        this.searchResultIds.splice(index, 0, id)
+                        this.searchResultNames.splice(index, 0, getResp.name)
+                        break
+                      }
+                      case status: {
+                        this.loading = false
+                        this.searchResultIds.splice(index, 0, id)
+                        this.searchResultNames.splice(index, 0, getResp.name)
+                        break
+                      } default:{
+                      }
+                    }
+                    break
+                  }
+                  case Searchables.Challenges:{
+                    let status = (<any>getResp).status;
+                    switch (this.challStatusFilter){
+                      case undefined:{
+                        this.loading = false
+                        this.searchResultIds.splice(index, 0, id)
+                        this.searchResultNames.splice(index, 0, getResp.name)
+                        break
+                      }
+                      case status: {
+                        this.loading = false
+                        this.searchResultIds.splice(index, 0, id)
+                        this.searchResultNames.splice(index, 0, getResp.name)
+                        break
+                      } default:{
+                      }
+                    }
+                    break
+                  }
+                  case Searchables.Groups:{
+                    let status = (<any>getResp).amMember;
+                    switch (this.challStatusFilter){
+                      case undefined:{
+                        this.loading = false
+                        this.searchResultIds.splice(index, 0, id)
+                        this.searchResultNames.splice(index, 0, getResp.name)
+                        break
+                      }
+                      case status: {
+                        this.loading = false
+                        this.searchResultIds.splice(index, 0, id)
+                        this.searchResultNames.splice(index, 0, getResp.name)
+                        break
+                      } default:{
+                      }
+                    }
+                    break
+                  }
+                  default:{
+                    this.loading = false
+                    this.searchResultIds.splice(index, 0, id)
+                    this.searchResultNames.splice(index, 0, getResp.name)
+                  }
+                }
               }
             })
           })
