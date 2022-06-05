@@ -216,6 +216,8 @@ public class ConfirmationController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Accept(int raceId, int userId)
     {
+        (int effective, int self) = this.OrSelf(userId);
+
         using (var txn = _db.Txn())
         {
             string query = @"
@@ -227,7 +229,7 @@ public class ConfirmationController : ControllerBase
             int? category;
             using (var cmd = txn.Cmd(query))
             {
-                category = cmd.Param("race", raceId).Param("athlete", userId).Row<int>();
+                category = cmd.Param("race", raceId).Param("athlete", effective).Row<int>();
             }
 
             if (category == null)
@@ -242,7 +244,7 @@ public class ConfirmationController : ControllerBase
 
             using (var cmd = txn.Cmd(query))
             {
-                cmd.Param("race", raceId).Param("athlete", userId).Param("category", category);
+                cmd.Param("race", raceId).Param("athlete", effective).Param("category", category);
                 await cmd.Exec();
             }
 
@@ -255,6 +257,8 @@ public class ConfirmationController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Reject(int raceId, int userId)
     {
+        (int effective, int self) = this.OrSelf(userId);
+
         string query = @"
             DELETE FROM receipts
             WHERE       race=@race AND athlete=@athlete
@@ -262,7 +266,7 @@ public class ConfirmationController : ControllerBase
 
         using (var cmd = _db.Cmd(query))
         {
-            cmd.Param("race", raceId).Param("athlete", userId);
+            cmd.Param("race", raceId).Param("athlete", effective);
             return await cmd.Exec() > 0 ? NoContent() : NotFound();
         }
     }
