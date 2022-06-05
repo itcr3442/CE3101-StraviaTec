@@ -131,7 +131,7 @@ public class ProgressController : ControllerBase
             {
                 cmd.Param("race", id).Param("athlete", self);
 
-                (int, int? activity)? row = cmd.Row<(int, int)>();
+                (int, int? activity)? row = cmd.Row<(int, int?)>();
                 if (row == null)
                 {
                     return NotFound();
@@ -160,8 +160,57 @@ public class ProgressController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Challenges(int id, int activity)
+    public async Task<ActionResult> Challenges(int id, int activity)
     {
+        int self = this.LoginId();
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                SELECT     goal, SUM(length), MAX(seq_no)
+                FROM       challenge_activities
+                JOIN       activities
+                ON         activity = id
+                RIGHT JOIN challenge_participants
+                ON         activities.athlete = challenge_participants.athlete
+                JOIN       challenges
+                ON         challenge_participants.challenge = challenges.id
+                WHERE      challenge_participants.athlete = @athlete
+                GROUP BY   challenges.id, goal
+                HAVING     challenges.id = @challenge
+                ";
+
+            (int goal, int? progress, int? seqNo)? row;
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("challenge", id).Param("athlete", self);
+                row = cmd.Row<(int, int?, int?)>();
+            }
+
+            if (row == null)
+            {
+                return NotFound();
+            } else if((row.Value.progress ?? 0) >= row.Value.goal)
+            {
+                return Conflict();
+            }
+
+            query = @"
+                INSERT INTO challenge_activities(challenge, activity, seq_no)
+                VALUES(@challenge, @activity, @seq)
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("challenge", id)
+                   .Param("activity", activity)
+                   .Param("seq", (row.Value.seqNo ?? -1) + 1);
+
+                await cmd.Exec();
+            }
+
+            txn.Commit();
+        }
+
         return NoContent();
     }
 
