@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { countries, maxImageSize } from 'src/app/constants/user.constants';
 import { Country } from 'src/app/interfaces/country';
@@ -27,10 +27,13 @@ export class EditProfileFormComponent implements OnInit {
   imageURL: string | null = null;
   imageFile: File | null = null;
 
+  baseURL: string;
   @Input() user: User | null = null;
 
-  constructor(
+  constructor(@Inject('BASE_URL') baseUrl: string
   ) {
+    this.baseURL = baseUrl
+
     let countryObject = countries.getNames("es", { select: "official" })
     this.countryList = Object.entries(countryObject).map(([key, val]) => { return { alpha2: key, official: <string>val, flag: getUnicodeFlagIcon(key) } })
 

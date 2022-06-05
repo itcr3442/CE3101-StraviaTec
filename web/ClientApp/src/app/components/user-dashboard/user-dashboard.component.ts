@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { ApplicationRef, Component, OnInit } from '@angular/core';
+import { ApplicationRef, Component, Inject, OnInit } from '@angular/core';
 import { faBicycle, faHiking, faQuestionCircle, faRunning, faSwimmer, faWalking, faWater, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { registerLocale } from 'i18n-iso-countries';
+import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent } from 'leaflet';
 import { Observable } from 'rxjs';
 import { ActivityType } from 'src/app/constants/activity.constants';
 import { Activity } from 'src/app/interfaces/activity';
@@ -30,6 +30,7 @@ export class UserDashboardComponent implements OnInit {
     walking: faWalking
   }
 
+  idList: Array<number> = []
   feedList: Array<UserActivity> = []
   selfList: Array<Activity> = []
   loadingFeed: boolean;
@@ -38,8 +39,25 @@ export class UserDashboardComponent implements OnInit {
   userStats: UserStats | null = null
   lastActivity: Activity | null = null
 
-  constructor(private authService: AuthService, private formatter: FormattingService, private appRef: ApplicationRef) {
+  baseURL: string;
+
+  // opciones para mapa inicial, no editar
+  options = {
+    layers: [
+      tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '...' })
+    ],
+    zoom: 15,
+    center: latLng(9.855319, -83.910799)
+  };
+  // Referencia al mapa
+  gpxMapReference: LeafMap | null = null
+  // layers del mapa, se usa solo para meter el layer del gpx
+  gpxLayer: Layer[] = [];
+
+
+  constructor(private authService: AuthService, private formatter: FormattingService, private appRef: ApplicationRef, @Inject('BASE_URL') baseUrl: string) {
     this.loadingFeed = true
+    this.baseURL = baseUrl
 
     this.refreshFeed()
     this.refreshSelf()
@@ -138,16 +156,13 @@ export class UserDashboardComponent implements OnInit {
     this.authService.getFeed().subscribe(
       (feedResp: HttpResponse<number[]>) => {
         if (feedResp.body) {
-          let gets: Observable<User | null>[] = []
-
           feedResp.body.forEach((actId: number, index: number) => {
-            // gets.push(
-            //   );
             this.authService.getActivity(actId).subscribe((activity: Activity | null) => {
               if (activity) {
                 this.authService.getUser(activity.user).subscribe((user: User | null) => {
                   if (user) {
                     this.feedList.splice(index, 0, { user, activity })
+                    this.idList.splice(index, 0, actId)
                     this.rerenderFeed()
                   }
                 })
@@ -163,6 +178,15 @@ export class UserDashboardComponent implements OnInit {
 
       }
     ).add(() => this.loadingFeed = false)
+  }
+
+
+  onMapReady(map: LeafMap) {
+    this.gpxMapReference = map
+  }
+
+  loadGpx(actId: number) {
+
   }
 
 }

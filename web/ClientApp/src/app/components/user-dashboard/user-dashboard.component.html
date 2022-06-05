@@ -14,7 +14,7 @@
 
                 <div class="card mb-4">
                     <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
-                    <img src="https://localhost:44442/Api/Users/0/Photo" class="center profile-image mt-2"
+                    <img src="{{this.baseURL +'Api/Users/0/Photo'}}" class="center profile-image mt-2"
                         alt="profile picture" onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
 
 
@@ -78,7 +78,8 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <a>Ver ruta</a>
+                                    <a class="btn btn-success" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#routeModal">Ver ruta</a>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +107,7 @@
                             <div class="row align-items-center mb-2">
                                 <div class="col-2" style="min-width: 120px;">
                                     <a class="thumbnail">
-                                        <img src="{{'https://localhost:44442/Api/Users/'+ua.activity.user + '/Photo'}}"
+                                        <img src="{{ this.baseURL +'Api/Users/' +ua.activity.user + '/Photo'}}"
                                             class="img-responsive profile-image ml-2" alt="profile picture"
                                             onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
                                     </a>
@@ -130,17 +131,21 @@
                                 <div class="col-2" style="min-width: 120px;"></div>
                                 <div class="col">
                                     <div class="row">
-                                        <div class="col-5">
+                                        <div class="col-4">
                                             <label for="distance-{{i}}">Distancia</label>
                                             <p id="distance-{{i}}">{{ua.activity.length}}</p>
                                         </div>
-                                        <div class="col-5">
+                                        <div class="col-4">
                                             <label for="duration-{{i}}">Tiempo</label>
                                             <p id="duration-{{i}}">{{getDuration(ua.activity)}}
                                             </p>
                                         </div>
-                                        <div class="col-2"><a>Ver Ruta</a>
+                                        <div class="col">
+                                            <a class="btn btn-success" type="button" data-bs-toggle="modal"
+                                                data-bs-target="#routeModal" (click)="loadGpx(idList[i])">Ver
+                                                Ruta</a>
                                         </div>
+                                        <!-- <div class="col"></div> -->
                                     </div>
                                 </div>
                             </div>
@@ -181,7 +186,9 @@
                                             <label for="duration-{{i}}">Tiempo</label>
                                             <p id="duration-{{i}}">{{getDuration(activity)}}</p>
                                         </div>
-                                        <div class="col-2"><a>Ver ruta</a>
+                                        <div class="col-2"><a class="btn btn-success" type="button"
+                                                data-bs-toggle="modal" data-bs-target="#routeModal">Ver
+                                                ruta</a>
                                         </div>
                                     </div>
                                 </div>
@@ -204,3 +211,23 @@
         <span class="visually-hidden">Cargando...</span>
     </div>
 </ng-template>
+
+<!-- GPX Modal -->
+<div class="modal fade" id="routeModal" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="route-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileLabel">Mapa GPX</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="gpx-map" style="height: 400px;" leaflet [leafletOptions]="options" [leafletLayers]="gpxLayer"
+                    (leafletMapReady)="onMapReady($event)">>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
