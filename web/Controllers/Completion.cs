@@ -48,7 +48,30 @@ public class AvailableController : ControllerBase
     [HttpGet]
     public ActionResult Races(ActivityType type, Category category)
     {
-        return Ok(new int[] { 1, 2, 3 });
+        string query = @"
+            SELECT races.id
+            FROM   races
+            JOIN   activity_types
+            ON     type = activity_types.id
+            JOIN   race_participants
+            ON     races.id = race
+            JOIN   categories
+            ON     category = categories.id
+            WHERE  activity_types.name = @type
+               AND categories.name = @category
+               AND athlete = @athlete
+               AND activity IS NULL
+               AND on_date = CAST(GETDATE() AS date)
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            cmd.Param("type", type.ToString())
+               .Param("category", category.ToString())
+               .Param("athlete", this.LoginId());
+
+            return Ok(cmd.Rows<int>().ToArray());
+        }
     }
 
     [HttpGet]
