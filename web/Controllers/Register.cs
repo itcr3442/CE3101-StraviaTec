@@ -131,6 +131,8 @@ public class RegistrationController : ControllerBase
 [Route("Api/Races/{raceId}/Receipts")]
 public class ReceiptController : ControllerBase
 {
+    public ReceiptController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Pdf)]
     [RequestSizeLimit(1048576)]
@@ -153,7 +155,21 @@ public class ReceiptController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int raceId)
     {
-        return Ok(new int[] { 69, 420 });
+        using (var txn = _db.Txn())
+        {
+            using (var cmd = txn.Cmd("SELECT id FROM races WHERE id=@race"))
+            {
+                if (cmd.Param("race", raceId).Row<int>() == null)
+                {
+                    return NotFound();
+                }
+            }
+
+            using (var cmd = txn.Cmd("SELECT athlete FROM receipts WHERE race=@race"))
+            {
+                return Ok(cmd.Param("race", raceId).Rows<int>().ToArray());
+            }
+        }
     }
 
     [HttpGet("{userId}")]
@@ -164,6 +180,8 @@ public class ReceiptController : ControllerBase
     {
         return File(Stream.Null, MediaTypeNames.Application.Pdf, "recibo.pdf");
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]
