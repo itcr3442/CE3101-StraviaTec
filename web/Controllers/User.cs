@@ -412,7 +412,7 @@ public class PhotoController : ControllerBase
 
     [HttpGet]
     [Produces(MediaTypeNames.Image.Jpeg)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
@@ -437,7 +437,7 @@ public class PhotoController : ControllerBase
     [FileUpload(MediaTypeNames.Image.Jpeg)]
     [Consumes(MediaTypeNames.Image.Jpeg)]
     [RequestSizeLimit(1048576)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Put(int id)
     {
