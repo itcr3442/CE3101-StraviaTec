@@ -113,9 +113,49 @@ public class AvailableController : ControllerBase
 [ProducesResponseType(StatusCodes.Status409Conflict)]
 public class ProgressController : ControllerBase
 {
+    public ProgressController(ISqlConn db) => _db = db;
+
     [HttpPost]
-    public ActionResult Races(int id, int activity)
+    public async Task<ActionResult> Races(int id, int activity)
     {
+        int self = this.LoginId();
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                SELECT 1, activity
+                FROM   race_participants
+                WHERE  race = @race AND athlete = @athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("race", id).Param("athlete", self);
+
+                (int, int? activity)? row = cmd.Row<(int, int)>();
+                if (row == null)
+                {
+                    return NotFound();
+                } else if (row.Value.activity != null)
+                {
+                    return Conflict();
+                }
+            }
+
+            query = @"
+                UPDATE race_participants
+                SET    activity = @activity
+                WHERE  race = @race AND athlete = @athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("race", id).Param("athlete", self).Param("activity", activity);
+                await cmd.Exec();
+            }
+
+            txn.Commit();
+        }
+
         return NoContent();
     }
 
@@ -124,4 +164,6 @@ public class ProgressController : ControllerBase
     {
         return NoContent();
     }
+
+    private readonly ISqlConn _db;
 }
