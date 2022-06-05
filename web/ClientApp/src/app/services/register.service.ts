@@ -75,14 +75,23 @@ export class RegisterService {
     }
   }
 
+  public reset_password(id: number, currentP: string, newP: string): Observable<HttpResponse<null>> {
+    let updatePassword = {
+      current: currentP,
+      new: newP
+    }
+
+    return this.repositoryService.replace(`Users/${id}/Password`, updatePassword, { skip401: true })
+  }
+
   /**
    * resetea el formgroup dejando todos sus campos vacíos
    * @param formGroup un formgroup a resetear
    */
   public resetForm = (formGroup: FormGroup) => {
-    if (environment.production) {
-      Object.values(formGroup.controls).forEach((control) => control.reset())
-    }
+    // if (environment.production) {
+    Object.values(formGroup.controls).forEach((control) => control.reset())
+    // }
 
   }
 

@@ -9,6 +9,7 @@ import { NullableUser, User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
 import { EditProfileFormComponent } from '../edit-profile-form/edit-profile-form.component';
+import { ResetPasswordFormComponent } from '../reset-password-form/reset-password-form.component';
 
 @Component({
   selector: 'app-settings-dropdown',
@@ -17,7 +18,8 @@ import { EditProfileFormComponent } from '../edit-profile-form/edit-profile-form
 })
 export class SettingsDropdownComponent implements OnInit {
 
-  @ViewChild("editForm") editProfileForm: EditProfileFormComponent = {} as EditProfileFormComponent;
+  @ViewChild("editForm") editProfileForm!: EditProfileFormComponent;
+  @ViewChild("resetForm") resetPasswordForm!: ResetPasswordFormComponent;
 
   userInfo: User | null = null;
   trigger: number = 0
@@ -78,13 +80,34 @@ export class SettingsDropdownComponent implements OnInit {
     this.authService.logout()
   }
 
-  hideModal() {
-    let myModalEl: HTMLElement | null = document.getElementById('editProfile');
+  hideModal(id: string) {
+    let myModalEl: HTMLElement | null = document.getElementById(id);
     if (!!myModalEl) {
       // @ts-ignore
       let modal: bootstrap.Modal | null = bootstrap.Modal.getInstance(myModalEl)
       // console.log("modal:", modal)
       modal?.hide();
+    }
+  }
+
+  resetPassword() {
+    if (this.resetPasswordForm.validateForm()) {
+      this.resetPasswordForm.message = ""
+
+      this.registerService.reset_password(0, this.resetPasswordForm.old, this.resetPasswordForm.new).subscribe(
+        (_: HttpResponse<null>) => {
+          this.hideModal('resetPassword')
+          this.registerService.resetForm(this.resetPasswordForm.resetForm)
+        },
+        (err: HttpErrorResponse) => {
+          if (err.status === 401) {
+            this.resetPasswordForm.message = "La contraseña actual ingresada es incorrecta."
+          }
+          else {
+            console.log("Error inseperado en resetPassword():", err)
+          }
+        }
+      )
     }
   }
 
@@ -107,16 +130,15 @@ export class SettingsDropdownComponent implements OnInit {
 
       this.loading = true
       this.registerService.edit_user(edit_user).subscribe(
-        (resp: HttpResponse<null>) => {
-
-          // Esconder modal si request sirvió
+        (_: HttpResponse<null>) => {
 
           //can't submit image to server atm porque endpoint requiere autenticación
           if (this.editProfileForm.imageFile && this.editProfileForm.imageURL) {
             this.registerService.put_pfp(0, this.editProfileForm.imageFile).subscribe((resp: HttpResponse<null>) => {
 
               // this.editProfileForm.clearImage()
-              this.hideModal()
+              // Esconder modal si request sirvió
+              this.hideModal('editProfile')
 
               console.log("upload image resp:", resp)
               this.loading = false
@@ -130,7 +152,7 @@ export class SettingsDropdownComponent implements OnInit {
               })
           }
           else {
-            this.hideModal()
+            this.hideModal('editProfile')
             this.loading = false
           }
         },

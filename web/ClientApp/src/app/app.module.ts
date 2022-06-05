@@ -36,6 +36,7 @@ import { UserSubscribedComponent } from './components/user-subscribed/user-subsc
 import { RaceAdminComponent } from './components/race-admin/race-admin.component';
 import { SearchFieldComponent } from './components/search-field/search-field.component';
 import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
+import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
 
 
 @NgModule({
@@ -61,6 +62,7 @@ import { UserDashboardComponent } from './components/user-dashboard/user-dashboa
     RaceAdminComponent,
     SearchFieldComponent,
     UserDashboardComponent,
+    ResetPasswordFormComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
