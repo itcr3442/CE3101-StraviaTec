@@ -51,7 +51,9 @@ export class AuthService {
 
     ).add(() => {
       this.cookies.delete_cookie(UserCookieName, '/')
-      if (goToLogin) this.router.navigate(['/login'])
+
+      if (goToLogin) this.router.navigate(['/login']).then(() => window.location.reload())
+      else window.location.reload()
     })
   }
 
