@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,21 @@ public class SearchController : ControllerBase
     [HttpGet]
     public ActionResult Users(string? query)
     {
+        int? exact = null;
+        if (query != null)
+        {
+            using (var cmd = _db.Cmd("SELECT id FROM users WHERE username=@query"))
+            {
+                exact = cmd.Param("query", query).Row<int>();
+            }
+        }
+
+        var matches = new List<int>();
+        if (exact != null)
+        {
+            matches.Add(exact.Value);
+        }
+
         (string selectSql, string orderBy) =
             SearchSelect("users", query, "(first_name, last_name)");
 
@@ -29,8 +45,10 @@ public class SearchController : ControllerBase
                 cmd.Param("query", query);
             }
 
-            return Ok(cmd.Rows<int>().ToArray());
+            matches.AddRange(cmd.Rows<int>().Where(id => id != exact));
         }
+
+        return Ok(matches.ToArray());
     }
 
     [HttpGet]
