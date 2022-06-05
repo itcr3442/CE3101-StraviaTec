@@ -56,6 +56,8 @@ public class RegistrationController : ControllerBase
 
                 await cmd.Exec();
             }
+
+            txn.Commit();
         }
 
         return CreatedAtAction(nameof(Races), new { id = id });
@@ -64,10 +66,37 @@ public class RegistrationController : ControllerBase
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult Races(int id)
+    public async Task<ActionResult> Races(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
+        int self = this.LoginId();
+        int deleted = 0;
+
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                DELETE FROM race_participants
+                WHERE       race=@race AND athlete=@athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                deleted += await cmd.Param("race", id).Param("athlete", self).Exec();
+            }
+
+            query = @"
+                DELETE FROM receipts
+                WHERE       race=@race AND athlete=@athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                deleted += await cmd.Param("race", id).Param("athlete", self).Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return deleted > 0 ? NoContent() : NotFound();
     }
 
     [HttpPost]
