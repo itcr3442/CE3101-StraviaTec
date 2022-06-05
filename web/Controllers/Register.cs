@@ -15,16 +15,47 @@ namespace web.Controllers;
 [Route("Api/[action]/{id}/Registration")]
 public class RegistrationController : ControllerBase
 {
+    public RegistrationController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult Races(int id, Category category)
+    public async Task<ActionResult> Races(int id, Category category)
     {
-        if (Random.Shared.Next(3) == 0)
+        int self = this.LoginId();
+        using (var txn = _db.Txn())
         {
-            return Conflict();
+            string query = @"
+                SELECT COUNT(race)
+                FROM   race_participants
+                WHERE  race=@race AND athlete=@athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                if ((cmd.Param("race", id).Param("athlete", self).Row<int>() ?? 0) > 0)
+                {
+                    return Conflict();
+                }
+            }
+
+            query = @"
+                INSERT INTO receipts(race, athlete, category)
+                SELECT @race, @athlete, id
+                FROM   categories
+                WHERE  name=@category
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("race", id)
+                   .Param("athlete", self)
+                   .Param("category", category.ToString());
+
+                await cmd.Exec();
+            }
         }
 
         return CreatedAtAction(nameof(Races), new { id = id });
@@ -63,6 +94,8 @@ public class RegistrationController : ControllerBase
     {
         return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
     }
+
+    private ISqlConn _db;
 }
 
 [ApiController]
