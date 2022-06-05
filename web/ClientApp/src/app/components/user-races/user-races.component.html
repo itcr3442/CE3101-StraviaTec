@@ -28,6 +28,7 @@
                         <th>Finalización</th>
                         <th>Precio</th>
                         <th>Tipo de Deporte</th>
+                        <th>Categorías</th>
                         <th>Inscripción</th>
                         <!-- Falta mostrar categorías -->
                     </tr>
@@ -35,23 +36,43 @@
                 <tbody>
                     <tr *ngFor="let race of races_page; index as i">
                         <td>{{race.name}}</td>
-                        <!-- <td>{{race.start}}</td> -->
                         <td>{{race.day.toDateString()}}</td>
                         <td>{{race.price}}</td>
                         <td>{{race.type}}</td>
+                        <th>{{race.categories}}</th>
                         <td>
                             <div #ListItem1><button type="register" class="btn btn-outline-success"
-                                    (click)="onRegister(races_id_list[i])">Inscribirse</button></div>
+                                    (click)="onRegister(races_id_list[i])" data-toggle="modal" data-target="#inscriptionModal">Inscribirse</button></div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="col-md-4">
-        <button type="left-arrow" class="btn btn-outline-secondary" [disabled]="this.isFirstPage"
-            (click)="onPreviousPage()">←</button>
-        <button type="right-arrow" class="btn btn-outline-secondary" [disabled]="this.isLastPage"
-            (click)="onNextPage()">→</button>
-    </div>
 </div>
+
+<div class="modal fade" id="inscriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Inscripción</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="raceFileForm">
+                <div class="mb-3 form-group">
+                    <label for="pdf">Seleccione el archivo del recibo de pago de la carrera a inscribirse</label>
+                    <input id="pdffile" class="form-control" type="file" accept=".pdf"/>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" 
+          (click)="onConfirmRegister()">Inscribirse</button>
+        </div>
+      </div>
+    </div>
+  </div>

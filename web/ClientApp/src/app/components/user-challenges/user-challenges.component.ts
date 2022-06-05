@@ -66,7 +66,6 @@ export class UserChallengesComponent implements OnInit {
 
           this.challenges_id_list = id_list
           this.getPageChallenges(id_list);
-          this.pageButtonsSetup();
         }
       })
   }
@@ -86,49 +85,13 @@ export class UserChallengesComponent implements OnInit {
     console.log("challenges:", this.challenges_page)
   }
 
-  pageButtonsSetup() {
-    if (this.amount_of_pages == 1 || this.amount_of_pages == 0) {
-      this.isFirstPage = true;
-      this.isLastPage = true;
-    } else if (this.currentPage == 1) {
-      this.isFirstPage = true;
-      this.isLastPage = false;
-    } else if (this.amount_of_pages - this.currentPage == 0) {
-      this.isFirstPage = false;
-      this.isLastPage = true;
-    } else {
-      this.isFirstPage = false;
-      this.isLastPage = false;
-    }
-  }
-
-  onPreviousPage() {
-    this.currentPage = this.currentPage - 1;
-    if (this.currentPage == 0) {
-      this.currentPage = 1;
-      this.pageButtonsSetup();
-      return
-    }
-
-    this.refreshPage()
-  }
-
-  onNextPage() {
-    this.currentPage = this.currentPage + 1;
-    if (this.currentPage > this.amount_of_pages) {
-      this.currentPage = this.amount_of_pages;
-      this.pageButtonsSetup();
-      return
-    }
-
-    this.refreshPage()
-  }
 
   onRegister(id: number) {
     this.registerService.register_user_challenges(id)
       .subscribe((res: HttpResponse<null>) => {
         console.log("onRegister result:", res);
       })
+    this.message = "Se ha inscrito exitosamente al reto deseado."
     this.refreshPage()
   }
 

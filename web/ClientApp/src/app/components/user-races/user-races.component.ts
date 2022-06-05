@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
 import { SearchService } from 'src/app/services/search.service';
-import { Race } from 'src/app/interfaces/race';
+import { getUserCategory, Race } from 'src/app/interfaces/race';
+import { User } from 'src/app/interfaces/user';
 
 @Component({
   selector: 'app-user-races',
@@ -17,6 +18,9 @@ export class UserRacesComponent implements OnInit {
     raceName: new FormControl(''),
   })
 
+  raceFileForm = new FormGroup({
+  })
+
   message: string = "";
   currentPage: number = 1;
   races_id_list: number[] = [];
@@ -24,6 +28,7 @@ export class UserRacesComponent implements OnInit {
   amount_of_pages: number = 0;
   isFirstPage: boolean = true;
   isLastPage: boolean = true;
+  modalRaceId: number = 0;
 
   test = new Date();
 
@@ -68,7 +73,6 @@ export class UserRacesComponent implements OnInit {
 
           this.races_id_list = id_list
           this.getPageRaces(id_list);
-          this.pageButtonsSetup();
         }
       })
   }
@@ -90,51 +94,25 @@ export class UserRacesComponent implements OnInit {
     console.log("races:", this.races_page)
   }
 
-  pageButtonsSetup() {
-    if (this.amount_of_pages == 1 || this.amount_of_pages == 0) {
-      this.isFirstPage = true;
-      this.isLastPage = true;
-    } else if (this.currentPage == 1) {
-      this.isFirstPage = true;
-      this.isLastPage = false;
-    } else if (this.amount_of_pages - this.currentPage == 0) {
-      this.isFirstPage = false;
-      this.isLastPage = true;
-    } else {
-      this.isFirstPage = false;
-      this.isLastPage = false;
-    }
+  onRegister(raceId: number){
+    this.modalRaceId = raceId
   }
 
-  onPreviousPage() {
-    this.currentPage = this.currentPage - 1;
-    if (this.currentPage == 0) {
-      this.currentPage = 1;
-      this.pageButtonsSetup();
-      return
+  onConfirmRegister() {
+    this.authService.getUser(0)
+    .subscribe((user: User | null) => {
+      if (user) {
+        this.registerService.register_user_race(this.modalRaceId,getUserCategory(user.age))
+        .subscribe((res: HttpResponse<null>) => {
+          console.log("registerUserToRaceResp:", res)
+          this.message = "Se ha inscrito correctamente a la carrera deseada"
+        })
+    }},
+    (error: 409) => {
+      console.log("Conflict error:", error)
+      this.message = "No es posible inscribirse a esta carrera ya que no se cumplen con los requisitos de edad."
     }
-
-    this.refreshPage()
-  }
-
-  onNextPage() {
-    this.currentPage = this.currentPage + 1;
-    if (this.currentPage > this.amount_of_pages) {
-      this.currentPage = this.amount_of_pages;
-      this.pageButtonsSetup();
-      return
-    }
-
-    this.refreshPage()
-  }
-
-  onRegister(id: number) {
-    /* testing no touch >:(
-    this.registerService.register_race(id)
-      .subscribe((res: HttpResponse<null>) => {
-        console.log("onFollow result:", res);
-      })
-    */
+    )
   }
 
 }
