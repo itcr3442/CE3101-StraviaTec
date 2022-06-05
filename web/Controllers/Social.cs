@@ -20,7 +20,7 @@ public class DashboardController : ControllerBase
     public ActionResult Feed()
     {
         string query = @"
-            SELECT   id
+            SELECT   TOP 100 id
             FROM     activities
             JOIN     friends
             ON       athlete = followee
