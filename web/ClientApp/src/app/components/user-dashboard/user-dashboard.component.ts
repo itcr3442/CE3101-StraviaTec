@@ -1,10 +1,11 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ApplicationRef, Component, OnInit } from '@angular/core';
 import { faBicycle, faHiking, faQuestionCircle, faRunning, faSwimmer, faWalking, faWater, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { registerLocale } from 'i18n-iso-countries';
+import { Observable } from 'rxjs';
 import { ActivityType } from 'src/app/constants/activity.constants';
 import { Activity } from 'src/app/interfaces/activity';
-import { User } from 'src/app/interfaces/user';
+import { User, UserStats } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormattingService } from 'src/app/services/formatting.service';
 
@@ -30,15 +31,23 @@ export class UserDashboardComponent implements OnInit {
   }
 
   feedList: Array<UserActivity> = []
-  loadingFeed: boolean | null;
+  selfList: Array<Activity> = []
+  loadingFeed: boolean;
 
-  constructor(private authService: AuthService, private formatter: FormattingService) {
+  userInfo: User | null = null
+  userStats: UserStats | null = null
+  lastActivity: Activity | null = null
+
+  constructor(private authService: AuthService, private formatter: FormattingService, private appRef: ApplicationRef) {
     this.loadingFeed = true
 
     this.refreshFeed()
+    this.refreshSelf()
   }
 
   ngOnInit(): void {
+    this.refreshUser()
+    this.refreshStats()
   }
 
   getIconForType(type: ActivityType): IconDefinition {
@@ -66,32 +75,94 @@ export class UserDashboardComponent implements OnInit {
     return ActivityType
   }
 
+  rerenderFeed(): void {
+    this.appRef.tick()
+  }
+
+  get selectedFeed(): string {
+    let feedSelect: HTMLSelectElement = document.getElementById('feed-select') as HTMLSelectElement
+    return feedSelect.value
+  }
+
+  refreshUser(): void {
+    this.authService.getUser(0).subscribe((user: User | null) => {
+      if (user) {
+        user.type = this.authService.getRole()
+        this.userInfo = user
+      }
+    })
+  }
+
+  refreshStats(): void {
+    this.authService.getStats(0).subscribe(
+      (resp: HttpResponse<UserStats>) => {
+        if (resp.body) {
+          this.userStats = resp.body
+          if (!!this.userStats.latestActivity) {
+            this.authService.getActivity(this.userStats.latestActivity).subscribe((act: Activity | null) => {
+              if (act) {
+                this.lastActivity = act
+              }
+            })
+          }
+        }
+      },
+      (err: HttpErrorResponse) => console.log("Error in refreshStats():", err)
+    )
+  }
+
+
+
+
+  refreshSelf(): void {
+    this.authService.getHistory(0).subscribe(
+      (resp: HttpResponse<number[]>) => {
+        if (resp.body) {
+
+          resp.body.forEach((actId: number, index: number) => {
+            this.authService.getActivity(actId).subscribe((activity: Activity | null) => {
+              if (activity) {
+                this.selfList.splice(index, 0, activity)
+                this.rerenderFeed()
+              }
+            })
+          })
+
+        }
+      },
+      (err: HttpErrorResponse) => console.log("Error in refreshStats():", err)
+    )
+  }
+
   refreshFeed(): void {
     this.authService.getFeed().subscribe(
       (feedResp: HttpResponse<number[]>) => {
         if (feedResp.body) {
+          let gets: Observable<User | null>[] = []
+
           feedResp.body.forEach((actId: number, index: number) => {
+            // gets.push(
+            //   );
             this.authService.getActivity(actId).subscribe((activity: Activity | null) => {
               if (activity) {
                 this.authService.getUser(activity.user).subscribe((user: User | null) => {
                   if (user) {
                     this.feedList.splice(index, 0, { user, activity })
-                    this.loadingFeed = false
+                    this.rerenderFeed()
                   }
                 })
               }
             })
+
           }
           )
         }
       },
       (feedErr: HttpErrorResponse) => {
         console.log("Error getting feed:", feedErr)
-        if (feedErr.status === 404) {
-          this.loadingFeed = null
-        }
+
       }
-    )
+    ).add(() => this.loadingFeed = false)
   }
 
 }

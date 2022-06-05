@@ -1,7 +1,12 @@
 <div class="container row">
     <div class="row mb-4">
         <div class="col-md-4"></div>
-        <div class="col-md-8">Following</div>
+        <div class="col-md-8">
+            <select (change)="rerenderFeed()" id='feed-select' class="form-select select-feed">
+                <option selected value="Following">Following</option>
+                <option value="Self">Self</option>
+            </select>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-4">
@@ -12,44 +17,87 @@
                     <img src="https://localhost:44442/Api/Users/0/Photo" class="center profile-image mt-2"
                         alt="profile picture" onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
 
-                    <h4 class="card-title text-center mt-2">NOMBRE</h4>
 
-                    <div class="card-body">
+                    <h4 *ngIf="!!this.userInfo; else loadingSpinner" class="card-title text-center mt-2">
+                        {{userInfo.firstName+' '+userInfo.lastName}}</h4>
+
+                    <div *ngIf="!!this.userStats; else loadingSpinner" class="card-body">
                         <div class="row">
                             <div class="col-md-4 text-center">
-                                Sigue
+                                <label for="following">Sigue</label>
+                                <p id="following">{{userStats.following}}</p>
                             </div>
                             <div class="col-md-4 text-center">
-                                Seguidores
+                                <label for="followers">Seguidores</label>
+                                <p id="followers">{{userStats.followers}}</p>
                             </div>
                             <div class="col-md-4 text-center">
-                                Actividades
+                                <label for="activities">Actividades</label>
+                                <p id="activities">{{userStats.activities}}</p>
+
+                            </div>
+                        </div>
+                        <!-- <ng-container *ngIf="!!this.userStats.latestActivity">
+                            <div *ngIf="!!this.lastActivity; else loadingSpinner" class="card-body">
+
+                                <label for="latestActivity">Última actividad:</label>
+                                <p id="latestActivity">{{this.lastActivity.type}}</p>
+
+                            </div>
+                        </ng-container> -->
+                    </div>
+                </div>
+
+                <ng-container *ngIf="!!this.userStats && !!this.userStats.latestActivity">
+                    <div *ngIf="!!this.lastActivity; else loadingSpinner" class="card mb-4">
+                        <div class="row card-body text-center">
+                            <h4 class=" card-title">Última actividad:</h4>
+                        </div>
+                        <div class="row align-items-center card-body">
+                            <div class="col-2 text-center" style="min-width: 120px;">
+                                <!-- símbolo de actividad -->
+                                <fa-icon [icon]="getIconForType(this.lastActivity.type)" size="3x"></fa-icon>
+                            </div>
+
+                            <div class="col">
+                                <div class=" row">
+                                    <div class="col-5">
+                                        <label for="distance-last">Distancia</label>
+                                    </div>
+                                    <div class="col">
+                                        <p id="distance-last">{{this.lastActivity.length}}</p>
+                                    </div>
+                                </div>
+                                <div class=" row">
+                                    <div class="col-5">
+                                        <label for="duration-last">Tiempo</label>
+                                    </div>
+                                    <div class="col">
+                                        <p id="duration-last">
+                                            {{getDuration(this.lastActivity)}}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <a>Ver ruta</a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        Última actividad
-                    </div>
-                </div>
+                </ng-container>
 
                 <!-- Puedo meter más cards 👀 -->
             </ul>
 
         </div>
 
-        <div class="col-md-8">
+        <div class=" col-md-8">
 
-            <ul class="list-group">
-                <ng-container *ngIf="loadingFeed===null">
-                    <p>Parece que ninguno de tus amigos ha subido una actividad, sigue a más personas!</p>
-                </ng-container>
-                <ng-container *ngIf="loadingFeed===true">
-                    <div class="spinner-border ml-6 mt-2" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </ng-container>
-
-                <ng-container *ngIf="loadingFeed===false">
+            <ul *ngIf="selectedFeed === 'Following'" class="list-group">
+                <ng-container *ngIf="!loadingFeed; else loadingSpinner">
+                    <ng-container *ngIf="feedList.length === 0">
+                        <p>Parece que ninguno de tus amigos ha subido una actividad, sigue a más
+                            personas!</p>
+                    </ng-container>
                     <div *ngFor="let ua of feedList; index as i" class="card mb-4">
                         <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
 
@@ -58,22 +106,24 @@
                             <div class="row align-items-center mb-2">
                                 <div class="col-2" style="min-width: 120px;">
                                     <a class="thumbnail">
-                                        <img src="{{'https://localhost:44442/Api/Users/'+ua.activity.user}}"
+                                        <img src="{{'https://localhost:44442/Api/Users/'+ua.activity.user + '/Photo'}}"
                                             class="img-responsive profile-image ml-2" alt="profile picture"
                                             onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
                                     </a>
                                 </div>
                                 <div class="col">
                                     <h5>{{ua.user.firstName + ' ' + ua.user.lastName}}</h5>
+                                    <p>{{ua.user.country.flag}}</p>
                                 </div>
                             </div>
                             <div class="row align-items-center">
                                 <div class="col-2 text-center" style="min-width: 120px;">
                                     <!-- símbolo de actividad -->
-                                    <fa-icon [icon]="getIconForType(ua.activity.type)" size="3x"></fa-icon>
+                                    <fa-icon [icon]="getIconForType(ua.activity.type)" size="2x"></fa-icon>
                                 </div>
                                 <div class="col">
-                                    <h4 class="card-title">{{this.activityTypes[ua.activity.type]}}</h4>
+                                    <h4 class="card-title">
+                                        {{this.activityTypes[ua.activity.type]}}</h4>
                                 </div>
                             </div>
                             <div class="row align-items-center">
@@ -84,15 +134,59 @@
                                             <label for="distance-{{i}}">Distancia</label>
                                             <p id="distance-{{i}}">{{ua.activity.length}}</p>
                                         </div>
-                                        <div class="col-5">Tiempo
+                                        <div class="col-5">
                                             <label for="duration-{{i}}">Tiempo</label>
-                                            <p id="duration-{{i}}">{{getDuration(ua.activity)}}</p>
+                                            <p id="duration-{{i}}">{{getDuration(ua.activity)}}
+                                            </p>
                                         </div>
-                                        <div class="col-2">Ver Ruta
+                                        <div class="col-2"><a>Ver Ruta</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </ul>
+
+            <ul *ngIf="selectedFeed === 'Self'" class="list-group">
+                <ng-container *ngIf="!loadingFeed; else loadingSpinner">
+                    <ng-container *ngIf="selfList.length === 0">
+                        <p>Parece que no has registrado ninguna actividad, <a [routerLinkActive]="['link-active']"
+                                [routerLink]="['/register=act']">ve a registrar una!</a></p>
+                    </ng-container>
+                    <div *ngFor="let activity of selfList; index as i" class="card mb-4">
+                        <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-2 text-center" style="min-width: 120px;">
+                                    <!-- símbolo de actividad -->
+                                    <fa-icon [icon]="getIconForType(activity.type)" size="3x">
+                                    </fa-icon>
+                                </div>
+
+                                <div class="col">
+                                    <div class="row">
+                                        <h4 class="card-title">
+                                            {{this.activityTypes[activity.type]}}</h4>
+
+                                    </div>
+                                    <div class=" row">
+                                        <div class="col-5">
+                                            <label for="distance-{{i}}">Distancia</label>
+                                            <p id="distance-{{i}}">{{activity.length}}</p>
+                                        </div>
+                                        <div class="col-5">
+                                            <label for="duration-{{i}}">Tiempo</label>
+                                            <p id="duration-{{i}}">{{getDuration(activity)}}</p>
+                                        </div>
+                                        <div class="col-2"><a>Ver ruta</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </ng-container>
@@ -104,3 +198,9 @@
 </div>
 
 <hr class="bg-danger border-2 border-top border-danger">
+
+<ng-template #loadingSpinner>
+    <div class="spinner-border ml-6 mt-2" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</ng-template>

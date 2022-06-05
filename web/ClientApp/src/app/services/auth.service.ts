@@ -7,7 +7,7 @@ import { RoleLevels, RoleLevelType, } from '../constants/user.constants';
 import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
-import { User, UserResp, resp2user } from '../interfaces/user';
+import { User, UserResp, resp2user, UserStats } from '../interfaces/user';
 import { Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
 import { GroupResp, groupResp2GroupDisplay, GroupSearchDisplay } from '../interfaces/group';
@@ -183,7 +183,16 @@ export class AuthService {
     ))
   }
 
+  public getHistory(id: number): Observable<HttpResponse<number[]>> {
+    return this.repo.getData<number[]>(`Users/${id}/History`)
+  }
+
+  public getStats(id: number): Observable<HttpResponse<UserStats>> {
+    return this.repo.getData<UserStats>(`Users/${id}/Stats`)
+  }
+
+
   public getFeed(): Observable<HttpResponse<number[]>> {
-    return this.repo.getData<number[]>('Feed', { skip404: true })
+    return this.repo.getData<number[]>('Feed')
   }
 }
