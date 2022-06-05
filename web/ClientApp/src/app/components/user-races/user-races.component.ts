@@ -157,7 +157,15 @@ export class UserRacesComponent implements OnInit {
   upload(files: FileList) {
     this.pdfFile = files[0]
   }
-  
+
+  isRegistered(raceStatus: RaceStatus){
+    if (raceStatus == RaceStatus.NotRegistered){
+      return false
+    } else {
+      return true
+    }
+
+  }  
 
 
 }

@@ -39,8 +39,10 @@
                         <td>{{race.type}}</td>
                         <th>{{race.categories}}</th>
                         <td>
-                            <div #ListItem1><button type="button" class="btn btn-outline-success"
-                                    (click)="onRegister(races_id_list[i])" data-bs-toggle="modal" data-bs-target="#inscriptionModal">Inscribirse</button></div>
+                            <div #ListItem1><button type="register" class="btn btn-outline-success"
+                                    (click)="onRegister(races_id_list[i])" *ngIf="!isRegistered(race.status)" data-bs-toggle="modal" data-bs-target="#inscriptionModal">Inscribirse</button></div>
+                            <div #ListItem2><button type="Already-registered" class="btn btn-secondary"
+                                *ngIf="isRegistered(race.status)" disabled>Already Registered</button></div>
                         </td>
                     </tr>
                 </tbody>
