@@ -104,11 +104,16 @@ public class RegistrationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult RegisterChallenge(int id)
+    public async Task<ActionResult> RegisterChallenge(int id)
     {
-        if (Random.Shared.Next(3) == 0)
+        string query = @"
+            INSERT INTO challenge_participants(challenge, athlete)
+            VALUES(@challenge, @athlete)
+            ";
+
+        using (var cmd = _db.Cmd(query))
         {
-            return Conflict();
+            await cmd.Param("challenge", id).Param("athlete", this.LoginId()).Exec();
         }
 
         return CreatedAtAction("Challenges", new { id = id });
