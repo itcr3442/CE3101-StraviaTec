@@ -77,7 +77,30 @@ public class AvailableController : ControllerBase
     [HttpGet]
     public ActionResult Challenges(ActivityType type)
     {
-        return Ok(new int[] { 1, 2, 3 });
+        string query = @"
+            SELECT     challenges.id
+            FROM       challenge_activities
+            JOIN       activities
+            ON         activity = id
+            RIGHT JOIN challenge_participants
+            ON         activities.athlete = challenge_participants.athlete
+            JOIN       challenges
+            ON         challenge_participants.challenge = challenges.id
+            JOIN       activity_types
+            ON         challenges.type = activity_types.id
+            WHERE      activity_types.name = @type
+                   AND challenge_participants.athlete = @athlete
+                   AND challenges.start_time < GETDATE()
+                   AND challenges.end_time > GETDATE()
+            GROUP BY   challenges.id, challenges.goal
+            HAVING     SUM(length) IS NULL OR SUM(length) < goal
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            cmd.Param("type", type.ToString()).Param("athlete", this.LoginId());
+            return Ok(cmd.Rows<int>().ToArray());
+        }
     }
 
     private readonly ISqlConn _db;
