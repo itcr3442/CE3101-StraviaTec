@@ -148,6 +148,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
+        int deleted;
         using (var txn = _db.Txn())
         {
             using (var cmd = _db.Cmd("DELETE FROM challenge_private_groups WHERE group_id=@id"))
@@ -172,9 +173,13 @@ public class GroupController : ControllerBase
 
             using (var cmd = _db.Cmd("DELETE FROM groups WHERE id=@id"))
             {
-                return await cmd.Param("id", id).Exec() > 0 ? NoContent() : NotFound();
+                deleted = await cmd.Param("id", id).Exec();
             }
+
+            txn.Commit();
         }
+
+        return deleted > 0 ? NoContent() : NotFound();
     }
 
     private readonly ISqlConn _db;
@@ -191,7 +196,7 @@ public class MembershipController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> New(int id, Req.NewGroup req)
+    public async Task<ActionResult> New(int id)
     {
         string query = @"
             INSERT INTO group_members(group_id, member)
@@ -201,11 +206,10 @@ public class MembershipController : ControllerBase
         using (var cmd = _db.Cmd(query))
         {
             cmd.Param("group_id", id).Param("member", this.LoginId());
-
-            return await cmd.Exec() > 0
-                ? CreatedAtAction(nameof(Delete), new { id = id })
-                : NotFound();
+            await cmd.Exec();
         }
+
+        return CreatedAtAction(nameof(Delete), new { id = id });
     }
 
     [HttpDelete]
@@ -216,6 +220,7 @@ public class MembershipController : ControllerBase
     {
         int self = this.LoginId();
 
+        int deleted;
         using (var txn = _db.Txn())
         {
             using (var cmd = txn.Cmd("SELECT COUNT(id) FROM groups WHERE admin=@id"))
@@ -234,9 +239,13 @@ public class MembershipController : ControllerBase
             using (var cmd = txn.Cmd(query))
             {
                 cmd.Param("group_id", id).Param("member", self);
-                return await cmd.Exec() > 0 ? NoContent() : NotFound();
+                deleted = await cmd.Exec();
             }
+
+            txn.Commit();
         }
+
+        return deleted > 0 ? NoContent() : NotFound();
     }
 
     private ISqlConn _db;

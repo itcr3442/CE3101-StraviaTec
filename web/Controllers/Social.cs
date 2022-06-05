@@ -15,7 +15,6 @@ public class DashboardController : ControllerBase
     public DashboardController(ISqlConn db) => _db = db;
 
     [HttpGet]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     public ActionResult Feed()
