@@ -937,6 +937,7 @@ CREATE TABLE race_participants
 (
   race     int NOT NULL REFERENCES races(id),
   athlete  int NOT NULL REFERENCES users(id),
+  category int NOT NULL REFERENCES categories(id),
   activity int     NULL REFERENCES activities(id),
 
   PRIMARY KEY(race, athlete),
@@ -956,9 +957,10 @@ CREATE INDEX idx_race_sponsors ON race_sponsors(race);
 
 CREATE TABLE receipts
 (
-  race    int            NOT NULL REFERENCES races(id),
-  athlete int            NOT NULL REFERENCES users(id),
-  receipt varbinary(max) NOT NULL,
+  race     int            NOT NULL REFERENCES races(id),
+  athlete  int            NOT NULL REFERENCES users(id),
+  category int            NOT NULL REFERENCES categories(id),
+  receipt  varbinary(max)     NULL,
 
   PRIMARY KEY(race, athlete),
 );

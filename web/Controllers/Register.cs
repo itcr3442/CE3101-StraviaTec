@@ -124,7 +124,7 @@ public class RegistrationController : ControllerBase
         return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
     }
 
-    private ISqlConn _db;
+    private readonly ISqlConn _db;
 }
 
 [ApiController]
@@ -173,15 +173,61 @@ public class ReceiptController : ControllerBase
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 public class ConfirmationController : ControllerBase
 {
+    public ConfirmationController(ISqlConn db) => _db = db;
+
     [HttpPost]
-    public ActionResult Accept(int raceId, int userId)
+    public async Task<ActionResult> Accept(int raceId, int userId)
     {
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                SELECT category
+                FROM   receipts
+                WHERE  race=@race AND athlete=@athlete
+                ";
+
+            int? category;
+            using (var cmd = txn.Cmd(query))
+            {
+                category = cmd.Param("race", raceId).Param("athlete", userId).Row<int>();
+            }
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            query = @"
+                INSERT INTO race_participants(race, athlete, category)
+                VALUES(@race, @athlete, @category)
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("race", raceId).Param("athlete", userId).Param("category", category);
+                await cmd.Exec();
+            }
+
+            txn.Commit();
+        }
+
         return NoContent();
     }
 
     [HttpPost]
-    public ActionResult Reject(int raceId, int userId)
+    public async Task<ActionResult> Reject(int raceId, int userId)
     {
-        return NoContent();
+        string query = @"
+            DELETE FROM receipts
+            WHERE       race=@race AND athlete=@athlete
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            cmd.Param("race", raceId).Param("athlete", userId);
+            return await cmd.Exec() > 0 ? NoContent() : NotFound();
+        }
     }
+
+    private readonly ISqlConn _db;
 }
