@@ -25,3 +25,7 @@ hr {
     outline: none;
     box-shadow: none;
 }
+
+.side-btn {
+    margin-top: 10px;
+}

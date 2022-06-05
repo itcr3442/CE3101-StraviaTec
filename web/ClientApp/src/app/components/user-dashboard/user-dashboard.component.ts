@@ -75,13 +75,7 @@ export class UserDashboardComponent implements OnInit {
 
     let self = this
     myModalEl.addEventListener('shown.bs.modal', function () {
-      setTimeout(function () {
-        if (self.gpxMapReference) {
-          self.gpxMapReference.invalidateSize();
-          if (self.gpxBounds)
-            self.gpxMapReference.fitBounds(self.gpxBounds);
-        }
-      }, 1);
+      self.refreshMap()
     });
   }
 
@@ -146,6 +140,15 @@ export class UserDashboardComponent implements OnInit {
     )
   }
 
+  refreshMap(): void {
+    if (this.gpxMapReference) {
+      this.gpxMapReference.invalidateSize();
+      if (this.gpxBounds) {
+        this.gpxMapReference.fitBounds(this.gpxBounds);
+      }
+    }
+  }
+
   refreshSelf(): void {
     this.authService.getHistory(0).subscribe(
       (resp: HttpResponse<number[]>) => {
@@ -199,6 +202,7 @@ export class UserDashboardComponent implements OnInit {
   }
 
   loadGpx(actId: number) {
+    this.loadingGpx = true
     this.gpxLayer = []
     this.gpxBounds = null
     if (!!this.gpxMapReference) {
@@ -213,6 +217,10 @@ export class UserDashboardComponent implements OnInit {
         }
       }).on('loaded', function (e: LayerEvent) {
         self.gpxBounds = e.target.getBounds()
+        self.loadingGpx = false
+        setTimeout(() => {
+          self.refreshMap()
+        }, 100)
       })
       this.gpxLayer.push(layer)
     }

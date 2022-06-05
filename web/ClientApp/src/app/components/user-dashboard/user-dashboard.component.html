@@ -65,7 +65,7 @@
                                         <label for="distance-last">Distancia</label>
                                     </div>
                                     <div class="col">
-                                        <p id="distance-last">{{this.lastActivity.length}}</p>
+                                        <p id="distance-last">{{this.lastActivity.length}} km</p>
                                     </div>
                                 </div>
                                 <div class=" row">
@@ -80,7 +80,7 @@
                                 <div class="row">
                                     <a class="btn btn-success" type="button" data-bs-toggle="modal"
                                         data-bs-target="#routeModal"
-                                        (click)="loadGpx(this.userStats.latestActivity)">Ver ruta</a>
+                                        (click)="loadGpx(this.userStats.latestActivity)">Ver Ruta</a>
                                 </div>
                             </div>
                         </div>
@@ -130,11 +130,11 @@
                             </div>
                             <div class="row align-items-center">
                                 <div class="col-2" style="min-width: 120px;"></div>
-                                <div class="col">
+                                <div class="col row">
                                     <div class="row">
                                         <div class="col-4">
                                             <label for="distance-{{i}}">Distancia</label>
-                                            <p id="distance-{{i}}">{{ua.activity.length}}</p>
+                                            <p id="distance-{{i}}">{{ua.activity.length}} km</p>
                                         </div>
                                         <div class="col-4">
                                             <label for="duration-{{i}}">Tiempo</label>
@@ -142,7 +142,7 @@
                                             </p>
                                         </div>
                                         <div class="col">
-                                            <a class="btn btn-success" type="button" data-bs-toggle="modal"
+                                            <a class="btn btn-success side-btn" type=" button" data-bs-toggle="modal"
                                                 data-bs-target="#routeModal" (click)="loadGpx(ua.actId)">Ver
                                                 Ruta</a>
                                         </div>
@@ -179,18 +179,18 @@
 
                                     </div>
                                     <div class=" row">
-                                        <div class="col-5">
+                                        <div class="col-4">
                                             <label for="distance-{{i}}">Distancia</label>
-                                            <p id="distance-{{i}}">{{a.activity.length}}</p>
+                                            <p id="distance-{{i}}">{{a.activity.length}} km</p>
                                         </div>
-                                        <div class="col-5">
+                                        <div class="col-4">
                                             <label for="duration-{{i}}">Tiempo</label>
                                             <p id="duration-{{i}}">{{getDuration(a.activity)}}</p>
                                         </div>
-                                        <div class="col-2"><a class="btn btn-success" type="button"
+                                        <div class="col"><a class="btn btn-success side-btn" type="button"
                                                 data-bs-toggle="modal" data-bs-target="#routeModal"
                                                 (click)="loadGpx(a.actId)">Ver
-                                                ruta</a>
+                                                Ruta</a>
                                         </div>
                                     </div>
                                 </div>
@@ -219,13 +219,13 @@
     <div class="modal-dialog">
         <div class="modal-content" id="route-modal">
             <div class="modal-header">
-                <h5 class="modal-title" id="editProfileLabel">Mapa GPX
+                <h5 class="modal-title" id="editProfileLabel">Mapa de ruta
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="gpx-map" style="height: 400px;" leaflet [leafletOptions]="options" [leafletLayers]="gpxLayer"
-                    (leafletMapReady)="onMapReady($event)">>
+                <div *ngIf="!loadingGpx; else loadingSpinner" id="gpx-map" style="height: 600px;" leaflet
+                    [leafletOptions]="options" [leafletLayers]="gpxLayer" (leafletMapReady)="onMapReady($event)">>
                 </div>
             </div>
             <div class="modal-footer">
