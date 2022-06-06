@@ -155,7 +155,7 @@ export class SearchFieldComponent implements OnInit {
                         add()
                         break
                       }
-                      case status: {
+                      case RaceStatus[status]: {
                         add()
                         break
                       } default: {
@@ -170,7 +170,7 @@ export class SearchFieldComponent implements OnInit {
                         add()
                         break
                       }
-                      case status: {
+                      case ChallengeStatus[status]: {
                         add()
                         break
                       } default: {
@@ -180,7 +180,7 @@ export class SearchFieldComponent implements OnInit {
                   }
                   case Searchables.Groups: {
                     let status = (<any>getResp).amMember;
-                    switch (this.challStatusFilter) {
+                    switch (this.groupStatusFilter) {
                       case undefined: {
                         add()
                         break
