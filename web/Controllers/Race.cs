@@ -57,11 +57,27 @@ public class RaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Leaderboard(int id)
     {
-        return Ok(new Resp.LeaderboardRow[] { new Resp.LeaderboardRow {
-                Activity = 69,
-                Seconds = 6969,
-                Length = 0.420M,
-                }});
+        string query = @"
+            SELECT   activity, duration, length
+            FROM     race_positions
+            WHERE    race = @race
+            ORDER BY duration ASC
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("race", id)
+                    .Rows<(int, decimal, decimal)>()
+                    .Select(((int activity, decimal duration, decimal length) row) =>
+                        new Resp.LeaderboardRow
+                        {
+                            Activity = row.activity,
+                            Seconds = row.duration,
+                            Length = row.length,
+                        })
+                    .ToArray()
+                );
+        }
     }
 
     [HttpGet("{id}/Participants")]
@@ -70,13 +86,53 @@ public class RaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Participants(int id)
     {
-        return Ok(new Resp.RaceParticipants[] { new Resp.RaceParticipants {
-                Category = Category.MasterC,
-                Participants = new int[] { 69, 420 }
-                }, new Resp.RaceParticipants {
-                Category = Category.Elite,
-                Participants = new int[] { 69420, 42069 }
-                }});
+        string query = @"
+            SELECT   name, athlete
+            FROM     race_participants
+            JOIN     categories
+            ON       category = id
+            WHERE    race = @race
+            ORDER BY category ASC, athlete ASC
+            ";
+
+        var categories = new List<Resp.RaceParticipants>();
+        Resp.RaceParticipants? last = null;
+        var participants = new List<int>();
+
+        using (var cmd = _db.Cmd(query))
+        {
+            var rows = cmd.Param("race", id).Rows<(string, int)>();
+            foreach ((string categoryName, int athlete) row in rows)
+            {
+                Enum.TryParse(row.categoryName, out Category category);
+                if (last == null || last.Category != category)
+                {
+                    if (last != null)
+                    {
+                        last.Participants = participants.ToArray();
+                    }
+
+                    participants.Clear();
+
+                    last = new Resp.RaceParticipants
+                    {
+                        Category = category,
+                        Participants = new int[] { }
+                    };
+
+                    categories.Add(last);
+                }
+
+                participants.Add(row.athlete);
+            }
+        }
+
+        if (last != null)
+        {
+            last.Participants = participants.ToArray();
+        }
+
+        return Ok(categories.ToArray());
     }
 
     [HttpGet("{id}/Positions")]
@@ -85,13 +141,53 @@ public class RaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Positions(int id)
     {
-        return Ok(new Resp.RacePositions[] { new Resp.RacePositions {
-                Category = Category.Sub23,
-                Activities = new int[] { 69, 420 }
-                }, new Resp.RacePositions {
-                Category = Category.Junior,
-                Activities = new int[] { 69420, 42069 },
-                }});
+        string query = @"
+            SELECT   name, activity
+            FROM     race_positions
+            JOIN     categories
+            ON       category = id
+            WHERE    race = @race
+            ORDER BY category ASC, duration ASC
+            ";
+
+        var positions = new List<Resp.RacePositions>();
+        Resp.RacePositions? last = null;
+        var activities = new List<int>();
+
+        using (var cmd = _db.Cmd(query))
+        {
+            var rows = cmd.Param("race", id).Rows<(string, int)>();
+            foreach ((string categoryName, int activity) row in rows)
+            {
+                Enum.TryParse(row.categoryName, out Category category);
+                if (last == null || last.Category != category)
+                {
+                    if (last != null)
+                    {
+                        last.Activities = activities.ToArray();
+                    }
+
+                    activities.Clear();
+
+                    last = new Resp.RacePositions
+                    {
+                        Category = category,
+                        Activities = new int[] { }
+                    };
+
+                    positions.Add(last);
+                }
+
+                activities.Add(row.activity);
+            }
+        }
+
+        if (last != null)
+        {
+            last.Activities = activities.ToArray();
+        }
+
+        return Ok(positions.ToArray());
     }
 
     [HttpPatch("{id}")]

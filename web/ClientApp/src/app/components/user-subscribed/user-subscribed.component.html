@@ -88,7 +88,7 @@
                         <tr *ngFor="let row of leaderboardRaw; index as i">
                             <td>{{i}}</td>
                             <td>{{leaderboardUsers[i].firstName + " " + leaderboardUsers[i].lastName}}</td>
-                            <td>{{row.seconds}}</td>
+                            <td>{{secondstoTime(row.seconds)}}</td>
                             <td>{{leaderboardAct[i].length}}</td>
                             <td>{{leaderboardAct[i].end.toDateString()}}</td>
                         </tr>
