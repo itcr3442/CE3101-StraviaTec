@@ -120,7 +120,7 @@ export class RegisterActivityComponent implements OnInit {
       this.warnMessage = "Por favor ingrese fechas válidas y verifique que la fecha de inicio sea antes que la fecha de fin."
       return false
     }
-    if (!((this.gpxFile !== null) && (this.gpxFile.type === 'application/gpx+xml'))) {
+    if (!((this.gpxFile !== null))) {
       this.warnMessage = "Por favor ingrese un archivo '.gpx' válido."
       return false
     }
