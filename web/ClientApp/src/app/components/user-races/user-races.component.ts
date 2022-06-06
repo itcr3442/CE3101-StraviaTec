@@ -8,6 +8,7 @@ import { getUserCategory, getUserCategoryType, Race } from 'src/app/interfaces/r
 import { User } from 'src/app/interfaces/user';
 import { ActivityType } from 'src/app/constants/activity.constants';
 import { RaceCategory, RaceStatus } from 'src/app/constants/races.constants';
+import { FormattingService } from 'src/app/services/formatting.service';
 
 @Component({
   selector: 'app-user-races',
@@ -40,6 +41,7 @@ export class UserRacesComponent implements OnInit {
     private registerService: RegisterService,
     private authService: AuthService,
     private searchService: SearchService,
+    public formatter: FormattingService
   ) { }
 
   ngOnInit(): void {
@@ -108,31 +110,31 @@ export class UserRacesComponent implements OnInit {
     if (this.pdfFile !== null) {
       this.authService.getRace(this.modalRaceId)
         .subscribe((race: Race | null) => {
-        if (race) {
-          this.authService.getUser(0)
-          .subscribe((user: User | null) => {
-          if (user) {
-            if ((race.categories.includes(RaceCategory.Elite)) || (race.categories.includes(getUserCategoryType(user.age)))){
-              this.registerService.register_user_race(this.modalRaceId, getUserCategory(user.age))
-              .subscribe((res: HttpResponse<null>) => {
-                console.log("registerUserToRaceResp:", res)
+          if (race) {
+            this.authService.getUser(0)
+              .subscribe((user: User | null) => {
+                if (user) {
+                  if ((race.categories.includes(RaceCategory.Elite)) || (race.categories.includes(getUserCategoryType(user.age)))) {
+                    this.registerService.register_user_race(this.modalRaceId, getUserCategory(user.age))
+                      .subscribe((res: HttpResponse<null>) => {
+                        console.log("registerUserToRaceResp:", res)
 
-                this.registerService.register_race_receipt(this.modalRaceId, this.pdfFile)
-                  .subscribe((res2: HttpResponse<null>) => {
-                    this.hideModal()
-                    this.message = "Se ha inscrito correctamente a la carrera deseada"
-                    this.refreshPage()
-                  })
+                        this.registerService.register_race_receipt(this.modalRaceId, this.pdfFile)
+                          .subscribe((res2: HttpResponse<null>) => {
+                            this.hideModal()
+                            this.message = "Se ha inscrito correctamente a la carrera deseada"
+                            this.refreshPage()
+                          })
+                      })
+                  } else {
+                    this.modalMessage = "La carrera a inscribirse es de una categoría que no se le permite competir. Escoja otra carrera válida."
+                  }
+
+                }
               })
-            }else{
-              this.modalMessage = "La carrera a inscribirse es de una categoría que no se le permite competir. Escoja otra carrera válida."
-            }
-            
-          }
-      })
 
-        }
-      })
+          }
+        })
     } else {
       this.modalMessage = "Ingrese un archivo pdf válido."
     }
@@ -162,16 +164,4 @@ export class UserRacesComponent implements OnInit {
 
   }
 
-  raceTypeToString(raceType: ActivityType) {
-    return ActivityType[raceType]
-  }
-
-  raceCategoriestoString(raceCategory: RaceCategory[]){
-    let stringCategories = Array(raceCategory.length);
-    for (let j = 0; j < raceCategory.length; j++) {
-      stringCategories[j] = RaceCategory[raceCategory[j]]
-    }
-    console.log("stringCategories:", stringCategories)
-    return stringCategories
-  }
 }

@@ -36,8 +36,8 @@
                         <td>{{race.name}}</td>
                         <td>{{race.day.toDateString()}}</td>
                         <td>{{race.price}}</td>
-                        <td>{{raceTypeToString(race.type)}}</td>
-                        <th>{{raceCategoriestoString(race.categories)}}</th>
+                        <td>{{formatter.raceTypeToString(race.type)}}</td>
+                        <th>{{formatter.raceCategoriestoString(race.categories)}}</th>
                         <td>
                             <div #ListItem1><button type="register" class="btn btn-outline-success"
                                     (click)="onRegister(races_id_list[i])" *ngIf="!isRegistered(race.status)"

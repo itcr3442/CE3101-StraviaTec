@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ActivityType } from '../constants/activity.constants';
+import { RaceCategory } from '../constants/races.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +27,18 @@ export class FormattingService {
 
   public padTwo(n: number): string {
     return (n + "").padStart(2, "0")
+  }
+
+  raceTypeToString(raceType: ActivityType) {
+    return ActivityType[raceType]
+  }
+
+  raceCategoriestoString(raceCategory: RaceCategory[]) {
+    let stringCategories = Array(raceCategory.length);
+    for (let j = 0; j < raceCategory.length; j++) {
+      stringCategories[j] = RaceCategory[raceCategory[j]]
+    }
+    console.log("stringCategories:", stringCategories)
+    return stringCategories
   }
 }
