@@ -7,7 +7,7 @@ namespace web;
 
 public interface IMongoConn
 {
-    IMongoCollection<LazyBsonDocument> Collection(string name);
+    IMongoCollection<T> Collection<T>(string name);
 }
 
 public class MongoConn : IMongoConn
@@ -18,8 +18,7 @@ public class MongoConn : IMongoConn
         _db = _client.GetDatabase("straviatec");
     }
 
-    public IMongoCollection<LazyBsonDocument> Collection(string name) =>
-        _db.GetCollection<LazyBsonDocument>(name);
+    public IMongoCollection<T> Collection<T>(string name) => _db.GetCollection<T>(name);
 
     private MongoClient _client;
     private IMongoDatabase _db;
