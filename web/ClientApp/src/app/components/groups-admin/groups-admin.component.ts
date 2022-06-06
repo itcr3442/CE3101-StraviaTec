@@ -18,7 +18,7 @@ interface GroupWithAdmin {
   members: number[],
 }
 
-const registerTitle = "Registro de Actividades"
+const registerTitle = "Registro de Grupos"
 const editTitle = "Editando grupo existente"
 
 @Component({
