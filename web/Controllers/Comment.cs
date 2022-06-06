@@ -4,6 +4,7 @@ using System.Net.Mime;
 
 using Microsoft.AspNetCore.Mvc;
 
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 using Req = web.Body.Req;
@@ -79,6 +80,7 @@ public class CommentsController : ControllerBase
     private readonly IMongoConn _mongo;
 }
 
+[BsonIgnoreExtraElements]
 class StoredComment
 {
     public int Activity { get; set; }

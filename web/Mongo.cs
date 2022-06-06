@@ -12,14 +12,20 @@ public interface IMongoConn
 
 public class MongoConn : IMongoConn
 {
-    public MongoConn(IConnectionStrings strs)
+    public MongoConn(IConnectionStrings strs) => _strs = strs;
+
+    public IMongoCollection<T> Collection<T>(string name)
     {
-        _client = new MongoClient(strs.Mongo);
-        _db = _client.GetDatabase("straviatec");
+        if (_db == null)
+        {
+            _client = new MongoClient(_strs.Mongo);
+            _db = _client.GetDatabase("straviatec");
+        }
+
+        return _db.GetCollection<T>(name);
     }
 
-    public IMongoCollection<T> Collection<T>(string name) => _db.GetCollection<T>(name);
-
-    private MongoClient _client;
-    private IMongoDatabase _db;
+    private readonly IConnectionStrings _strs;
+    private MongoClient? _client = null;
+    private IMongoDatabase? _db = null;
 }
