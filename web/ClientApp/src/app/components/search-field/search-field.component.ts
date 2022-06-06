@@ -50,6 +50,7 @@ export class SearchFieldComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.searchable = Searchables[this.searchFor]
   }
 
   showDropDown(): void {
