@@ -234,13 +234,13 @@ export class UserDashboardComponent implements OnInit {
         if (commentsResp.body) {
           commentsResp.body.forEach((commentResp: CommentResp, index: number) => {
             let time = new Date(commentResp.time)
-            this.comments.splice(index, 0, { comment: { user: this.userInfo!, time, content: commentResp.content }, userId: commentResp.user })
-            // this.authService.getUser(commentResp.user).subscribe(
-            //   (user: User | null) => {
-            //     if (!!user) {
-            //       this.comments.splice(index, 0, { user, time, content: commentResp.content })
-            //     }
-            //   })
+            // this.comments.splice(index, 0, { comment: { user: this.userInfo!, time, content: commentResp.content }, userId: commentResp.user })
+            this.authService.getUser(commentResp.user).subscribe(
+              (user: User | null) => {
+                if (!!user) {
+                  this.comments.splice(index, 0, { comment: { user, time, content: commentResp.content }, userId: commentResp.user })
+                }
+              })
           });
         }
       },
