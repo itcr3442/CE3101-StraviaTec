@@ -5,6 +5,8 @@ using System.Net;
 
 using Microsoft.Data.SqlClient;
 
+// Traducción de excepciones de SQL Server a códigos HTTP
+
 namespace web.Extensions;
 
 public static class ExceptionMiddlewareExtensions

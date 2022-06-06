@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
+/* Punto de entrada principal del programa.
+ * Aquí se inicializan e inician servicios.
+ */
+
 using web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

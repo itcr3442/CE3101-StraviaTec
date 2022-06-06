@@ -1,5 +1,6 @@
 namespace web;
 
+// Cadenas de conexión a bases de datos
 public interface IConnectionStrings
 {
     public string Sql { get; }

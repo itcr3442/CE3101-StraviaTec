@@ -3,6 +3,11 @@ using System;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
+/* Este es un análogo a Sql.cs pero para el caso de Mongo.
+ * La interfaz es muy reducida ya que no se necesita Mongo
+ * para mucho en comparación a SQL Server en esta aplicación.
+ */
+
 namespace web;
 
 public interface IMongoConn
@@ -14,6 +19,7 @@ public class MongoConn : IMongoConn
 {
     public MongoConn(IConnectionStrings strs) => _strs = strs;
 
+	// Obtiene una colección dentro de la DB "straviatec"
     public IMongoCollection<T> Collection<T>(string name)
     {
         if (_db == null)
