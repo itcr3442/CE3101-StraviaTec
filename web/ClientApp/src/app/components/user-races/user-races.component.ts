@@ -83,6 +83,7 @@ export class UserRacesComponent implements OnInit {
   }
 
   getPageRaces(id_list: number[]) {
+    /*
     for (let j = 0; j < id_list.length; j++) {
 
       this.authService.getRace(id_list[j])
@@ -94,7 +95,7 @@ export class UserRacesComponent implements OnInit {
           }
         })
     }
-   /* CARRERA DE PRUEBA PARA PROBAR MODAL Y DEMÁS
+    */
     this.races_id_list = [1]
     this.races_page = [{  
       name: "-",
@@ -104,7 +105,6 @@ export class UserRacesComponent implements OnInit {
       price: 69420,
       status: RaceStatus.WaitingConfirmation,
       categories: [RaceCategory.Elite]}];
-    */
 
     console.log("races:", this.races_page)
   }
@@ -166,6 +166,23 @@ export class UserRacesComponent implements OnInit {
     }
 
   }  
+
+  raceTypeToString(challType: ActivityType){
+    switch (challType){
+      case ActivityType.Running:
+        return "Correr"
+      case ActivityType.Swimming:
+        return "Nadar"
+      case ActivityType.Cycling:
+        return "Ciclismo"
+      case ActivityType.Hiking:
+        return "Senderismo"
+      case ActivityType.Kayaking:
+        return "Kayak"
+      case ActivityType.Walking:
+        return "Caminata"
+    }
+  }
 
 
 }

@@ -34,13 +34,17 @@
                 <tbody>
                     <tr *ngFor="let chall of challenges_page; index as i">
                         <td>{{chall.name}}</td>
-                        <td>{{chall.start}}</td>
-                        <td>{{chall.end}}</td>
+                        <td>{{chall.start.toDateString()}}</td>
+                        <td>{{chall.end.toDateString()}}</td>
                         <td>{{chall.remainingDays}}</td>
-                        <td>{{chall.type}}</td>
+                        <td>{{challTypeToString(chall.type)}}</td>
                         <td>
                             <div #ListItem1><button type="register" class="btn btn-outline-success"
-                                    (click)="onRegister(challenges_id_list[i])">Inscribirse</button></div>
+                                *ngIf="!isRegistered(chall)"
+                                (click)="onRegister(challenges_id_list[i])">Inscribirse</button></div>
+                            <div #ListItem2><button type="unregister" class="btn btn-outline-danger"
+                                *ngIf="isRegistered(chall)"
+                                (click)="onUnregister(challenges_id_list[i])">Cancelar</button></div>
                         </td>
                     </tr>
                 </tbody>

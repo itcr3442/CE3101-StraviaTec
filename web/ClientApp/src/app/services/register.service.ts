@@ -201,8 +201,16 @@ export class RegisterService {
     return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
   }
 
+  public unregister_user_challenges(challId: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.delete<null>("Challenges/" + challId + "/Registration")
+  }
+
   public register_user_groups(groupId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Groups/" + groupId + "/Registration", null)
+  }
+
+  public unregister_user_groups(groupId: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.delete<null>("Groups/" + groupId + "/Registration")
   }
 
   public post_comment(activityId: number, content: string): Observable<HttpResponse<null>> {
