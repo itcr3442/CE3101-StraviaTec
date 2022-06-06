@@ -20,6 +20,8 @@ import { UserGroupsComponent } from './components/user-groups/user-groups.compon
 import { UserSubscribedComponent } from './components/user-subscribed/user-subscribed.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RaceAdminComponent } from './components/race-admin/race-admin.component';
+import { ChallengeAdminComponent } from './components/challenge-admin/challenge-admin.component';
+import { GroupsAdminComponent } from './components/groups-admin/groups-admin.component';
 // import { WorkerAdminComponent } from './components/worker-admin/worker-admin.component';
 
 
@@ -38,6 +40,8 @@ const routes: Routes = [
   { path: 'subscribe=group', component: UserGroupsComponent, canActivate: [AuthGuard], data: { roles: [...allRoles] } },
   { path: 'subscriptions', component: UserSubscribedComponent, canActivate: [AuthGuard], data: { roles: [...allRoles] } },
   { path: 'admin=race', component: RaceAdminComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
+  { path: 'admin=challenge', component: ChallengeAdminComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
+  { path: 'admin=group', component: GroupsAdminComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
   { path: '', component: HomeComponent, pathMatch: 'full' },
 ];
 
