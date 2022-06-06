@@ -240,11 +240,11 @@ export class RegisterService {
   }
 
   public register_user_groups(groupId: number): Observable<HttpResponse<null>> {
-    return this.repositoryService.create<null>("Groups/" + groupId + "/Registration", null)
+    return this.repositoryService.create<null>("Groups/" + groupId + "/Membership", null)
   }
 
   public unregister_user_groups(groupId: number): Observable<HttpResponse<null>> {
-    return this.repositoryService.delete<null>("Groups/" + groupId + "/Registration")
+    return this.repositoryService.delete<null>("Groups/" + groupId + "/Membership")
   }
 
   public post_comment(activityId: number, content: string): Observable<HttpResponse<null>> {
