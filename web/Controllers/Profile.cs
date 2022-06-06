@@ -136,7 +136,7 @@ public class ProfileController : ControllerBase
         (int effective, int self) = this.OrSelf(id);
 
         string query = @"
-            SELECT    challenge
+            SELECT    challenge_participants.challenge
             FROM      challenge_participants
             LEFT JOIN last_challenge_updates AS latest
             ON        latest.athlete = challenge_participants.athlete
