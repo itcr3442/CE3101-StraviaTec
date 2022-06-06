@@ -69,7 +69,8 @@ export class SettingsDropdownComponent implements OnInit {
         console.log("Cuenta eliminada:", resp)
         // this.router.navigate(['/login'])
         window.location.reload()
-      })
+      },
+      (err: HttpErrorResponse) => console.log("Error eliminando usuario:", err))
   }
 
   /**
