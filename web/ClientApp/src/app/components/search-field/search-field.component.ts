@@ -37,6 +37,7 @@ export class SearchFieldComponent implements OnInit {
   @Output() unselectEvent = new EventEmitter<null>();
 
   @ViewChild('dropdownLinkToggle') dropdownToggle !: ElementRef;
+  @ViewChild('searchInput') searchInput !: ElementRef;
 
   searchable: Searchables;
   searchResultIds: Array<number> = []
@@ -70,7 +71,7 @@ export class SearchFieldComponent implements OnInit {
   }
 
   get getSearchList(): Observable<HttpResponse<number[]>> {
-    let searchInput: HTMLInputElement = document.getElementById('searchInput') as HTMLInputElement
+    let searchInput: HTMLInputElement = this.searchInput.nativeElement
     let query = searchInput.value
 
     switch (this.searchable) {
@@ -218,7 +219,7 @@ export class SearchFieldComponent implements OnInit {
 
     this.selectEvent.emit({ id: this.selectedId, name: this.selectedName })
 
-    let searchInput: HTMLInputElement = document.getElementById('searchInput') as HTMLInputElement
+    let searchInput: HTMLInputElement = this.searchInput.nativeElement
     searchInput.value = this.selectedName
 
     // console.log("Selected id:", this.selectedId)
