@@ -2,6 +2,10 @@ DROP PROCEDURE IF EXISTS current_age;
 
 
 IF EXISTS (SELECT 0 FROM  sys.fulltext_indexes 
+                    WHERE object_id = object_id('dbo.sponsors'))
+   DROP FULLTEXT INDEX ON sponsors;
+
+IF EXISTS (SELECT 0 FROM  sys.fulltext_indexes 
                     WHERE object_id = object_id('dbo.challenges'))
    DROP FULLTEXT INDEX ON challenges;
 
@@ -22,6 +26,7 @@ IF EXISTS (SELECT 0 FROM  sys.fulltext_catalogs
    DROP FULLTEXT CATALOG search;
 
 
+DROP INDEX IF EXISTS idx_sponsors_id              ON sponsors;
 DROP INDEX IF EXISTS idx_challenges_id            ON challenges;
 DROP INDEX IF EXISTS idx_races_id                 ON races;
 DROP INDEX IF EXISTS idx_groups_id                ON groups;

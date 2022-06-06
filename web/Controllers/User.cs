@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 
+using MongoDB.Driver;
+
 using web.Body.Common;
 
 using Req = web.Body.Req;
@@ -125,7 +127,11 @@ public class IdentityController : ControllerBase
 [Route("Api/Users")]
 public class UserController : ControllerBase
 {
-    public UserController(ISqlConn db) => _db = db;
+    public UserController(ISqlConn db, IMongoConn mongo)
+    {
+        _db = db;
+        _mongo = mongo;
+    }
 
     [HttpPost]
     [AllowAnonymous]
@@ -328,6 +334,7 @@ public class UserController : ControllerBase
             return Forbid();
         }
 
+        int deleted;
         using (var txn = _db.Txn())
         {
             using (var cmd = txn.Cmd("DELETE FROM photos WHERE user_id=@id"))
@@ -386,22 +393,32 @@ public class UserController : ControllerBase
                 await cmd.Param("id", self).Exec();
             }
 
-            using (var cmd = txn.Cmd("DELETE FROM activities WHERE athlete=@id"))
+            var comments = _mongo.Collection<StoredComment>("comments");
+            var filter = Builders<StoredComment>.Filter;
+            comments.DeleteMany(filter.Eq(comment => comment.Author, id));
+
+            using (var cmd = txn.Cmd("SELECT id FROM activities WHERE athlete=@id"))
             {
-                await cmd.Param("id", self).Exec();
+                foreach (int activity in cmd.Param("id", self).Rows<int>())
+                {
+                    comments.DeleteMany(filter.Eq(comment => comment.Activity, activity));
+                }
             }
 
             using (var cmd = txn.Cmd("DELETE FROM users WHERE id=@id"))
             {
-                await cmd.Param("id", self).Exec();
+                deleted = await cmd.Param("id", self).Exec();
             }
+
+            txn.Commit();
         }
 
         await HttpContext.SignOutAsync();
-        return NoContent();
+        return deleted > 0 ? NoContent() : NotFound();
     }
 
     private readonly ISqlConn _db;
+    private readonly IMongoConn _mongo;
 }
 
 [ApiController]

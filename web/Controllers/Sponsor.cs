@@ -55,7 +55,7 @@ public class SponsorController : ControllerBase
     {
         using (var cmd = _db.Cmd("SELECT logo FROM sponsor_logos WHERE sponsor=@sponsor"))
         {
-            using (var stream = cmd.Param("id", id).Stream())
+            using (var stream = cmd.Param("sponsor", id).Stream())
             {
                 var logo = stream.Take();
                 if (logo == null)
