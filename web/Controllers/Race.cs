@@ -221,7 +221,7 @@ public class RaceController : ControllerBase
             {
                 query = @"
                     SELECT COUNT(receipt)
-                    FROM   race_receipts
+                    FROM   receipts
                     WHERE  race = @race AND athlete = @athlete
                     ";
 
