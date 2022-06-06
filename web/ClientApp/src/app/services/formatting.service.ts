@@ -38,7 +38,7 @@ export class FormattingService {
     for (let j = 0; j < raceCategory.length; j++) {
       stringCategories[j] = RaceCategory[raceCategory[j]]
     }
-    console.log("stringCategories:", stringCategories)
+    // console.log("stringCategories:", stringCategories)
     return stringCategories
   }
 }

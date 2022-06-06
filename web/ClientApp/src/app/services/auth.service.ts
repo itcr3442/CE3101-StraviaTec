@@ -14,6 +14,7 @@ import { Sponsor } from '../interfaces/sponsor';
 import { GroupResp } from '../interfaces/group';
 import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
 import { CommentResp } from '../interfaces/comment';
+import { ParticipantsResp, PositionsResp } from '../interfaces/reports';
 
 export interface LoginResponse {
   id: number,
@@ -220,8 +221,16 @@ export class AuthService {
     return this.repo.getData<number[]>(`Races/${raceId}/Receipts`)
   }
 
-  public getReceipt(raceId: number, userId: number) {
+  public getReceipt(raceId: number, userId: number): Observable<HttpResponse<number[]>> {
     return this.repo.getData<number[]>(`Races/${raceId}/Receipts/${userId}`, {})
+  }
+
+  public getPositions(raceId: number): Observable<HttpResponse<PositionsResp[]>> {
+    return this.repo.getData<PositionsResp[]>(`Races/${raceId}/Positions`)
+  }
+
+  public getParticipants(raceId: number): Observable<HttpResponse<ParticipantsResp[]>> {
+    return this.repo.getData<ParticipantsResp[]>(`Races/${raceId}/Participants`)
   }
 
 }
