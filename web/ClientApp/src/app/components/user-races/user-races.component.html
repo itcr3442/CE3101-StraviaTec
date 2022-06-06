@@ -36,7 +36,7 @@
                         <td>{{race.name}}</td>
                         <td>{{race.day.toDateString()}}</td>
                         <td>{{race.price}}</td>
-                        <td>{{race.type}}</td>
+                        <td>{{raceTypeToString(race.type)}}</td>
                         <th>{{race.categories}}</th>
                         <td>
                             <div #ListItem1><button type="register" class="btn btn-outline-success"

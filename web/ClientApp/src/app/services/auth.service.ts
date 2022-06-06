@@ -9,7 +9,7 @@ import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
 import { User, UserResp, resp2user, UserStats } from '../interfaces/user';
 import { LeaderboardRow, Race, RaceResp, resp2race } from '../interfaces/race';
-import { Challenge } from '../interfaces/challenge';
+import { Challenge, resp2chall, RespChallenge } from '../interfaces/challenge';
 import { GroupResp} from '../interfaces/group';
 import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
 import { CommentResp } from '../interfaces/comment';
@@ -137,11 +137,11 @@ export class AuthService {
   }
 
   public getChallenge(id: number): Observable<Challenge | null> {
-    return this.repo.getData<Challenge>(`Challenges/${id}`).pipe(map((resp: HttpResponse<Challenge>) => {
+    return this.repo.getData<RespChallenge>(`Challenges/${id}`).pipe(map((resp: HttpResponse<RespChallenge>) => {
       if (resp.body) {
-        let challResp: Challenge = resp.body;
+        let challResp: RespChallenge = resp.body;
 
-        return challResp
+        return resp2chall(challResp)
       }
       else {
         this.router.navigate(['/404'])

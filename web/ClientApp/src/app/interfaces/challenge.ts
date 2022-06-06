@@ -1,5 +1,6 @@
-import { ActivityType } from "../constants/activity.constants";
-import { ChallengeStatus } from "../constants/challengers.constants";
+import { start } from "repl";
+import { ActivityType, ActivityTypeType } from "../constants/activity.constants";
+import { ChallengeStatus, ChallengeStatusType } from "../constants/challengers.constants";
 
 //Esta interfaz se usa para recibir las carreras de la búsqueda de carreras por ID
 export interface Challenge {
@@ -13,4 +14,36 @@ export interface Challenge {
     privateGroups: number[],
     status: ChallengeStatus
 }
+
+export interface RespChallenge {
+    name: string,
+    start: string,
+    end: string,
+    type: ActivityTypeType,
+    goal: number,
+    progress: number,
+    remainingDays: number,
+    privateGroups: number[],
+    status: ChallengeStatusType
+}
+
+export function resp2chall(challResp: RespChallenge): Challenge {
+    let start = new Date(challResp.start)
+    let end = new Date(challResp.end)
+    let type: ActivityType = ActivityType[challResp.type]
+    let status: ChallengeStatus = ChallengeStatus[challResp.status]
+
+    return {
+        name: challResp.name,
+        start,
+        end,
+        type,
+        goal: challResp.goal,
+        progress: challResp.progress,
+        remainingDays: challResp.remainingDays,
+        privateGroups: challResp.privateGroups,
+        status
+    }
+}
+
 

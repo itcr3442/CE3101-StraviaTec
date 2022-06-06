@@ -36,7 +36,11 @@
                         
                         <td>
                             <div #ListItem1><button type="register" class="btn btn-outline-success"
-                                    (click)="onRegister(groups_id_list[i])">Asociarse</button></div>
+                                *ngIf="!group.amMember"
+                                (click)="onRegister(groups_id_list[i])">Asociarse</button></div>
+                            <div #ListItem2><button type="unregister" class="btn btn-outline-danger"
+                                *ngIf="group.amMember"
+                                (click)="onUnregister(groups_id_list[i])">Desasociarse</button></div>
                         </td>
                     </tr>
                 </tbody>

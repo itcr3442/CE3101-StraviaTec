@@ -5,6 +5,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
 import { SearchService } from 'src/app/services/search.service';
 import { Challenge } from 'src/app/interfaces/challenge';
+import { ActivityType } from 'src/app/constants/activity.constants';
+import { ChallengeStatus } from 'src/app/constants/challengers.constants';
 
 @Component({
   selector: 'app-user-challenges',
@@ -93,6 +95,41 @@ export class UserChallengesComponent implements OnInit {
         this.message = "Se ha inscrito exitosamente al reto deseado."
       })
     this.refreshPage()
+  }
+
+  onUnregister(id: number) {
+    this.registerService.unregister_user_challenges(id)
+      .subscribe((res: HttpResponse<null>) => {
+        console.log("onRegister result:", res);
+        this.message = "Se ha calcelado exitosamente la inscripción al reto deseado."
+      })
+    this.refreshPage()
+  }
+
+  challTypeToString(challType: ActivityType){
+    switch (challType){
+      case ActivityType.Running:
+        return "Correr"
+      case ActivityType.Swimming:
+        return "Nadar"
+      case ActivityType.Cycling:
+        return "Ciclismo"
+      case ActivityType.Hiking:
+        return "Senderismo"
+      case ActivityType.Kayaking:
+        return "Kayak"
+      case ActivityType.Walking:
+        return "Caminata"
+    }
+  }
+
+  isRegistered(chall:Challenge){
+    if (chall.status == ChallengeStatus.NotRegistered){
+      return false
+    } else {
+      return true
+    }
+
   }
 
 }

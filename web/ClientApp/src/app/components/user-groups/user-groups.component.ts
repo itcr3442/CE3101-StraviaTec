@@ -116,4 +116,14 @@ export class UserGroupsComponent implements OnInit {
     
     this.refreshPage()
   }
+
+  onUnregister(id: number) {
+    this.registerService.unregister_user_groups(id)
+      .subscribe((res: HttpResponse<null>) => {
+        console.log("onRegister result:", res);
+        this.message = "Se ha salido exitosamente del grupo deseado"
+      })
+    
+    this.refreshPage()
+  }
 }
