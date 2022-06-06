@@ -30,6 +30,7 @@ public static class ExceptionMiddlewareExtensions
                     switch (sqlExc.Number)
                     {
                         case 547:
+                        case 2628:
                             status = HttpStatusCode.BadRequest;
                             break;
 
