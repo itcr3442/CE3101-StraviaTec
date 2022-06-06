@@ -10,6 +10,7 @@ import { Id } from 'src/app/interfaces/id';
 import { Race } from 'src/app/interfaces/race';
 import { RaceCategory, RaceStatus } from 'src/app/constants/races.constants';
 import { SearchFieldComponent } from '../search-field/search-field.component';
+import { FormattingService } from 'src/app/services/formatting.service';
 
 @Component({
   selector: 'app-race-admin',
@@ -100,10 +101,10 @@ export class RaceAdminComponent implements OnInit {
     return RaceCategory
   }
 
-  constructor(private registerService: RegisterService) {
+  constructor(private registerService: RegisterService, private formatter: FormattingService) {
     let today = new Date()
-    this.minDate = this.toTimeStr(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0))
-    this.maxDate = this.toTimeStr(new Date(today.getFullYear() + 5, today.getMonth(), today.getDate() + 1, 0, 0, 0))
+    this.minDate = this.formatter.toDateStr(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0))
+    this.maxDate = this.formatter.toDateStr(new Date(today.getFullYear() + 5, today.getMonth(), today.getDate() + 1, 0, 0, 0))
 
     for (let a in ActivityType) {
       if (typeof ActivityType[a] === 'number') this.activityTypes.push(a as (keyof typeof ActivityType));
@@ -155,12 +156,12 @@ export class RaceAdminComponent implements OnInit {
 
   checkGroupsValidity(): boolean {
     let groupsList: Array<number> = []
-    for (let i = 0; i < this.totalGroups; i++) {
+    for (let i = 0; i < this.selectedGroups.length; i++) {
 
       let selectedGroup = this.selectedGroups[i]
 
-      console.log("groups list:", groupsList)
-      console.log("selected group:", selectedGroup)
+      // console.log("groups list:", groupsList)
+      // console.log("selected group:", selectedGroup)
 
       if (selectedGroup === -1) {
         continue
@@ -168,9 +169,14 @@ export class RaceAdminComponent implements OnInit {
 
       if (groupsList.includes(selectedGroup)) {
         console.log("Repeat group:", selectedGroup)
+        this.warnMessage = "No se pueden tener grupos repetidos."
         return false
       }
       groupsList.push(selectedGroup)
+    }
+    if (groupsList.length === 0 && this.isPrivate) {
+      this.warnMessage = "Si desea que el evento sea privado debe seleccionar por lo menos un grupo."
+      return false
     }
     return true
   }
@@ -195,7 +201,6 @@ export class RaceAdminComponent implements OnInit {
       return false
     }
     if (!this.checkGroupsValidity()) {
-      this.warnMessage = "No se pueden tener grupos repetidos."
       return false
     }
     // if (!this.checkBanksValidity()) {
@@ -307,10 +312,6 @@ export class RaceAdminComponent implements OnInit {
 
       this.gpxLayer.push(layer)
     }
-  }
-
-  toTimeStr(date: Date) {
-    return date.getFullYear() + "-" + (date.getMonth() + 1 + "").padStart(2, "0") + "-" + (date.getDate() + "").padStart(2, "0")
   }
 
   bankCounter() {

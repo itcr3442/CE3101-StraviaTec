@@ -19,6 +19,10 @@ export class FormattingService {
     return date.getFullYear() + "-" + this.padTwo(date.getMonth() + 1) + "-" + this.padTwo(date.getDate()) + "T" + this.padTwo(date.getHours()) + ":" + this.padTwo(date.getMinutes()) + ":" + this.padTwo(date.getSeconds()) //+ "." + padTwo(date.getMilliseconds())
   }
 
+  toDateStr(date: Date) {
+    return date.getFullYear() + "-" + (date.getMonth() + 1 + "").padStart(2, "0") + "-" + (date.getDate() + "").padStart(2, "0")
+  }
+
   public padTwo(n: number): string {
     return (n + "").padStart(2, "0")
   }
