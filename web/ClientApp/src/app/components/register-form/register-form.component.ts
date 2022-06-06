@@ -16,7 +16,7 @@ import { Id } from "src/app/interfaces/id";
 })
 export class RegisterFormComponent implements OnInit {
   registerForm = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required, Validators.pattern('[a-z]+')]),
     password: new FormControl('', [Validators.required]),
     firstName: new FormControl('', [Validators.required]),
     lastName: new FormControl('', [Validators.required]),
@@ -28,7 +28,7 @@ export class RegisterFormComponent implements OnInit {
   minDate: string = '1900-01-01'
   message: string = ""
   countryList: Country[];
-  imageURL: string | null = null;
+  // imageFile: File | null = null;
 
   @Input() userRole: RoleLevels = RoleLevels.Athlete;
   @Input() successMsg: string = "";
@@ -49,16 +49,11 @@ export class RegisterFormComponent implements OnInit {
     // console.log("Success Msg:", this.successMsg)
   }
 
-  upload(files: FileList) {
-    if (this.imageURL) {
-      URL.revokeObjectURL(this.imageURL)
-    }
-
-    this.imageURL = URL.createObjectURL(files[0]);
-    console.log("images:", files)
-    console.log("image:", files[0])
-    console.log("imageURL:", this.imageURL)
-  }
+  // upload(files: FileList) {
+  //   this.imageFile = files[0];
+  //   console.log("images:", files)
+  //   console.log("image:", files[0])
+  // }
 
   get username() {
     return this.registerForm.controls['username'].value
@@ -84,7 +79,7 @@ export class RegisterFormComponent implements OnInit {
   validateForm(): boolean {
     //validate date
     if (!this.registerForm.valid) {
-      this.message = "Por favor verifique que ingresó todos los campos correctamente";
+      this.message = "Por favor verifique que ingresó todos los campos correctamente y el usuario es una cadena de solo letras minúsuculas.";
       return false
     }
     if (this.birthDate > this.maxDate || this.birthDate < this.minDate) {
@@ -106,7 +101,7 @@ export class RegisterFormComponent implements OnInit {
         lastName: this.lastName,
         birthDate: new Date(this.birthDate),
         country: this.country,
-        imageURL: this.imageURL,
+        imageURL: null,
         type: this.userRole,
         age: null,
         relationship: null
@@ -119,11 +114,19 @@ export class RegisterFormComponent implements OnInit {
         (resp: HttpResponse<Id>) => {
           console.log(resp)
           this.registerService.resetForm(this.registerForm)
-          this.successMsgOn = true
-          if (this.imageURL != null) {
-            //TODO: submit image to server
-            URL.revokeObjectURL(this.imageURL)
-          }
+
+          //can't submit image to server atm porque endpoint requiere autenticación
+          // if (this.imageFile) {
+          //   this.registerService.put_pfp(0, this.imageFile).subscribe((resp: HttpResponse<null>) => {
+          //     this.successMsgOn = true
+          //   },
+          //     (err: HttpErrorResponse) => {
+          //       console.log("Upload img error:", err)
+          //       this.message = "El usuario fue registrado, pero hubo un error al cargar la imagen, por favor inténtelo más tarde."
+          //     })
+          // }
+          // else { this.successMsgOn = true }
+
         },
         (err: HttpErrorResponse) => {
           if (err.status == 409) {

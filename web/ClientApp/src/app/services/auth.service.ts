@@ -1,17 +1,18 @@
-import { Injectable, ɵisObservable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { RepositoryService } from './repository.service';
 import { map } from 'rxjs/operators';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { RoleLevels, RoleLevelType, countries } from '../constants/user.constants';
+import { Observable, of, race } from 'rxjs';
+import { RoleLevels, RoleLevelType, } from '../constants/user.constants';
 import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
-import { User, UserResp, resp2user } from '../interfaces/user';
-import { Country, newc_alpha2 } from '../interfaces/country';
+import { User, UserResp, resp2user, UserStats } from '../interfaces/user';
 import { Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
-import { GroupResp, groupResp2GroupDisplay, GroupSearchDisplay } from '../interfaces/group';
+import { GroupResp} from '../interfaces/group';
+import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
+import { CommentResp } from '../interfaces/comment';
 
 export interface LoginResponse {
   id: number,
@@ -37,7 +38,24 @@ export class AuthService {
       password
     }
 
-    return this.repo.create<LoginResponse>("Users/Login", credentials, true)
+    return this.repo.create<LoginResponse>("Users/Login", credentials, { skip401: true })
+  }
+
+  /**
+   * Remueve los cookies que mantienen la sesión del usuario y manda un request de logout al API
+   */
+  public logout(goToLogin: boolean = true) {
+    return this.repo.create<null>("Users/Logout", null, { skip401: true }).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
+      (error: HttpErrorResponse) => {
+        console.log("Log out error:", error)
+      }
+
+    ).add(() => {
+      this.cookies.delete_cookie(UserCookieName, '/')
+
+      if (goToLogin) this.router.navigate(['/login']).then(() => window.location.reload())
+      else window.location.reload()
+    })
   }
 
   /**
@@ -96,7 +114,6 @@ export class AuthService {
         this.router.navigate(['/404'])
         return null
       }
-
     }
     ))
 
@@ -136,12 +153,12 @@ export class AuthService {
 
   }
 
-  public getGroup(id: number, authService: AuthService): Observable<GroupSearchDisplay | null> {
+  public getGroup(id: number): Observable<GroupResp | null> {
     return this.repo.getData<GroupResp>(`Groups/${id}`).pipe(map((resp: HttpResponse<GroupResp>) => {
       if (resp.body) {
         let groupResp: GroupResp = resp.body;
 
-        return groupResp2GroupDisplay(groupResp, authService)
+        return groupResp
       }
       else {
         this.router.navigate(['/404'])
@@ -150,25 +167,37 @@ export class AuthService {
 
     }
     ))
-
   }
 
+  public getActivity(id: number): Observable<Activity | null> {
+    return this.repo.getData<ActivityResp>(`Activities/${id}`).pipe(map((resp: HttpResponse<ActivityResp>) => {
+      if (resp.body) {
+        let activityResp: ActivityResp = resp.body;
 
-
-  /**
-   * Remueve los cookies que mantienen la sesión del usuario y manda un request de logout al API
-   */
-  public logout() {
-    return this.repo.create<null>("Users/Logout", null, true).subscribe((res: HttpResponse<null>) => console.log("Log out:", res),
-      (error: HttpErrorResponse) => {
-        console.log("Log out error:", error)
+        return resp2activity(activityResp)
       }
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
+    }
+    ))
+  }
 
-    ).add(() => {
-      this.cookies.delete_cookie(UserCookieName, '/')
-      this.router.navigate(['/login'])
-    })
+  public getComments(activityId: number): Observable<HttpResponse<CommentResp[]>> {
+    return this.repo.getData<CommentResp[]>(`Activities/${activityId}/Comments`)
+  }
+
+  public getHistory(id: number): Observable<HttpResponse<number[]>> {
+    return this.repo.getData<number[]>(`Users/${id}/History`)
+  }
+
+  public getStats(id: number): Observable<HttpResponse<UserStats>> {
+    return this.repo.getData<UserStats>(`Users/${id}/Stats`)
   }
 
 
+  public getFeed(): Observable<HttpResponse<number[]>> {
+    return this.repo.getData<number[]>('Feed')
+  }
 }

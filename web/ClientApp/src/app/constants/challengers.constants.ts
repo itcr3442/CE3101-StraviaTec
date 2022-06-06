@@ -3,3 +3,5 @@ export enum ChallengeStatus {
     Registered, 
     Completed
 }
+
+export declare type ChallengeStatusType = keyof typeof ChallengeStatus;

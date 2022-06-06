@@ -11,28 +11,9 @@ export interface GroupResp {
 
 export interface GroupSearchDisplay {
     name: string,
-    admin: User,
+    adminDisplay: string,
     members: number[],
     amMember: boolean,
 }
-
-export function groupResp2GroupDisplay(groupResp: GroupResp, authService: AuthService): GroupSearchDisplay {
-    let groupAdmin!: User;
-    authService.getUser(groupResp.admin)
-        .subscribe((user: User | null) => {
-        if (user) {
-            console.log("getPageUsers res:", user);
-            groupAdmin = user;
-        }})
-
-    return {
-        name: groupResp.name,
-        admin: groupAdmin,
-        members: groupResp.members,
-        amMember: groupResp.amMember,
-    }
-
-}
-
 
 

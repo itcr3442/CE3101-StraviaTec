@@ -60,3 +60,9 @@ export function resp2user(userResp: UserResp): User {
     }
 
 }
+export interface UserStats {
+    following: number,
+    followers: number,
+    activities: number,
+    latestActivity: number | null
+}

@@ -1,0 +1,311 @@
+<div class="container row">
+    <div class="row mb-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-8">
+            <select (change)="rerenderFeed()" id='feed-select' class="form-select select-feed">
+                <option selected value="Following">Following</option>
+                <option value="Self">Self</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <ul class="list-group sticky-md-top" style="top: 1.5rem;">
+
+                <div class="card mb-4">
+                    <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+                    <img src="{{this.baseURL +'Api/Users/0/Photo'}}" class="center profile-image mt-2"
+                        alt="profile picture" onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+
+
+                    <h4 *ngIf="!!this.userInfo; else loadingSpinner" class="card-title text-center mt-2">
+                        {{userInfo.firstName+' '+userInfo.lastName}}</h4>
+
+                    <div *ngIf="!!this.userStats; else loadingSpinner" class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <label for="following">Sigue</label>
+                                <p id="following">{{userStats.following}}</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <label for="followers">Seguidores</label>
+                                <p id="followers">{{userStats.followers}}</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <label for="activities">Actividades</label>
+                                <p id="activities">{{userStats.activities}}</p>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <ng-container *ngIf="!!this.userStats && !!this.userStats.latestActivity">
+                    <div *ngIf="!!this.lastActivity; else loadingSpinner" class="card mb-4">
+                        <div class="row card-body text-center">
+                            <h4 class=" card-title">Última actividad:</h4>
+                            <small>{{this.lastActivity.start.toLocaleString()}}</small>
+
+                        </div>
+                        <div class="row align-items-center card-body">
+                            <div class=" row">
+                                <div class="col-2 text-center" style="min-width: 120px; margin-top: 10px;">
+                                    <!-- símbolo de actividad -->
+                                    <fa-icon [icon]="getIconForType(this.lastActivity.type)" size="3x"></fa-icon>
+                                </div>
+
+                                <div class="col">
+                                    <div class=" row">
+                                        <div class="col-5">
+                                            <label for="distance-last">Distancia</label>
+                                        </div>
+                                        <div class="col">
+                                            <p id="distance-last">
+                                                {{this.lastActivity.length}} km</p>
+                                        </div>
+                                    </div>
+                                    <div class=" row">
+                                        <div class="col-5">
+                                            <label for="duration-last">Tiempo</label>
+                                        </div>
+                                        <div class="col">
+                                            <p id="duration-last">
+                                                {{getDuration(this.lastActivity)}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-2 text-center" style="min-width: 120px;">
+                                    <a class="comment" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#commentsModal"
+                                        (click)="loadComments(this.userStats.latestActivity)">
+                                        <fa-icon [icon]="icons.comment" size="2x"></fa-icon>
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <a class="btn btn-success container-fluid" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#routeModal"
+                                        (click)="loadGpx(this.userStats.latestActivity)">Ver
+                                        Ruta</a>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <!-- Puedo meter más cards 👀 -->
+            </ul>
+
+        </div>
+
+        <div class=" col-md-8">
+
+            <ul *ngIf="selectedFeed === 'Following'" class="list-group">
+                <ng-container *ngIf="!loadingFeed; else loadingSpinner">
+                    <ng-container *ngIf="feedList.length === 0">
+                        <p>Parece que ninguno de tus amigos ha subido una actividad, sigue a más
+                            personas!</p>
+                    </ng-container>
+                    <div *ngFor="let ua of feedList; index as i" class="card mb-4">
+                        <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+
+                        <div class="card-body">
+                            <div></div>
+                            <div class="row align-items-center mb-2">
+                                <div class="col-2" style="min-width: 120px;">
+                                    <a class="thumbnail">
+                                        <img src="{{ this.baseURL +'Api/Users/' +ua.activity.user + '/Photo'}}"
+                                            class="img-responsive profile-image ml-2" alt="profile picture"
+                                            onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+                                    </a>
+                                </div>
+                                <div class="col-8 row">
+                                    <div class="col-8">
+                                        <h5>{{ua.user.firstName + ' ' + ua.user.lastName}}</h5>
+                                        <p>{{ua.user.country.flag}}</p>
+                                        <small>{{ua.activity.start.toLocaleString()}}</small>
+                                    </div>
+                                    <div class="col d-flex justify-content-end" style="margin-top: 10px;">
+                                        <a class="comment" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#commentsModal" (click)="loadComments(ua.actId)">
+                                            <fa-icon [icon]="icons.comment" size="2x"></fa-icon>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-center">
+                                <div class="col-2 text-center" style="min-width: 120px;">
+                                    <!-- símbolo de actividad -->
+                                    <fa-icon [icon]="getIconForType(ua.activity.type)" size="2x"></fa-icon>
+                                </div>
+                                <div class="col">
+                                    <h4 class="card-title">
+                                        {{this.activityTypes[ua.activity.type]}}</h4>
+                                </div>
+                            </div>
+                            <div class="row align-items-center">
+                                <div class="col-2" style="min-width: 120px;"></div>
+                                <div class="col row">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label for="distance-{{i}}">Distancia</label>
+                                            <p id="distance-{{i}}">{{ua.activity.length}} km</p>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="duration-{{i}}">Tiempo</label>
+                                            <p id="duration-{{i}}">{{getDuration(ua.activity)}}
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            <a class="btn btn-success side-btn" type=" button" data-bs-toggle="modal"
+                                                data-bs-target="#routeModal" (click)="loadGpx(ua.actId)">Ver
+                                                Ruta</a>
+                                        </div>
+                                        <!-- <div class="col"></div> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </ul>
+
+            <ul *ngIf="selectedFeed === 'Self'" class="list-group">
+                <ng-container *ngIf="!loadingFeed; else loadingSpinner">
+                    <ng-container *ngIf="selfList.length === 0">
+                        <p>Parece que no has registrado ninguna actividad, <a [routerLinkActive]="['link-active']"
+                                [routerLink]="['/register=act']">ve a registrar una!</a></p>
+                    </ng-container>
+                    <div *ngFor="let a of selfList; index as i" class="card mb-4">
+                        <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-2 text-center" style="min-width: 120px;">
+                                    <!-- símbolo de actividad -->
+                                    <fa-icon [icon]="getIconForType(a.activity.type)" size="3x">
+                                    </fa-icon>
+                                </div>
+
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <h4 class="card-title">{{this.activityTypes[a.activity.type]}}</h4>
+                                            <small>{{a.activity.start.toLocaleString()}}</small>
+
+                                        </div>
+                                        <div class="col" style="margin-left: 30px;">
+                                            <a class="comment" type="button" data-bs-toggle="modal"
+                                                data-bs-target="#commentsModal" (click)="loadComments(a.actId)">
+                                                <fa-icon [icon]="icons.comment" size="2x"></fa-icon>
+                                            </a>
+                                        </div>
+
+
+                                    </div>
+                                    <div class=" row">
+                                        <div class="col-4">
+                                            <label for="distance-{{i}}">Distancia</label>
+                                            <p id="distance-{{i}}">{{a.activity.length}} km</p>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="duration-{{i}}">Tiempo</label>
+                                            <p id="duration-{{i}}">{{getDuration(a.activity)}}</p>
+                                        </div>
+                                        <div class="col"><a class="btn btn-success side-btn" type="button"
+                                                data-bs-toggle="modal" data-bs-target="#routeModal"
+                                                (click)="loadGpx(a.actId)">Ver
+                                                Ruta</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </ng-container>
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+
+<hr class=" bg-danger border-2 border-top border-danger">
+
+<ng-template #loadingSpinner>
+    <div class="spinner-border ml-6 mt-2" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</ng-template>
+
+<!-- GPX Modal -->
+<div class="modal fade" id="routeModal" tabindex="-1" aria-labelledby="routeLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="route-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="routeLabel">Mapa de ruta
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="!loadingGpx; else loadingSpinner" id="gpx-map" style="height: 600px;" leaflet
+                    [leafletOptions]="options" [leafletLayers]="gpxLayer" (leafletMapReady)="onMapReady($event)">>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comments Modal -->
+<div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="comments-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentsLabel">Comentarios
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngFor="let c of comments; index as i" class="card mb-4">
+                    <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+
+                    <div class="card-body row">
+                        <div class="col-md-3">
+                            <!-- Remplazar src con dirección de imagen de cada usuario cuando GET funcione -->
+                            <img src="{{this.baseURL +'Api/Users/' +  c.userId + '/Photo'}}" class="profile-image"
+                                height=100 alt="profile picture"
+                                onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+
+                        </div>
+
+                        <div class="col-md-9">
+
+                            <h5>{{c.comment.user.firstName + ' ' + c.comment.user.lastName}}</h5>
+                            <small>{{c.comment.time.toLocaleString()}}</small>
+                            <p>{{c.comment.content}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 form-group">
+                    <label for="new-comment">Dejar comentario:</label>
+                    <div id="new-comment" class="input-group mb-3">
+                        <input id="new-comment-input" type="text" class="form-control" aria-label="New comment">
+                        <button class="btn btn-outline-secondary" type="button" (click)="postComment()">
+                            <fa-icon [icon]="icons.send"></fa-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>

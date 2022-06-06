@@ -840,12 +840,12 @@ CREATE TABLE activity_types
 
 CREATE TABLE activities
 (
-  id         int      NOT NULL IDENTITY PRIMARY KEY,
-  athlete    int      NOT NULL REFERENCES users(id),
-  start_time datetime NOT NULL,
-  end_time   datetime NOT NULL,
-  type       int      NOT NULL REFERENCES activity_types(id),
-  length     decimal  NOT NULL,
+  id         int            NOT NULL IDENTITY PRIMARY KEY,
+  athlete    int            NOT NULL REFERENCES users(id),
+  start_time datetime       NOT NULL,
+  end_time   datetime       NOT NULL,
+  type       int            NOT NULL REFERENCES activity_types(id),
+  length     decimal(18, 9) NOT NULL,
 
   CHECK(start_time < end_time),
 );
@@ -897,11 +897,11 @@ CREATE TABLE sponsor_logos
 
 CREATE TABLE races
 (
-  id      int         NOT NULL IDENTITY PRIMARY KEY,
-  name    varchar(64) NOT NULL UNIQUE,
-  on_date date        NOT NULL,
-  type    int         NOT NULL REFERENCES activity_types(id),
-  price   decimal     NOT NULL,
+  id      int            NOT NULL IDENTITY PRIMARY KEY,
+  name    varchar(64)    NOT NULL UNIQUE,
+  on_date date           NOT NULL,
+  type    int            NOT NULL REFERENCES activity_types(id),
+  price   decimal(18, 9) NOT NULL,
 
   CHECK(LEN(name) > 0),
   CHECK(price > 0),
@@ -937,6 +937,7 @@ CREATE TABLE race_participants
 (
   race     int NOT NULL REFERENCES races(id),
   athlete  int NOT NULL REFERENCES users(id),
+  category int NOT NULL REFERENCES categories(id),
   activity int     NULL REFERENCES activities(id),
 
   PRIMARY KEY(race, athlete),
@@ -956,9 +957,10 @@ CREATE INDEX idx_race_sponsors ON race_sponsors(race);
 
 CREATE TABLE receipts
 (
-  race    int            NOT NULL REFERENCES races(id),
-  athlete int            NOT NULL REFERENCES users(id),
-  receipt varbinary(max) NOT NULL,
+  race     int            NOT NULL REFERENCES races(id),
+  athlete  int            NOT NULL REFERENCES users(id),
+  category int            NOT NULL REFERENCES categories(id),
+  receipt  varbinary(max)     NULL,
 
   PRIMARY KEY(race, athlete),
 );
@@ -975,12 +977,12 @@ CREATE INDEX idx_bank_accounts_race ON bank_accounts(race);
 
 CREATE TABLE challenges
 (
-  id         int         NOT NULL IDENTITY PRIMARY KEY,
-  name       varchar(64) NOT NULL UNIQUE,
-  start_time datetime    NOT NULL,
-  end_time   datetime    NOT NULL,
-  type       int         NOT NULL REFERENCES activity_types(id),
-  goal       decimal     NOT NULL,
+  id         int            NOT NULL IDENTITY PRIMARY KEY,
+  name       varchar(64)    NOT NULL UNIQUE,
+  start_time datetime       NOT NULL,
+  end_time   datetime       NOT NULL,
+  type       int            NOT NULL REFERENCES activity_types(id),
+  goal       decimal(18, 9) NOT NULL,
 
   CHECK(LEN(name) > 0),
   CHECK(start_time < end_time),
@@ -1021,8 +1023,26 @@ CREATE INDEX idx_challenge_activities ON challenge_activities(challenge);
 
 GO
 
+CREATE VIEW challenge_progress AS
+  SELECT     challenge_participants.challenge,
+             challenge_participants.athlete,
+             COALESCE(SUM(length), 0) AS progress,
+             COALESCE(MAX(seq_no), -1) AS last_seq
+  FROM       challenge_activities
+  JOIN       activities
+  ON         activity = id
+  RIGHT JOIN challenge_participants
+  ON         activities.athlete = challenge_participants.athlete
+  GROUP BY   challenge_participants.challenge,
+             challenge_participants.athlete;
+
+GO
+
 CREATE FULLTEXT CATALOG search;
 CREATE UNIQUE INDEX idx_users_id ON users(id);
+CREATE UNIQUE INDEX idx_groups_id ON groups(id);
+CREATE UNIQUE INDEX idx_races_id ON races(id);
+CREATE UNIQUE INDEX idx_challenges_id ON challenges(id);
 
 GO
 
@@ -1030,6 +1050,18 @@ CREATE FULLTEXT INDEX ON users
 ( first_name LANGUAGE 5130 -- es-CR
 , last_name  LANGUAGE 5130 -- es-Cr
 ) KEY INDEX idx_users_id ON search;
+
+CREATE FULLTEXT INDEX ON groups
+( name LANGUAGE 5130 -- es-CR
+) KEY INDEX idx_groups_id ON search;
+
+CREATE FULLTEXT INDEX ON races
+( name LANGUAGE 5130 -- es-CR
+) KEY INDEX idx_races_id ON search;
+
+CREATE FULLTEXT INDEX ON challenges
+( name LANGUAGE 5130 -- es-CR
+) KEY INDEX idx_challenges_id ON search;
 
 GO
 

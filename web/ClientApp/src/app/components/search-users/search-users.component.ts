@@ -7,7 +7,7 @@ import { User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
 import { RepositoryService } from 'src/app/services/repository.service';
-import { SearchResp, SearchService } from 'src/app/services/search.service';
+import { SearchService } from 'src/app/services/search.service';
 
 
 @Component({
@@ -18,7 +18,7 @@ import { SearchResp, SearchService } from 'src/app/services/search.service';
 export class SearchUsersComponent implements OnInit {
 
   searchUserForm = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    username: new FormControl(''),
   })
 
   message: string = "";
@@ -56,39 +56,40 @@ export class SearchUsersComponent implements OnInit {
   }
 
   refreshPage(): void {
-    this.searchService.searchUserPage(this.searchQuery, this.currentPage)
-      .subscribe((res: HttpResponse<SearchResp>) => {
+    this.searchService.searchUserPage(this.searchQuery)
+      .subscribe((res: HttpResponse<number[]>) => {
         if (res.body) {
 
-          let id_list = res.body.page;
+          let id_list = res.body;
+          this.user_id_list = id_list;
+          for (let j = 0; j < id_list.length; j++) {
+            if(id_list[j] == this.authService.getId()){
+              this.user_id_list.splice(j,1)
+              break
+            }
+            continue
+          }
 
-          this.users_page = Array(id_list.length);
-          this.amount_of_pages = res.body.pages;
+          this.users_page = Array(this.user_id_list.length);
 
           console.log("onSearch id list:", id_list);
           console.log("onSearch pages:", this.amount_of_pages);
-
           this.user_id_list = id_list
-          this.getPageUsers(id_list);
-          this.pageButtonsSetup();
+          this.getPageUsers();
         }
       })
   }
 
-  getPageUsers(id_list: number[]) {
-    for (let j = 0; j < id_list.length; j++) {
-
-      this.authService.getUser(id_list[j])
-        .subscribe((user: User | null) => {
-          if (user) {
-            console.log("getPageUsers res:", user);
+  getPageUsers() {
+    for (let j = 0; j < this.user_id_list.length; j++) {
+      this.authService.getUser(this.user_id_list[j])
+      .subscribe((user: User | null) => {
+        if (user) {
+          console.log("getPageUsers res:", user);
             this.users_page[j] = user;
             console.log(this.users_page[j]);
-          }
         }
-          // No hay que manejar error porque getUser ya maneja el 404
-        )
-        
+      })
     }
     console.log("users:", this.users_page)
   }
@@ -97,58 +98,21 @@ export class SearchUsersComponent implements OnInit {
     this.registerService.follow_user(id)
       .subscribe((res: HttpResponse<null>) => {
         console.log("onFollow result:", res);
+        this.message = "Se ha seguido exitosamente al ususario deseado"
       })
-
-    // TODO: refrescar página?
-    // user.isfollowing = !user.isfollowing;
+    this.refreshPage()
   }
 
   onUnfollow(id: number) {
     this.registerService.unfollow_user(id)
       .subscribe((res: HttpResponse<null>) => {
         console.log("onUnfollow result:", res);
+        this.message = "Se ha dejado de seguir exitosamente al ususario deseado"
       })
-    // TODO: refrescar página?
-    // user.isfollowing = !user.isfollowing;
-  }
-
-  pageButtonsSetup() {
-    if (this.amount_of_pages == 1 || this.amount_of_pages == 0) {
-      this.isFirstPage = true;
-      this.isLastPage = true;
-    } else if (this.currentPage == 1) {
-      this.isFirstPage = true;
-      this.isLastPage = false;
-    } else if (this.amount_of_pages - this.currentPage == 0) {
-      this.isFirstPage = false;
-      this.isLastPage = true;
-    } else {
-      this.isFirstPage = false;
-      this.isLastPage = false;
-    }
-  }
-
-  onPreviousPage() {
-    this.currentPage = this.currentPage - 1;
-    if (this.currentPage == 0) {
-      this.currentPage = 1;
-      this.pageButtonsSetup();
-      return
-    }
-
     this.refreshPage()
+  
   }
 
-  onNextPage() {
-    this.currentPage = this.currentPage + 1;
-    if (this.currentPage > this.amount_of_pages) {
-      this.currentPage = this.amount_of_pages;
-      this.pageButtonsSetup();
-      return
-    }
-
-    this.refreshPage()
-  }
 
   isFollowing(relationship: Relationships | null): boolean {
     if (relationship == Relationships.Self) {
@@ -160,6 +124,6 @@ export class SearchUsersComponent implements OnInit {
     } else if (relationship == Relationships.Following || relationship == Relationships.BothFollowing) {
       return true
     }
-    return false; //no debería pasar;
+    return false; //no debería pasar, pero typescript se enoja si no lo pongo;
   }
 }

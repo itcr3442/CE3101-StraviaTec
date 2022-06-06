@@ -2,6 +2,18 @@ DROP PROCEDURE IF EXISTS current_age;
 
 
 IF EXISTS (SELECT 0 FROM  sys.fulltext_indexes 
+                    WHERE object_id = object_id('dbo.challenges'))
+   DROP FULLTEXT INDEX ON challenges;
+
+IF EXISTS (SELECT 0 FROM  sys.fulltext_indexes 
+                    WHERE object_id = object_id('dbo.races'))
+   DROP FULLTEXT INDEX ON races;
+
+IF EXISTS (SELECT 0 FROM  sys.fulltext_indexes 
+                    WHERE object_id = object_id('dbo.groups'))
+   DROP FULLTEXT INDEX ON groups;
+
+IF EXISTS (SELECT 0 FROM  sys.fulltext_indexes 
                     WHERE object_id = object_id('dbo.users'))
    DROP FULLTEXT INDEX ON users;
 
@@ -10,6 +22,9 @@ IF EXISTS (SELECT 0 FROM  sys.fulltext_catalogs
    DROP FULLTEXT CATALOG search;
 
 
+DROP INDEX IF EXISTS idx_challenges_id            ON challenges;
+DROP INDEX IF EXISTS idx_races_id                 ON races;
+DROP INDEX IF EXISTS idx_groups_id                ON groups;
 DROP INDEX IF EXISTS idx_users_id                 ON users;
 DROP INDEX IF EXISTS idx_friends_follower         ON friends;
 DROP INDEX IF EXISTS idx_friends_followee         ON friends;
@@ -22,6 +37,9 @@ DROP INDEX IF EXISTS idx_bank_accounts_race       ON bank_accounts;
 DROP INDEX IF EXISTS idx_challenge_private_groups ON challenge_private_groups;
 DROP INDEX IF EXISTS idx_challenge_participants   ON challenge_participants;
 DROP INDEX IF EXISTS idx_challenge_activities     ON challenge_activities;
+
+
+DROP VIEW IF EXISTS challenge_progress;
 
 
 DROP TABLE IF EXISTS challenge_activities;

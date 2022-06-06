@@ -51,6 +51,12 @@ export class RaceAdminComponent implements OnInit {
   // el file mismo
   gpxFile: File | null = null
 
+  totalBanks: number = 1
+  totalCategories: number = 1
+
+  isPrivate: boolean = false
+  totalGroups: number = 1
+
   activityTypes: (keyof typeof ActivityType)[] = [];
   // Para acceder el enum dentro de html
   get activityTypeEnum(): typeof ActivityType {
@@ -83,15 +89,47 @@ export class RaceAdminComponent implements OnInit {
     this.gpxMapReference = map
   }
 
+  checkBanksValidity(): boolean {
+    for (let i = 0; i < this.totalBanks; i++) {
+      let bankInput: HTMLInputElement = document.getElementById('iban-' + i) as HTMLInputElement;
+      let bankString: string = bankInput.value;
+
+      const iban_regex: RegExp = /[A-Z]{2}\d{20}/;
+
+      if (!iban_regex.test(bankString)) {
+        console.log("IBAN # malformatted:", bankString)
+        return false
+      }
+    }
+    return true
+  }
+
+  checkCategoriesValidity(): boolean {
+    let categoryList: Array<number> = []
+    for (let i = 0; i < this.totalCategories; i++) {
+
+      let categorySelect: HTMLSelectElement = document.getElementById('category-' + i) as HTMLSelectElement;
+      let selectedCategory: number = +categorySelect.options[categorySelect.selectedIndex].value;
+      console.log("categories list:", categoryList)
+      console.log("selected category:", selectedCategory)
+
+      if (categoryList.includes(selectedCategory)) {
+        console.log("Repeat category:", selectedCategory)
+        return false
+      }
+      categoryList.push(selectedCategory)
+    }
+    return true
+  }
+
   checkFormValidity(): boolean {
-    // TODO: completar
     this.warnMessage = ""
 
     if (!this.registerForm.valid) {
       this.warnMessage = "Verifique que todos los campos fueron ingresados con formato correcto."
     }
-    let startDateCtrl = this.registerForm.controls['startDate']
-    if (!(startDateCtrl.valid && new Date(startDateCtrl.value) > new Date(this.minDate))) {
+    let raceDateCtrl = this.registerForm.controls['day']
+    if (!(raceDateCtrl.valid && new Date(raceDateCtrl.value) > new Date(this.minDate))) {
       this.warnMessage = "Por favor ingrese fechas válidas y verifique que la fecha de inicio sea antes que la fecha de fin."
       return false
     }
@@ -99,6 +137,14 @@ export class RaceAdminComponent implements OnInit {
       this.warnMessage = "Por favor ingrese un archivo '.gpx' válido."
       return false
     }
+    if (!this.checkCategoriesValidity()) {
+      this.warnMessage = "No se pueden tener categorías repetidas."
+      return false
+    }
+    // if (!this.checkBanksValidity()) {
+    //   this.warnMessage = "Revise que los códigos IBAN ingresados sean todos válidos."
+    //   return false
+    // }
     return true
   }
 
@@ -210,4 +256,66 @@ export class RaceAdminComponent implements OnInit {
     return date.getFullYear() + "-" + (date.getMonth() + 1 + "").padStart(2, "0") + "-" + (date.getDate() + "").padStart(2, "0")
   }
 
+  bankCounter() {
+    return new Array(this.totalBanks);
+  }
+
+  addBank() {
+    this.totalBanks += 1
+  }
+
+  decreaseBank() {
+    if (this.totalBanks === 1) return
+    this.totalBanks -= 1
+  }
+
+  categoryCounter() {
+    return new Array(this.totalCategories);
+  }
+
+  addCategory() {
+    if (this.totalCategories === this.categoryTypes.length) return
+    this.totalCategories += 1
+  }
+
+  decreaseCategory() {
+    if (this.totalCategories === 1) return
+    this.totalCategories -= 1
+  }
+
+  // onPrivacyChange(event: Event) {
+  //   let target = event.target as HTMLInputElement
+
+  //   this.isPrivate = target.checked
+
+  //   let studentId = this.registerForm.get('studentId')
+  //   let university = this.registerForm.get('university')
+
+  //   if (this.isPrivate) {
+  //     studentId?.setValidators(Validators.required);
+  //     university?.setValidators(Validators.required);
+
+  //   }
+  //   else {
+  //     studentId?.setValidators(null);
+  //     university?.setValidators(null);
+  //   }
+
+  //   studentId?.updateValueAndValidity();
+  //   university?.updateValueAndValidity();
+  // }
+
+  // groupCounter() {
+  //   return new Array(this.totalCategories);
+  // }
+
+  // addgroup() {
+  //   if (this.totalGroups === this.categoryTypes.length) return
+  //   this.totalGroups += 1
+  // }
+
+  // decreaseGroup() {
+  //   if (this.totalGroups === 1) return
+  //   this.totalGroups -= 1
+  // }
 }

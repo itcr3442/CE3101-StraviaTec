@@ -71,6 +71,7 @@ export class LoginComponent implements OnInit {
 
             this.cookies.setCookie(UserCookieName, JSON.stringify(res.body), 1)
             this.router.navigate(['/'])
+            window.location.reload()
 
           }
           else {

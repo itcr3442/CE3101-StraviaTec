@@ -12,18 +12,29 @@ namespace web.Controllers;
 [Route("Api/[action]")]
 public class DashboardController : ControllerBase
 {
-    [HttpGet("{page}")]
-    [Consumes(MediaTypeNames.Application.Json)]
+    public DashboardController(ISqlConn db) => _db = db;
+
+    [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Paged))]
-    public ActionResult Feed(int page)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    public ActionResult Feed()
     {
-        return Ok(new Resp.Paged
+        string query = @"
+            SELECT   TOP 100 id
+            FROM     activities
+            JOIN     friends
+            ON       athlete = followee
+            WHERE    follower = @id
+            ORDER BY end_time DESC
+            ";
+
+        using (var cmd = _db.Cmd(query))
         {
-            Pages = 1,
-            Page = new int[] { 69, 420 },
-        });
+            return Ok(cmd.Param("id", this.LoginId()).Rows<int>().ToArray());
+        }
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]

@@ -1,0 +1,33 @@
+/* body {
+
+    background-color: #eee;
+} */
+
+.card {
+
+    /* background-color: #fff; */
+    padding: 15px;
+    border: none;
+}
+
+
+.form-control:focus {
+    background-color: #eeeeee69;
+    box-shadow: none;
+    border-color: #eee;
+}
+
+
+.list {
+
+    padding-top: 7.5px;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+
+}
+
+.border-bottom {
+
+    border-bottom: 2px solid #eee;
+}

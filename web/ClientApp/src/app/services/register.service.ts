@@ -12,7 +12,7 @@ import { HttpResponse } from '@angular/common/http';
 import { Id } from '../interfaces/id';
 import { ActivityType } from '../constants/activity.constants';
 import { Race } from '../interfaces/race';
-import { RaceCategory } from '../constants/races.constants';
+import { RaceCategory, RaceCategoryType } from '../constants/races.constants';
 
 export enum gpxType {
   Race,
@@ -38,7 +38,6 @@ export class RegisterService {
       "type": RoleLevels[user.type]
     }
 
-
     console.log("New user: " + JSON.stringify(new_user))
 
     // return of({ id: 69 })
@@ -46,6 +45,13 @@ export class RegisterService {
       "Users", new_user)
 
   }
+
+  public put_pfp(id: number, image: File): Observable<HttpResponse<null>> {
+
+    return this.repositoryService.replace<null>(
+      `Users/${id}/Photo`, image, {}, "image/jpeg")
+  }
+
 
   public delete_self() {
     return this.repositoryService.delete<null>(
@@ -69,14 +75,23 @@ export class RegisterService {
     }
   }
 
+  public reset_password(id: number, currentP: string, newP: string): Observable<HttpResponse<null>> {
+    let updatePassword = {
+      current: currentP,
+      new: newP
+    }
+
+    return this.repositoryService.replace(`Users/${id}/Password`, updatePassword, { skip401: true })
+  }
+
   /**
    * resetea el formgroup dejando todos sus campos vacíos
    * @param formGroup un formgroup a resetear
    */
   public resetForm = (formGroup: FormGroup) => {
-    if (environment.production) {
-      Object.values(formGroup.controls).forEach((control) => control.reset())
-    }
+    // if (environment.production) {
+    Object.values(formGroup.controls).forEach((control) => control.reset())
+    // }
 
   }
 
@@ -119,7 +134,7 @@ export class RegisterService {
     let baseUrl: string = type === gpxType.Activity ? 'Activities' : 'Races';
 
     return this.repositoryService.replace<null>(
-      baseUrl + id + "/Track", gpx, false, "application/xml")
+      `${baseUrl}/${id}/Track`, gpx, {}, "application/xml")
   }
 
   public register_race(race: Race): Observable<HttpResponse<Id>> {
@@ -145,11 +160,15 @@ export class RegisterService {
       "Races/" + id)
   }
 
-  /* TESTING NO TOCAR
-  public register_user_race(raceId: number): Observable<HttpResponse<null>>{
-   return this.repositoryService.create<null>("Races/" + raceId + /Registration, null)
+
+  public register_user_race(raceId: number, userCategory: string): Observable<HttpResponse<null>> {
+    return this.repositoryService.create<null>("Races/" + raceId + "/Registration?category=" + userCategory, null)
   }
-  */
+
+  public register_race_receipt(raceId: number, receipt: File | null): Observable<HttpResponse<null>> {
+    return this.repositoryService.replace<null>("Races/" + raceId + "/Receipts", receipt, {}, "application/pdf")
+  }
+
 
   public register_user_challenges(challId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Challenges/" + challId + "/Registration", null)
@@ -157,6 +176,10 @@ export class RegisterService {
 
   public register_user_groups(groupId: number): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Groups/" + groupId + "/Registration", null)
+  }
+
+  public post_comment(activityId: number, content: string): Observable<HttpResponse<null>> {
+    return this.repositoryService.create<null>(`Activities/${activityId}/Comments`, { content: content })
   }
 
 }

@@ -70,18 +70,120 @@ public class ProfileController : ControllerBase
         });
     }
 
-    [HttpGet("{page}")]
-    [Consumes(MediaTypeNames.Application.Json)]
+    [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Paged))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult History(int id, int page)
+    public ActionResult History(int id)
     {
-        return Ok(new Resp.Paged
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = @"
+            SELECT   id
+            FROM     activities 
+            WHERE    athlete=@id
+            ORDER BY end_time DESC";
+
+        using (var cmd = _db.Cmd(query))
         {
-            Pages = 1,
-            Page = new int[] { 69, 420 },
-        });
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Groups(int id)
+    {
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = "SELECT group_id FROM group_members WHERE member=@id ORDER BY group_id";
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Races(int id)
+    {
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = @"
+            SELECT    race
+            FROM      race_participants
+            LEFT JOIN activities
+            ON        activity = id
+            WHERE     race_participants.athlete = @id
+            ORDER BY CASE WHEN activity IS NULL THEN 1 ELSE 0 END DESC, end_time DESC";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Challenges(int id)
+    {
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = @"
+            SELECT    challenge
+            FROM      challenge_participants
+            LEFT JOIN
+            (
+              SELECT   athlete, MAX(end_time) AS latest_time
+              FROM     challenge_activities
+              JOIN     activities
+              ON       activity = id
+              GROUP BY athlete
+            ) AS latest
+            ON       latest.athlete = challenge_participants.athlete
+            WHERE    latest.athlete = @id
+            ORDER BY CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END DESC, latest_time DESC";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Followers(int id)
+    {
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = "SELECT follower FROM friends WHERE followee=@id ORDER BY follower";
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult Following(int id)
+    {
+        (int effective, int self) = this.OrSelf(id);
+
+        string query = "SELECT followee FROM friends WHERE follower=@id ORDER BY followee";
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("id", effective).Rows<int>().ToArray());
+        }
     }
 
     private ISqlConn _db;

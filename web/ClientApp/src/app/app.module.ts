@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+// import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 // import * as gpx from 'leaflet-gpx';
 
 import { AuthGuard } from './guards/auth.guard';
@@ -32,6 +34,9 @@ import { UserChallengesComponent } from './components/user-challenges/user-chall
 import { UserGroupsComponent } from './components/user-groups/user-groups.component';
 import { UserSubscribedComponent } from './components/user-subscribed/user-subscribed.component';
 import { RaceAdminComponent } from './components/race-admin/race-admin.component';
+import { SearchFieldComponent } from './components/search-field/search-field.component';
+import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
+import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
 
 
 @NgModule({
@@ -55,6 +60,9 @@ import { RaceAdminComponent } from './components/race-admin/race-admin.component
     UserGroupsComponent,
     UserSubscribedComponent,
     RaceAdminComponent,
+    SearchFieldComponent,
+    UserDashboardComponent,
+    ResetPasswordFormComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -63,6 +71,7 @@ import { RaceAdminComponent } from './components/race-admin/race-admin.component
     FormsModule,
     AppRoutingModule,
     LeafletModule,
+    FontAwesomeModule,
   ],
   providers: [AuthGuard,
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedHandlerInterceptor, multi: true },

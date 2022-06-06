@@ -22,3 +22,5 @@ export enum Relationships {
     BothFollowing,
 }
 export declare type RelationshipsType = keyof typeof Relationships;
+
+export const maxImageSize: number = 4 * (10 ** 6);

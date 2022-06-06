@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { of } from 'rxjs';
 import { RoleLevels } from 'src/app/constants/user.constants';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -10,22 +11,19 @@ import { AuthService } from 'src/app/services/auth.service';
 export class NavMenuComponent {
 
   RoleLevels = RoleLevels; //  accessible in html
-  role: RoleLevels | null = null;
-  authenticated: boolean = false;
 
   constructor(private authService: AuthService) {
-    this.refresh_auth()
   }
 
-  ngDoCheck(): void {
-    this.refresh_auth()
+  get authenticated(): boolean {
+    return this.authService.isLoggedIn()
   }
 
-  refresh_auth(): void {
-    this.authenticated = this.authService.isLoggedIn()
+  get role(): RoleLevels | null {
     if (this.authenticated) {
-      this.role = this.authService.getRole()
+      return this.authService.getRole()
     }
+    else return null
   }
 
   logout(): void {

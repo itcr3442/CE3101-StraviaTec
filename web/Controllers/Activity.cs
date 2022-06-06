@@ -80,7 +80,7 @@ public class ActivityController : ControllerBase
             var result = cmd.Param("id", id).Row<(int, DateTime, DateTime, string, decimal)>();
             if (result == null)
             {
-                return Unauthorized();
+                return NotFound();
             }
 
             row = result.Value;
@@ -116,6 +116,21 @@ public class ActivityController : ControllerBase
                 {
                     return Forbid();
                 }
+            }
+
+            using (var cmd = txn.Cmd("UPDATE race_participants SET activity=NULL WHERE activity=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM activity_tracks WHERE activity=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM challenge_activities WHERE activity=@id"))
+            {
+                await cmd.Param("id", id).Exec();
             }
 
             using (var cmd = txn.Cmd("DELETE FROM activities WHERE id=@id"))

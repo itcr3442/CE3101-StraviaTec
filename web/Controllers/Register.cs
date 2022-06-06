@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
@@ -13,16 +15,49 @@ namespace web.Controllers;
 [Route("Api/[action]/{id}/Registration")]
 public class RegistrationController : ControllerBase
 {
+    public RegistrationController(ISqlConn db) => _db = db;
+
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult Races(int id, Category category)
+    public async Task<ActionResult> Races(int id, Category category)
     {
-        if (Random.Shared.Next(3) == 0)
+        int self = this.LoginId();
+        using (var txn = _db.Txn())
         {
-            return Conflict();
+            string query = @"
+                SELECT COUNT(race)
+                FROM   race_participants
+                WHERE  race=@race AND athlete=@athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                if ((cmd.Param("race", id).Param("athlete", self).Row<int>() ?? 0) > 0)
+                {
+                    return Conflict();
+                }
+            }
+
+            query = @"
+                INSERT INTO receipts(race, athlete, category)
+                SELECT @race, @athlete, id
+                FROM   categories
+                WHERE  name=@category
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("race", id)
+                   .Param("athlete", self)
+                   .Param("category", category.ToString());
+
+                await cmd.Exec();
+            }
+
+            txn.Commit();
         }
 
         return CreatedAtAction(nameof(Races), new { id = id });
@@ -31,10 +66,37 @@ public class RegistrationController : ControllerBase
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult Races(int id)
+    public async Task<ActionResult> Races(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
+        int self = this.LoginId();
+        int deleted = 0;
+
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                DELETE FROM race_participants
+                WHERE       race=@race AND athlete=@athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                deleted += await cmd.Param("race", id).Param("athlete", self).Exec();
+            }
+
+            query = @"
+                DELETE FROM receipts
+                WHERE       race=@race AND athlete=@athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                deleted += await cmd.Param("race", id).Param("athlete", self).Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return deleted > 0 ? NoContent() : NotFound();
     }
 
     [HttpPost]
@@ -42,11 +104,16 @@ public class RegistrationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult RegisterChallenge(int id)
+    public async Task<ActionResult> RegisterChallenge(int id)
     {
-        if (Random.Shared.Next(3) == 0)
+        string query = @"
+            INSERT INTO challenge_participants(challenge, athlete)
+            VALUES(@challenge, @athlete)
+            ";
+
+        using (var cmd = _db.Cmd(query))
         {
-            return Conflict();
+            await cmd.Param("challenge", id).Param("athlete", this.LoginId()).Exec();
         }
 
         return CreatedAtAction("Challenges", new { id = id });
@@ -56,31 +123,77 @@ public class RegistrationController : ControllerBase
     [ActionName("Challenges")] // Evita colisión de prototipos
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult UnregisterChallenge(int id)
+    public async Task<ActionResult> UnregisterChallenge(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : Conflict();
+        int self = this.LoginId();
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                DELETE FROM challenge_participants
+                WHERE       challenge=@challenge AND athlete=@athlete
+                ";
+
+            using (var cmd = _db.Cmd(query))
+            {
+                cmd.Param("challenge", id).Param("athlete", self);
+                if (await cmd.Exec() == 0)
+                {
+                    return NotFound();
+                }
+            }
+
+            query = @"
+                DELETE challenge_activities
+                FROM   challenge_activities
+                JOIN   activities
+                ON     activity = activities.id
+                WHERE  challenge=@challenge AND athlete=@athlete
+                ";
+
+            using (var cmd = _db.Cmd(query))
+            {
+                await cmd.Param("challenge", id).Param("athlete", self).Exec();
+            }
+
+            txn.Commit();
+        }
+
+        return NoContent();
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]
 [Route("Api/Races/{raceId}/Receipts")]
 public class ReceiptController : ControllerBase
 {
-    [HttpPost]
+    public ReceiptController(ISqlConn db) => _db = db;
+
+    [HttpPut]
+    [FileUpload(MediaTypeNames.Application.Pdf)]
     [Consumes(MediaTypeNames.Application.Pdf)]
     [RequestSizeLimit(1048576)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult New(int raceId, IFormFile receipt)
+    public async Task<ActionResult> Put(int raceId)
     {
-        if (Random.Shared.Next(3) == 0)
+        int self = this.LoginId();
+
+        string query = @"
+            UPDATE receipts
+            SET    receipt=@receipt
+            WHERE  race=@race AND athlete=@athlete
+            ";
+
+        int modified;
+        using (var cmd = _db.Cmd(query))
         {
-            return Conflict();
+            cmd.Param("race", raceId).Param("athlete", self).Param("receipt", Request.Body);
+            modified = await cmd.Exec();
         }
 
-        return CreatedAtAction(nameof(Get), new { raceId = raceId, userId = 69 });
+        return modified > 0 ? NoContent() : NotFound();
     }
 
     [HttpGet]
@@ -89,7 +202,21 @@ public class ReceiptController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int raceId)
     {
-        return Ok(new int[] { 69, 420 });
+        using (var txn = _db.Txn())
+        {
+            using (var cmd = txn.Cmd("SELECT id FROM races WHERE id=@race"))
+            {
+                if (cmd.Param("race", raceId).Row<int>() == null)
+                {
+                    return NotFound();
+                }
+            }
+
+            using (var cmd = txn.Cmd("SELECT athlete FROM receipts WHERE race=@race"))
+            {
+                return Ok(cmd.Param("race", raceId).Rows<int>().ToArray());
+            }
+        }
     }
 
     [HttpGet("{userId}")]
@@ -98,25 +225,98 @@ public class ReceiptController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Download(int raceId, int userId)
     {
-        return File(Stream.Null, MediaTypeNames.Application.Pdf, "recibo.pdf");
+        (int effective, int self) = this.OrSelf(userId);
+
+        string query = @"
+            SELECT receipt
+            FROM   receipts
+            WHERE  race=@race AND athlete=@athlete
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            using (var stream = cmd.Param("race", raceId).Param("athlete", effective).Stream())
+            {
+                var receipt = stream.Take();
+                if (receipt == null)
+                {
+                    return NotFound();
+                }
+
+                return File(receipt, MediaTypeNames.Application.Pdf);
+            }
+        }
     }
+
+    private readonly ISqlConn _db;
 }
 
 [ApiController]
 [Route("Api/Races/{raceId}/Receipts/{userId}/[action]")]
+[Authorize(Policy = "Organizer")]
 [ProducesResponseType(StatusCodes.Status204NoContent)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 public class ConfirmationController : ControllerBase
 {
+    public ConfirmationController(ISqlConn db) => _db = db;
+
     [HttpPost]
-    public ActionResult Accept(int raceId, int userId)
+    public async Task<ActionResult> Accept(int raceId, int userId)
     {
+        (int effective, int self) = this.OrSelf(userId);
+
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                SELECT category
+                FROM   receipts
+                WHERE  race=@race AND athlete=@athlete
+                ";
+
+            int? category;
+            using (var cmd = txn.Cmd(query))
+            {
+                category = cmd.Param("race", raceId).Param("athlete", effective).Row<int>();
+            }
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            query = @"
+                INSERT INTO race_participants(race, athlete, category)
+                VALUES(@race, @athlete, @category)
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("race", raceId).Param("athlete", effective).Param("category", category);
+                await cmd.Exec();
+            }
+
+            txn.Commit();
+        }
+
         return NoContent();
     }
 
     [HttpPost]
-    public ActionResult Reject(int raceId, int userId)
+    public async Task<ActionResult> Reject(int raceId, int userId)
     {
-        return NoContent();
+        (int effective, int self) = this.OrSelf(userId);
+
+        string query = @"
+            DELETE FROM receipts
+            WHERE       race=@race AND athlete=@athlete
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            cmd.Param("race", raceId).Param("athlete", effective);
+            return await cmd.Exec() > 0 ? NoContent() : NotFound();
+        }
     }
+
+    private readonly ISqlConn _db;
 }

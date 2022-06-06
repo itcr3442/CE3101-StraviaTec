@@ -365,15 +365,33 @@ $$~~~~~$$
     + Se desarrolla la parte de aprendizaje continuo del anexo, donde se expone los conocimientos actuales de los integrantes, lo que se requiere aprender para llevar a cabo el proyecto, y por último la estrategia utilizada para obtener dichos conocimientos y habilidades.
 
 ### Ignacio vargas
+- 16/05/2022
+    + Se instalaron varias librerías básicas necesarias del proyecto y se empezó la creación de la arquitectura base de la página web.
+- 21/05/2022
+    + Se agregaron componentes del proyecto viejo y funciona el login
+- 23/05/2022
+    + Se creó y terminó el form para crear usuarios nuevos en el sistema.
+- 23/05/2022
+    + Se agregaron settings en el nav-menu. Se agregaron capacidades nuevas para el auth guard como poder expresar que todos los roles loggeados se permiten, o que solo se permite si no está loggeado. Se manejaron algunos errores con cómo se toma el URL del API. Se creó un estilo css "warning" para mostrar los mensajes de error. Ya se pueden crear usuarios nuevos en el sistema.
+- 24/05/2022
+    + Se agregó mucho manejo de errores para diversos códigos de error comunes por parte del API. Se agregó manejo de cookies para guardar la información de autenticación del usuario.
+- 25/05/2022
+    + Se arreglaron errores con el comportamiento de hacer logout. Se convirtieron los settings en un dropdown. El nav-menu ahora varía dependiendo de estado de autenticación.
+- 26/05/2022
+    + Se hizo un poco de setup para la funcionalidad de poder editar usuarios.
+- 27/05/2022
+    + Se agregó funcionalidad de registrar otros organizadores. Borrar propia cuenta. Editar perfil.
+- 29/05/2022
+    + Se arreglaron varios errores con el navbar y el form de registrar actividades. Se agregaron algunas cosas a este mismo form y se agregó el mapa para mostrar las rutas gpx.
 
-- 29/04/2022
-    + Se toma una hora para leer y analizar la especificación del proyecto y formular posibles dudas al respecto.
-- 30/04/2022
-    + Reunión grupal para organización inicial del proyecto. Se escoge Azure para el despliegue del proyecto. Se discute la organización y rendimiento del proyecto pasado y cómo mejorar en este siguiente proyecto.
-- 02/05/2022
-    + Se coordina el plan de proyecto, cronograma, roles. Se crean documentos y repositorios de colaboración. Se escoge el modelo conceptual a utilizar en la DB.
-- 06/05/2022
-    + Se inicializó el proyecto para la aplicación web y se creó bastante del código boilerplate que ocupará la aplicación más tarde para el funcionamiento del login y las diferentes vistas.
+- 30/05/2022
+    + Se terminó la validación para registrar actividades y la duración se setea automáticamente basado en tiempos de inicio y fin. También se terminó de conectar el registro de actividades con el API.
+- 31/05/2022
+    + Se inició creando la página de gestión ed carreras y se cambiaron las interfaces de carreras para manejar correctamente las carreras enviadas por el API.
+- 02/06/2022
+    + Se creó la barra de búsqueda que será utilizada para los forms que se requiera escoger grupos/carrera/retos. Se terminó la funcionalidad de imágenes en los forms de registro pero se notó que no se está autenticado a la hora de registrar por lo que se removió. Se agregó categorías y cuentas bancarias + validación al form de gestionar carreras.
+- 03/06/2022
+    + Agregada funcionalidad de imágenes en form de registro, luego me di cuenta de los malavares que tendría que hacer para que funcione realmente (hacer login immediato, put imagen, logout) y quité todo lo relacionado con agregar imagen a la hora de registrar. Luego agregué funcionalidad de imágenes a form de editar usuarios, junto con validación de 4MB y círculo de cargar mientras cargan los datos. Se mejoró la forma que nav-menu obtiene los estados de autenticación y roles. Se agregó el componente de dashboard y se dejó funcionando en teoría, aunque no se puede comprobar porque al momento de escritura no se pueden seguir otros usuarios.
 
 # Aprendizaje continuo
 

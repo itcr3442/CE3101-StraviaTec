@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { countries, RoleLevels } from 'src/app/constants/user.constants';
+import { countries, maxImageSize } from 'src/app/constants/user.constants';
 import { Country } from 'src/app/interfaces/country';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 import { User } from 'src/app/interfaces/user';
@@ -25,11 +25,15 @@ export class EditProfileFormComponent implements OnInit {
   message: string = ""
   countryList: Country[];
   imageURL: string | null = null;
+  imageFile: File | null = null;
 
+  baseURL: string;
   @Input() user: User | null = null;
 
-  constructor(
+  constructor(@Inject('BASE_URL') baseUrl: string
   ) {
+    this.baseURL = baseUrl
+
     let countryObject = countries.getNames("es", { select: "official" })
     this.countryList = Object.entries(countryObject).map(([key, val]) => { return { alpha2: key, official: <string>val, flag: getUnicodeFlagIcon(key) } })
 
@@ -39,13 +43,6 @@ export class EditProfileFormComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  // upload(files: FileList) {
-  //   this.imageURL = URL.createObjectURL(files[0]);
-  //   console.log("images:", files)
-  //   console.log("image:", files[0])
-  //   console.log("imageURL:", this.imageURL)
-  // }
 
   ngOnChanges(): void {
     if (this.user !== null) {
@@ -74,12 +71,30 @@ export class EditProfileFormComponent implements OnInit {
     return this.registerForm.controls['birthDate'].value
   }
 
+  upload(files: FileList) {
+    this.imageFile = files[0];
+    this.imageURL = URL.createObjectURL(this.imageFile);
+
+    if (this.imageFile.size > maxImageSize) {
+      this.clearImage()
+      this.message = "Tamaño de imagen excedió límite de 4MB."
+    }
+  }
+
+  clearImage() {
+    if (this.imageURL) URL.revokeObjectURL(this.imageURL)
+    this.imageFile = null
+
+    let fileInputEl: HTMLInputElement = document.getElementById('pfp') as HTMLInputElement
+    fileInputEl.value = ''
+  }
+
   validateForm(): boolean {
-    //validate date
     if (!this.registerForm.valid) {
-      this.message = "Por favor verifique que ingresó todos los campos correctamente";
+      this.message = "Por favor verifique que ingresó todos los campos correctamente.";
       return false
     }
+    //validate date
     if (this.birthDate > this.maxDate || this.birthDate < this.minDate) {
       this.message = "Por favor introduzca una fecha de nacimiento válida. Solo se permiten usuarios mayores de 13 años."
       return false

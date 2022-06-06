@@ -4,6 +4,7 @@ using System.Net.Mime;
 using System.Xml;
 using System.Xml.Linq;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,13 +73,19 @@ public class TrackController : ControllerBase
 
     [HttpPut]
     [ActionName("Races")]
+    [Authorize(Policy = "Organizer")]
     [FileUpload(MediaTypeNames.Application.Xml)]
     [Consumes(MediaTypeNames.Application.Xml)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult PutRacesTrack(int id)
+    public async Task<ActionResult> PutRacesTrack(int id)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
+        using (var txn = _db.Txn())
+        {
+            string delete = "DELETE FROM race_tracks WHERE race=@id";
+            string insert = "INSERT INTO race_tracks(race, track) VALUES(@id, @track)";
+            return await WriteTrack(txn, delete, insert, id);
+        }
     }
 
     private ISqlConn _db;

@@ -7,6 +7,7 @@ import * as L from 'leaflet-gpx';
 import { gpxType, RegisterService } from 'src/app/services/register.service';
 import { Activity } from 'src/app/interfaces/activity';
 import { Id } from 'src/app/interfaces/id';
+import { FormattingService } from 'src/app/services/formatting.service';
 
 @Component({
   selector: 'app-register-activity',
@@ -36,7 +37,7 @@ export class RegisterActivityComponent implements OnInit {
   message: string = "";
   warnMessage: string = "";
   maxDate: string;
-  minDate: string = this.toLocalTimeStr(new Date('1900'))
+  minDate: string = this.formatter.toLocalTimeStr(new Date('1900'))
 
   // Referencia al mapa
   gpxMapReference: LeafMap | null = null
@@ -54,9 +55,9 @@ export class RegisterActivityComponent implements OnInit {
     return ActivityType
   }
 
-  constructor(private registerService: RegisterService) {
+  constructor(private registerService: RegisterService, private formatter: FormattingService) {
     let today = new Date()
-    this.maxDate = this.toLocalTimeStr(today)
+    this.maxDate = this.formatter.toLocalTimeStr(today)
     for (let a in ActivityType) {
       if (typeof ActivityType[a] === 'number') this.activityTypes.push(a as (keyof typeof ActivityType));
     }
@@ -76,7 +77,7 @@ export class RegisterActivityComponent implements OnInit {
     if (this.datesValidity()) {
       let startDate = new Date(startDateCtrl.value)
       let endDate = new Date(endDateCtrl.value)
-      var durationInputValue = this.format_ms(endDate.getTime() - startDate.getTime());
+      var durationInputValue = this.formatter.format_ms(endDate.getTime() - startDate.getTime());
     }
     else {
       var durationInputValue = "";
@@ -213,12 +214,12 @@ export class RegisterActivityComponent implements OnInit {
 
         if (e.target.get_total_time() > 0) {
 
-          let startDateValue = self.toLocalTimeStr(e.target.get_start_time());
+          let startDateValue = self.formatter.toLocalTimeStr(e.target.get_start_time());
           console.log("Start date:", startDateValue)
           console.log("Start date month:", e.target.get_start_time().getMonth() + 1)
 
           form.controls['startDate'].setValue(startDateValue);
-          form.controls['endDate'].setValue(self.toLocalTimeStr(e.target.get_end_time()));
+          form.controls['endDate'].setValue(self.formatter.toLocalTimeStr(e.target.get_end_time()));
           self.updateDuration()
         }
         form.controls['kilometers'].setValue((e.target.get_distance() / 1000).toFixed(3))
@@ -228,20 +229,5 @@ export class RegisterActivityComponent implements OnInit {
     }
   }
 
-  toLocalTimeStr(date: Date) {
-    return date.getFullYear() + "-" + padTwo(date.getMonth() + 1) + "-" + padTwo(date.getDate()) + "T" + padTwo(date.getHours()) + ":" + padTwo(date.getMinutes()) + ":" + padTwo(date.getSeconds()) //+ "." + padTwo(date.getMilliseconds())
-  }
 
-  format_ms(ms: number): string {
-    let hours = ms / (1000 * 60 * 60)
-    let mins = (hours % 1) * 60
-    let secs = (mins % 1) * 60
-    // let millis = Math.round((secs % 1) * 1000)
-    return padTwo(Math.floor(hours)) + ':' + padTwo(Math.floor(mins)) + ':' + padTwo(Math.round(secs))// + '.' + ('' + Math.floor(millis)).padStart(3, "0")
-  }
-
-}
-
-const padTwo = (n: number): string => {
-  return (n + "").padStart(2, "0")
 }

@@ -9,6 +9,7 @@ import { NullableUser, User } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { RegisterService } from 'src/app/services/register.service';
 import { EditProfileFormComponent } from '../edit-profile-form/edit-profile-form.component';
+import { ResetPasswordFormComponent } from '../reset-password-form/reset-password-form.component';
 
 @Component({
   selector: 'app-settings-dropdown',
@@ -17,11 +18,13 @@ import { EditProfileFormComponent } from '../edit-profile-form/edit-profile-form
 })
 export class SettingsDropdownComponent implements OnInit {
 
-  @ViewChild("editForm") editProfileForm: EditProfileFormComponent = {} as EditProfileFormComponent;
+  @ViewChild("editForm") editProfileForm!: EditProfileFormComponent;
+  @ViewChild("resetForm") resetPasswordForm!: ResetPasswordFormComponent;
 
   userInfo: User | null = null;
   trigger: number = 0
   RoleLevels = RoleLevels
+  loading: boolean = false
 
   constructor(private authService: AuthService, private registerService: RegisterService, private router: Router) {
   }
@@ -43,6 +46,8 @@ export class SettingsDropdownComponent implements OnInit {
       let self = this
       myModalEl.addEventListener('hidden.bs.modal', function (event) {
         self.refreshUser()
+        self.loading = false
+        self.editProfileForm.clearImage()
       })
     }
 
@@ -75,6 +80,37 @@ export class SettingsDropdownComponent implements OnInit {
     this.authService.logout()
   }
 
+  hideModal(id: string) {
+    let myModalEl: HTMLElement | null = document.getElementById(id);
+    if (!!myModalEl) {
+      // @ts-ignore
+      let modal: bootstrap.Modal | null = bootstrap.Modal.getInstance(myModalEl)
+      // console.log("modal:", modal)
+      modal?.hide();
+    }
+  }
+
+  resetPassword() {
+    if (this.resetPasswordForm.validateForm()) {
+      this.resetPasswordForm.message = ""
+
+      this.registerService.reset_password(0, this.resetPasswordForm.old, this.resetPasswordForm.new).subscribe(
+        (_: HttpResponse<null>) => {
+          this.hideModal('resetPassword')
+          this.registerService.resetForm(this.resetPasswordForm.resetForm)
+        },
+        (err: HttpErrorResponse) => {
+          if (err.status === 401) {
+            this.resetPasswordForm.message = "La contraseña actual ingresada es incorrecta."
+          }
+          else {
+            console.log("Error inseperado en resetPassword():", err)
+          }
+        }
+      )
+    }
+  }
+
   editUser() {
     if (this.userInfo && this.editProfileForm.validateForm()) {
       this.editProfileForm.message = ""
@@ -92,22 +128,32 @@ export class SettingsDropdownComponent implements OnInit {
 
       console.log("User edit:", edit_user)
 
+      this.loading = true
       this.registerService.edit_user(edit_user).subscribe(
-        (resp: HttpResponse<null>) => {
+        (_: HttpResponse<null>) => {
 
-          // Esconder modal si request sirvió
-          let myModalEl: HTMLElement | null = document.getElementById('editProfile');
-          if (!!myModalEl) {
-            // @ts-ignore
-            let modal: bootstrap.Modal | null = bootstrap.Modal.getInstance(myModalEl)
-            // console.log("modal:", modal)
-            modal?.hide();
+          //can't submit image to server atm porque endpoint requiere autenticación
+          if (this.editProfileForm.imageFile && this.editProfileForm.imageURL) {
+            this.registerService.put_pfp(0, this.editProfileForm.imageFile).subscribe((resp: HttpResponse<null>) => {
+
+              // this.editProfileForm.clearImage()
+              // Esconder modal si request sirvió
+              this.hideModal('editProfile')
+
+              console.log("upload image resp:", resp)
+              this.loading = false
+              window.location.reload()
+            },
+              (err: HttpErrorResponse) => {
+                console.log("Upload img error:", err)
+                this.editProfileForm.message = "El usuario fue registrado, pero hubo un error al cargar la imagen, por favor inténtelo más tarde."
+                this.loading = false
+
+              })
           }
-
-          let imageURL = null
-          if (/*this.*/imageURL != null) {
-            //TODO: submit image to server
-            URL.revokeObjectURL(/*this.*/imageURL)
+          else {
+            this.hideModal('editProfile')
+            this.loading = false
           }
         },
         (err: HttpErrorResponse) => {
@@ -120,6 +166,8 @@ export class SettingsDropdownComponent implements OnInit {
             console.log("404:", err)
             this.editProfileForm.message = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
           }
+          this.loading = false
+
         })
     }
   }

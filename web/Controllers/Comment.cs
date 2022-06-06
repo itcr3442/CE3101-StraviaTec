@@ -22,16 +22,23 @@ public class CommentsController : ControllerBase
         return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
     }
 
-    [HttpGet("{page}")]
+    [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Comments))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Comment[]))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Comments(int activityId, int pageId)
+    public ActionResult Comments(int activityId)
     {
-        return Ok(new Resp.Paged
-        {
-            Pages = 10,
-            Page = new int[] { 69, 420 },
-        });
+        return Ok(new Resp.Comment[] {
+                new Resp.Comment {
+                    User = 69,
+                    Time = DateTime.Now,
+                    Content = "kk",
+                },
+                new Resp.Comment {
+                    User = 70,
+                    Time = DateTime.Now,
+                    Content = "kk2",
+                }
+            });
     }
 }
