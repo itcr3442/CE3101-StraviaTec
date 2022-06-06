@@ -32,7 +32,7 @@ export class RaceAdminComponent implements OnInit {
     name: new FormControl('', [Validators.required]),
     day: new FormControl('', [Validators.required]),
     activityType: new FormControl('', [Validators.required]),
-    private: new FormControl(false, [Validators.required]),
+    isPrivate: new FormControl(false, [Validators.required]),
     price: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')])
   })
 
@@ -46,6 +46,8 @@ export class RaceAdminComponent implements OnInit {
     return this.registerForm.controls['private'].value
   } get formPrice(): string {
     return this.registerForm.controls['price'].value
+  } get isPrivate(): boolean {
+    return this.registerForm.controls['isPrivate'].value
   }
 
   formTitle: string = "Registrar nueva carrera"
@@ -78,7 +80,7 @@ export class RaceAdminComponent implements OnInit {
     return categoryList
   }
 
-  isPrivate: boolean = false
+  // isPrivate: boolean = false
   // totalGroups: number = 1
   selectedGroups: number[] = [];
   get totalGroups(): number {
@@ -338,12 +340,12 @@ export class RaceAdminComponent implements OnInit {
     this.totalCategories -= 1
   }
 
-  onPrivacyChange(event: Event) {
-    let target = event.target as HTMLInputElement
+  // onPrivacyChange(event: Event) {
+  //   let target = event.target as HTMLInputElement
 
-    this.isPrivate = target.checked
-    console.log("Private:", this.isPrivate)
-  }
+  //   this.isPrivate = target.checked
+  //   console.log("Private:", this.isPrivate)
+  // }
 
   groupCounter() {
     return new Array(this.totalGroups);
