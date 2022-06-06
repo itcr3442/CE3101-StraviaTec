@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { faSearch, faTimes, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Observable, of } from 'rxjs';
 import { SearchService } from 'src/app/services/search.service';
@@ -36,6 +36,8 @@ export class SearchFieldComponent implements OnInit {
   @Output() selectEvent = new EventEmitter<{ name: string, id: number }>();
   @Output() unselectEvent = new EventEmitter<null>();
 
+  @ViewChild('dropdownLinkToggle') dropdownToggle !: ElementRef;
+
   searchable: Searchables;
   searchResultIds: Array<number> = []
   searchResultNames: Array<string> = []
@@ -55,7 +57,7 @@ export class SearchFieldComponent implements OnInit {
   }
 
   showDropDown(): void {
-    let dropdownToggleEl = document.getElementById('dropdownLinkToggle') as HTMLElement
+    let dropdownToggleEl = this.dropdownToggle.nativeElement as HTMLElement
     //@ts-ignore
     let dropdown: Dropdown = new bootstrap.Dropdown(dropdownToggleEl)
 
