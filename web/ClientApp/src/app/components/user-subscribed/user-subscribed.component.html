@@ -1,1 +1,103 @@
-<app-search-field raceStatusFilter='Registered' searchFor="Races" (selectEvent)="selected($event)">
+<div class="container">
+    <div class="row mb-3">
+        <h3>Inscripciones</h3>
+    </div>
+    <div class="row mb-3">
+        <h5>Escoja si desea buscar las carreras o retos inscritos</h5>
+    </div>
+    <div class="row mb-3">
+        <div class="col mb-3">
+            <button type="button" class="btn btn-info" data-bs-toggle="button" (click)="races_searchbar_toggle()">Carreras</button>
+            <button type="button" class="btn btn-info" data-bs-toggle="button" (click)="challenges_searchbar_toggle()">Retos</button>
+        </div>
+    </div>
+    <ng-container *ngTemplateOutlet="this.seachbarToggle ?  SearchRacesBlock : SearchChallBlock">
+    </ng-container>
+
+    <ng-container *ngTemplateOutlet="this.contentToggle ?  RacesBlock : ChallBlock">
+    </ng-container>
+</div>
+
+<ng-template #SearchChallBlock>
+    <div class="row mb-3">
+        <app-search-field raceStatusFilter='Registered' searchFor="Challenges" (selectEvent)="selectedChall($event)"></app-search-field>
+    </div>
+  </ng-template>
+
+<ng-template #SearchRacesBlock>
+    <div class="row mb-3">
+        <app-search-field raceStatusFilter='Registered' searchFor="Races" (selectEvent)="selectedRace($event)"></app-search-field>
+    </div>
+</ng-template>
+
+<ng-template #ChallBlock>
+    <div class="container" *ngIf="this.showContentFlag">
+        <div class="row mb-3">
+            <ng-container *ngIf="this.raceNameMessage">
+                <h3>
+                    {{this.challNameMessage}}
+                </h3>
+            </ng-container>
+        </div>
+        <div class="row-md-4">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Progreso</th>
+                            <th>Meta</th>
+                            <th>Días Restantes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <td>{{this.currentChallenge.progress + " km"}}</td>
+                        <td>{{this.currentChallenge.goal  + " km"}}</td>
+                        <td>{{this.currentChallenge.remainingDays}}</td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  </ng-template>
+
+<ng-template #RacesBlock>
+    <div class="container" *ngIf="this.showContentFlag">
+        <div class="row mb-3">
+            <h1>Tabla de Clasificación</h1>
+        </div>
+        <div class="row mb-3">
+            <ng-container *ngIf="this.raceNameMessage">
+                <h3>
+                    {{this.raceNameMessage}}
+                </h3>
+            </ng-container>
+        </div>
+        <div class="row-md-4">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Atleta</th>
+                            <th>Tiempo</th>
+                            <th>Distancia</th>
+                            <th>Fecha Realizada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of leaderboardRaw; index as i">
+                            <td>{{i}}</td>
+                            <td>{{leaderboardUsers[i].firstName + " " + leaderboardUsers[i].lastName}}</td>
+                            <td>{{row.seconds}}</td>
+                            <td>{{leaderboardAct[i].length}}</td>
+                            <td>{{leaderboardAct[i].end.toDateString()}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+

@@ -8,7 +8,7 @@ import { CookiesService } from './cookies.service';
 import { UserCookieName } from '../constants/cookie.constants';
 import { Router } from '@angular/router';
 import { User, UserResp, resp2user, UserStats } from '../interfaces/user';
-import { Race, RaceResp, resp2race } from '../interfaces/race';
+import { LeaderboardRow, Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge } from '../interfaces/challenge';
 import { GroupResp} from '../interfaces/group';
 import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
@@ -200,4 +200,5 @@ export class AuthService {
   public getFeed(): Observable<HttpResponse<number[]>> {
     return this.repo.getData<number[]>('Feed')
   }
+
 }

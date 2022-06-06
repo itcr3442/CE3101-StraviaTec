@@ -62,9 +62,6 @@ export class ChallengeAdminComponent implements OnInit {
 
       let selectedGroup = this.selectedGroups[i]
 
-      // console.log("groups list:", groupsList)
-      // console.log("selected group:", selectedGroup)
-
       if (selectedGroup === -1) {
         continue
       }
