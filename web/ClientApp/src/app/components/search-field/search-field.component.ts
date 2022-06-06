@@ -105,13 +105,13 @@ export class SearchFieldComponent implements OnInit {
           ))
         }
       } case Searchables.Races: {
-        return this.authService.getRace
+        return (id: number) => this.authService.getRace(id)
 
       } case Searchables.Groups: {
-        return this.authService.getGroup
+        return (id: number) => this.authService.getGroup(id)
 
       } case Searchables.Challenges: {
-        return this.authService.getChallenge
+        return (id: number) => this.authService.getChallenge(id)
       }
       default: {
         console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
