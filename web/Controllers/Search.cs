@@ -68,6 +68,22 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet]
+    public ActionResult Sponsors(string? query)
+    {
+        (string selectSql, string orderBy) = SearchSelect("sponsors", query, "brand_name");
+
+        using (var cmd = _db.Cmd($"{selectSql} ORDER BY {orderBy}"))
+        {
+            if (query != null)
+            {
+                cmd.Param("query", query);
+            }
+
+            return Ok(cmd.Rows<int>().ToArray());
+        }
+    }
+
+    [HttpGet]
     public ActionResult Races(string? query)
     {
         return RaceChallengeSearch("race", query);
