@@ -143,6 +143,12 @@ $$~~~~~$$
 
 ![](imgs/minuta2.png)
 
+![](imgs/minuta3.png)
+
+![](imgs/minuta4.png)
+
+![](imgs/minuta5.png)
+
 \pagebreak
 
 ## Bitácoras
