@@ -151,27 +151,27 @@ public class GroupController : ControllerBase
         int deleted;
         using (var txn = _db.Txn())
         {
-            using (var cmd = _db.Cmd("DELETE FROM challenge_private_groups WHERE group_id=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM challenge_private_groups WHERE group_id=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM race_private_groups WHERE group_id=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM race_private_groups WHERE group_id=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM group_members WHERE group_id=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM group_members WHERE group_id=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM group_members WHERE group_id=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM group_members WHERE group_id=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM groups WHERE id=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM groups WHERE id=@id"))
             {
                 deleted = await cmd.Param("id", id).Exec();
             }
