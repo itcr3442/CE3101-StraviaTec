@@ -16,6 +16,17 @@ export interface Race {
     sponsors: number[]
 }
 
+export interface NullableRace {
+    name: string | null,
+    day: Date | null,
+    type: ActivityType | null,
+    privateGroups: number[] | null,
+    categories: RaceCategoryType[] | null,
+    price: number | null,
+    bankAccounts: string[] | null,
+    sponsors: number[] | null
+}
+
 // TODO: arreglar start/end -> day, +categories
 export interface RaceResp {
     name: string,

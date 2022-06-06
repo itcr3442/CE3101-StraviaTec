@@ -154,7 +154,7 @@ export class ChallengeAdminComponent implements OnInit, AfterViewChecked {
           })
 
       }
-      else { // registering new group
+      else { // registering new challenge
         let challenge: Challenge = {
           name: this.formName,
           start: new Date(this.formStart),
@@ -260,6 +260,7 @@ export class ChallengeAdminComponent implements OnInit, AfterViewChecked {
     this.formTitle = registerTitle
     this.current_challenge = null
     this.selectedGroups = []
+    this.totalGroups = 1
   }
 
   deleteChallengeSubmit(id: number) {

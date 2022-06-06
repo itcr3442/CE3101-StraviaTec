@@ -2,7 +2,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js"></script>
 
 <div class="container">
-    <div class="row align-items-center">
+    <div class="row align-items-start">
 
         <div class="col-md-6 col-md-offset-3 loginBox">
             <div class="row">
@@ -179,7 +179,15 @@
                         </p>
                     </ng-container>
 
-                    <button type="submit" class="btn btn-primary">Registrar</button>
+                    <div class="row g-2">
+                        <button type="submit" class="btn btn-primary">{{this.editing? "Editar" : "Registrar"}}</button>
+
+                        <ng-container *ngIf="this.editing">
+                            <button class="btn btn-danger" type="reset" (click)="cancelForm()">
+                                Cancelar
+                            </button>
+                        </ng-container>
+                    </div>
                 </form>
             </div>
 

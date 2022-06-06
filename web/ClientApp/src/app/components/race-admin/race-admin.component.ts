@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ApplicationRef, Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivityType, ActivityTypeType } from 'src/app/constants/activity.constants';
 import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent } from 'leaflet';
@@ -7,8 +7,8 @@ import * as L from 'leaflet-gpx';
 import { gpxType, RegisterService } from 'src/app/services/register.service';
 import { Activity } from 'src/app/interfaces/activity';
 import { Id } from 'src/app/interfaces/id';
-import { Race } from 'src/app/interfaces/race';
-import { RaceCategory, RaceStatus } from 'src/app/constants/races.constants';
+import { NullableRace, Race } from 'src/app/interfaces/race';
+import { RaceCategory, RaceCategoryType, RaceStatus } from 'src/app/constants/races.constants';
 import { SearchFieldComponent } from '../search-field/search-field.component';
 import { FormattingService } from 'src/app/services/formatting.service';
 import { SearchService } from 'src/app/services/search.service';
@@ -82,6 +82,37 @@ export class RaceAdminComponent implements OnInit {
     return categoryList
   }
 
+  setCategories(list: RaceCategory[]): void {
+
+    for (let i = 0; i < this.totalCategories; i++) {
+
+      let categorySelect: HTMLSelectElement = document.getElementById('category-' + i) as HTMLSelectElement;
+      categorySelect.selectedIndex = list[i]
+    }
+  }
+
+  setBanks(list: string[]): void {
+
+    for (let i = 0; i < this.totalBanks; i++) {
+
+      let bankInput: HTMLInputElement = document.getElementById('iban-' + i) as HTMLInputElement;
+      bankInput.value = list[i]
+    }
+  }
+
+
+  get bankAccounts(): string[] {
+    let bankList: Array<string> = []
+    for (let i = 0; i < this.totalBanks; i++) {
+
+      let bankInput: HTMLInputElement = document.getElementById('iban-' + i) as HTMLInputElement;
+      let iban: string = bankInput.value;
+
+      bankList.push(iban)
+    }
+    return bankList
+  }
+
 
   activityTypes: (keyof typeof ActivityType)[] = [];
   // Para acceder el enum dentro de html
@@ -95,7 +126,7 @@ export class RaceAdminComponent implements OnInit {
     return RaceCategory
   }
 
-  constructor(private registerService: RegisterService, private authService: AuthService, private formatter: FormattingService, private searchService: SearchService) {
+  constructor(private registerService: RegisterService, private authService: AuthService, private formatter: FormattingService, private searchService: SearchService, private appRef: ApplicationRef) {
     let today = new Date()
     this.minDate = this.formatter.toDateStr(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0))
     this.maxDate = this.formatter.toDateStr(new Date(today.getFullYear() + 5, today.getMonth(), today.getDate() + 1, 0, 0, 0))
@@ -109,6 +140,7 @@ export class RaceAdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.refreshRaces()
   }
 
   onMapReady(map: LeafMap) {
@@ -204,10 +236,10 @@ export class RaceAdminComponent implements OnInit {
     }
     let raceDateCtrl = this.registerForm.controls['day']
     if (!(raceDateCtrl.valid && new Date(raceDateCtrl.value) > new Date(this.minDate))) {
-      this.warnMessage = "Por favor ingrese fechas válidas y verifique que la fecha de inicio sea antes que la fecha de fin."
+      this.warnMessage = "Por favor ingrese una fecha válida."
       return false
     }
-    if (!((this.gpxFile !== null) && (this.gpxFile.type === 'application/gpx+xml'))) {
+    if (!((this.gpxFile !== null) && (this.gpxFile.type === 'application/gpx+xml')) && this.editing === false) {
       this.warnMessage = "Por favor ingrese un archivo '.gpx' válido."
       return false
     }
@@ -221,89 +253,116 @@ export class RaceAdminComponent implements OnInit {
     if (!this.checkSponsorsValidity()) {
       return false
     }
-    // if (!this.checkBanksValidity()) {
-    //   this.warnMessage = "Revise que los códigos IBAN ingresados sean todos válidos."
-    //   return false
-    // }
+    if (!this.checkBanksValidity()) {
+      this.warnMessage = "Revise que los códigos IBAN ingresados sean todos válidos."
+      return false
+    }
     return true
   }
 
   onSubmit() {
     this.message = ""
+    this.warnMessage = ""
 
     if (this.checkFormValidity()) {
+      let sponsors = this.selectedSponsors.filter((g: number) => { return g !== -1 })
 
-      let race: Race = {
-        name: this.formName,
-        day: (new Date(this.formDay)),
-        type: +this.formActivityType,
-        privateGroups: this.selectedGroups.filter((g: number) => { return g !== -1 }),
-        price: +this.formPrice,
-        status: RaceStatus.NotRegistered, // field doesn't matter
-        categories: this.selectedCategories,
-        sponsors: this.selectedSponsors.filter((g: number) => { return g !== -1 }),
-        bankAccounts: []
+      if (this.editing) {
+        let edit_race: NullableRace = {
+          name: this.formName || null,
+          day: !this.formDay ? null : new Date(this.formDay),
+          type: !this.formActivityType ? null : +this.formActivityType,
+          privateGroups: this.isPrivate ? this.selectedGroups.filter((g: number) => { return g !== -1 }) : [],
+          categories: this.selectedCategories.length > 0 ? this.selectedCategories.map((category: RaceCategory) => RaceCategory[category] as RaceCategoryType) : null,
+          price: !this.formPrice ? null : +this.formPrice,
+          bankAccounts: this.bankAccounts.length > 0 ? this.bankAccounts : null,
+          sponsors: sponsors.length > 0 ? sponsors : null,
+        }
+
+        this.registerService.edit_race(this.current_race!, edit_race).subscribe(
+          (_: HttpResponse<null>) => {
+            this.cancelForm()
+            this.refreshRaces()
+          },
+          (err: HttpErrorResponse) => {
+            if (err.status == 409) {
+              this.message = "Nombre de reto ya está tomado";
+            }
+          })
+
       }
+      else { // registering new group
+        let race: Race = {
+          name: this.formName,
+          day: (new Date(this.formDay)),
+          type: +this.formActivityType,
+          privateGroups: this.isPrivate ? this.selectedGroups.filter((g: number) => { return g !== -1 }) : [],
+          price: +this.formPrice,
+          status: RaceStatus.NotRegistered, // field doesn't matter
+          categories: this.selectedCategories,
+          sponsors,
+          bankAccounts: this.bankAccounts
+        }
 
-      console.log("Race submitted:", race)
-      // return
-      this.registerService.register_race(race).subscribe(
-        (postResp: HttpResponse<Id>) => {
-          if (postResp.body) {
-            console.log("Register Race Resp:", postResp)
-            this.registerService.resetForm(this.registerForm)
-            this.message = "La carrera se ha registrado correctamente."
+        console.log("Race submitted:", race)
+        // return
+        this.registerService.register_race(race).subscribe(
+          (postResp: HttpResponse<Id>) => {
+            if (postResp.body) {
+              console.log("Register Race Resp:", postResp)
+              this.registerService.resetForm(this.registerForm)
+              this.message = "La carrera se ha registrado correctamente."
 
-            // put gpx track
-            if (this.gpxFile !== null) {
-              this.registerService.put_gpx(postResp.body.id, this.gpxFile, gpxType.Race).subscribe(
-                (gpxResp: HttpResponse<null>) => {
-                  window.location.reload()
-                  console.log("PUT GPX resp:", gpxResp)
-                },
-                (err: HttpErrorResponse) => {
-                  if (err.status == 400) {
-                    this.warnMessage = "Hubo un problema con el formato del archivo '.gpx'."
+              // put gpx track
+              if (this.gpxFile !== null) {
+                this.registerService.put_gpx(postResp.body.id, this.gpxFile, gpxType.Race).subscribe(
+                  (gpxResp: HttpResponse<null>) => {
+                    window.location.reload()
+                    console.log("PUT GPX resp:", gpxResp)
+                  },
+                  (err: HttpErrorResponse) => {
+                    if (err.status == 400) {
+                      this.warnMessage = "Hubo un problema con el formato del archivo '.gpx'."
+                    }
+                    else {
+                      this.warnMessage = "Lo sentimos, hubo un problema a la hora de enviar el archivo '.gpx' al servidor."
+                    }
+                    console.log("Error while uploading gpx:", err);
+
+                    //Delete previously posted race
+                    if (postResp.body)
+                      this.registerService.delete_race(postResp.body.id).subscribe((deleteResp: HttpResponse<null>) => {
+                        console.log("delete resp:", deleteResp),
+                          (err: HttpErrorResponse) => {
+                            console.log("Error deleting race without gpx:", err)
+                          }
+                      })
+
                   }
-                  else {
-                    this.warnMessage = "Lo sentimos, hubo un problema a la hora de enviar el archivo '.gpx' al servidor."
-                  }
-                  console.log("Error while uploading gpx:", err);
+                )
+              }
 
-                  //Delete previously posted race
-                  if (postResp.body)
-                    this.registerService.delete_race(postResp.body.id).subscribe((deleteResp: HttpResponse<null>) => {
-                      console.log("delete resp:", deleteResp),
-                        (err: HttpErrorResponse) => {
-                          console.log("Error deleting race without gpx:", err)
-                        }
-                    })
-
-                }
-              )
+              if (this.gpxURL !== null) {
+                URL.revokeObjectURL(this.gpxURL)
+              }
+            }
+            else {
+              this.warnMessage = "Lo sentimos, estamos experimentado problemas (falta de body en response).";
             }
 
-            if (this.gpxURL !== null) {
-              URL.revokeObjectURL(this.gpxURL)
+          },
+          (err: HttpErrorResponse) => {
+            if (err.status == 400) {
+              this.warnMessage = "Bad Request 400: Por favor verifique que los datos ingresados son válidos.";
+
+            } else if (err.status == 404) {
+              console.log("404:", err)
+              this.warnMessage = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
+            } else {
+              this.warnMessage = "Lo sentimos, hubo un error registrando la carrera."
             }
-          }
-          else {
-            this.warnMessage = "Lo sentimos, estamos experimentado problemas (falta de body en response).";
-          }
-
-        },
-        (err: HttpErrorResponse) => {
-          if (err.status == 400) {
-            this.warnMessage = "Bad Request 400: Por favor verifique que los datos ingresados son válidos.";
-
-          } else if (err.status == 404) {
-            console.log("404:", err)
-            this.warnMessage = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
-          } else {
-            this.warnMessage = "Lo sentimos, hubo un error registrando la carrera."
-          }
-        })
-
+          })
+      }
     }
   }
 
@@ -443,6 +502,13 @@ export class RaceAdminComponent implements OnInit {
     this.totalGroups = this.selectedGroups.length || 1
     this.selectedSponsors = race.sponsors;
     this.totalSponsors = this.selectedSponsors.length || 1
+
+    this.totalBanks = race.bankAccounts.length || 1
+    this.totalCategories = race.categories.length || 1
+
+    this.appRef.tick()
+    this.setCategories(race.categories)
+    this.setBanks(race.bankAccounts)
   }
 
   @ViewChildren('groupSearchField') groupFieldsList!: QueryList<SearchFieldComponent>
@@ -451,8 +517,8 @@ export class RaceAdminComponent implements OnInit {
   ngAfterViewChecked() {
     // console.log("fieldsList:", this.fieldsList.length)
     if (this.editingSetup) {
-      this.sponsorFieldsList.forEach((searchField: SearchFieldComponent, i: number) => { searchField.setValue(this.selectedSponsors[i]) });
       this.groupFieldsList.forEach((searchField: SearchFieldComponent, i: number) => { searchField.setValue(this.selectedGroups[i]) });
+      this.sponsorFieldsList.forEach((searchField: SearchFieldComponent, i: number) => { !this.selectedSponsors[i] ? searchField.unselect() : searchField.setValue(this.selectedSponsors[i]) });
       this.editingSetup = false
     }
   }
@@ -464,6 +530,13 @@ export class RaceAdminComponent implements OnInit {
     this.current_race = null
     this.selectedGroups = []
     this.selectedSponsors = []
+    this.totalGroups = 1
+    this.totalSponsors = 1
+    this.totalCategories = 1
+    this.totalBanks = 1
+    this.setCategories([0])
+    this.setBanks([''])
+    this.editingSetup = true
   }
 
   deleteRaceSubmit(id: number) {

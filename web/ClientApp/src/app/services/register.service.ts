@@ -11,7 +11,7 @@ import { RoleLevels } from '../constants/user.constants';
 import { HttpResponse } from '@angular/common/http';
 import { Id } from '../interfaces/id';
 import { ActivityType } from '../constants/activity.constants';
-import { Race } from '../interfaces/race';
+import { NullableRace, Race } from '../interfaces/race';
 import { RaceCategory, RaceCategoryType } from '../constants/races.constants';
 import { Challenge, NullableChallenge } from '../interfaces/challenge';
 import { NullableGroup } from '../interfaces/group';
@@ -147,7 +147,9 @@ export class RegisterService {
       type: ActivityType[race.type],
       price: race.price,
       privateGroups: race.privateGroups,
-      categories: race.categories.map((category: RaceCategory) => { return RaceCategory[category] })
+      categories: race.categories.map((category: RaceCategory) => { return RaceCategory[category] }),
+      bankAccounts: race.bankAccounts,
+      sponsors: race.sponsors
     }
 
     console.log("New race: " + JSON.stringify(new_race))
@@ -160,6 +162,13 @@ export class RegisterService {
   public delete_race(id: number): Observable<HttpResponse<null>> {
     return this.repositoryService.delete<null>(
       "Races/" + id)
+  }
+
+  public edit_race(raceId: number, race: NullableRace): Observable<HttpResponse<null>> {
+    console.log(`Editing race '${raceId}' with:`, race)
+    return this.repositoryService.edit<null>(
+      `Races/${raceId}`, race)
+
   }
 
   public register_challenge(challenge: Challenge): Observable<HttpResponse<Id>> {
