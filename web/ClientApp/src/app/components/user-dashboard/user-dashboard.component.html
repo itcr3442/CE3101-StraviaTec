@@ -198,11 +198,22 @@
                                             <small>{{a.activity.start.toLocaleString()}}</small>
 
                                         </div>
-                                        <div class="col" style="margin-left: 30px;">
-                                            <a class="comment" type="button" data-bs-toggle="modal"
-                                                data-bs-target="#commentsModal" (click)="loadComments(a.actId)">
-                                                <fa-icon [icon]="icons.comment" size="2x"></fa-icon>
-                                            </a>
+                                        <div class="col row">
+                                            <div class="col-6">
+                                                <a class="comment" type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#commentsModal" (click)="loadComments(a.actId)">
+                                                    <fa-icon [icon]="icons.comment" size="2x"></fa-icon>
+                                                </a>
+                                            </div>
+                                            <div class="col-6">
+                                                <a type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteActivityModal"
+                                                    (click)="activityToDelete = a.actId">
+                                                    <fa-icon [icon]="icons.delete"
+                                                        [styles]="{'stroke': 'darkred', 'color': 'darkred'}" size="2x">
+                                                    </fa-icon>
+                                                </a>
+                                            </div>
                                         </div>
 
 
@@ -309,3 +320,27 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="deleteActivityModal" tabindex="-1" aria-labelledby="deleteActivityLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="delete-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteActivityLabel">Eliminar actividad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Seguro que desea eliminar su actividad?</p>
+                <ng-container *ngIf="this.deleteMessage">
+                    <p class="warning">
+                        {{this.deleteMessage}}
+                    </p>
+                </ng-container>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" (click)="deleteActivity()" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

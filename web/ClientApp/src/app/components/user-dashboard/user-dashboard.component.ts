@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ApplicationRef, Component, Inject, OnInit } from '@angular/core';
-import { faBicycle, faComment, faHiking, faPaperPlane, faQuestionCircle, faRunning, faSwimmer, faWalking, faWater, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faBicycle, faComment, faHiking, faPaperPlane, faQuestionCircle, faRunning, faSwimmer, faTrashAlt, faWalking, faWater, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import * as L from 'leaflet-gpx';
 import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent, GPX, LatLngBoundsExpression } from 'leaflet';
 import { Observable } from 'rxjs';
@@ -33,7 +33,8 @@ export class UserDashboardComponent implements OnInit {
     swimming: faSwimmer,
     walking: faWalking,
     comment: faComment,
-    send: faPaperPlane
+    send: faPaperPlane,
+    delete: faTrashAlt
   }
 
   feedList: Array<UserActivity> = []
@@ -265,6 +266,33 @@ export class UserDashboardComponent implements OnInit {
         }, 100)
       })
       this.gpxLayer.push(layer)
+    }
+  }
+
+  deleteMessage: string = ""
+  activityToDelete: number | null = null
+  deleteActivity(): void {
+    if (!!this.activityToDelete) {
+      this.registerService.delete_activity(this.activityToDelete).subscribe(
+        (_: HttpResponse<null>) => {
+          this.hideModal('deleteActivityModal')
+          window.location.reload()
+        },
+        (err: HttpErrorResponse) => {
+          console.log("Error deleting activity:", err)
+          this.deleteMessage = "Lo sentimos, hubo un error intentando eliminar la actividad."
+        }
+      )
+    }
+  }
+
+  hideModal(id: string) {
+    let myModalEl: HTMLElement | null = document.getElementById(id);
+    if (!!myModalEl) {
+      // @ts-ignore
+      let modal: bootstrap.Modal | null = bootstrap.Modal.getInstance(myModalEl)
+      // console.log("modal:", modal)
+      modal?.hide();
     }
   }
 
