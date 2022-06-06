@@ -57,11 +57,27 @@ public class RaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Leaderboard(int id)
     {
-        return Ok(new Resp.LeaderboardRow[] { new Resp.LeaderboardRow {
-                Activity = 69,
-                Seconds = 6969,
-                Length = 0.420M,
-                }});
+        string query = @"
+            SELECT   activity, duration, length
+            FROM     race_leaderboard
+            WHERE    race = @race AND activity IS NOT NULL
+            ORDER BY duration ASC
+            ";
+
+        using (var cmd = _db.Cmd(query))
+        {
+            return Ok(cmd.Param("race", id)
+                    .Rows<(int, decimal, decimal)>()
+                    .Select(((int activity, decimal duration, decimal length) row) =>
+                        new Resp.LeaderboardRow
+                        {
+                            Activity = row.activity,
+                            Seconds = row.duration,
+                            Length = row.length,
+                        })
+                    .ToArray()
+                );
+        }
     }
 
     [HttpGet("{id}/Participants")]

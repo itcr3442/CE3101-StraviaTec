@@ -123,7 +123,7 @@ public record LeaderboardRow
     [Required]
     public int Activity { get; set; }
     [Required]
-    public int Seconds { get; set; }
+    public decimal Seconds { get; set; }
     [Required]
     public decimal Length { get; set; }
 }
