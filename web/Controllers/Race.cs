@@ -588,6 +588,16 @@ public class RaceController : ControllerBase
                 await cmd.Param("id", id).Exec();
             }
 
+            using (var cmd = txn.Cmd("DELETE FROM receipts WHERE race=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM bank_accounts WHERE race=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
             using (var cmd = txn.Cmd("DELETE FROM races WHERE id=@id"))
             {
                 deleted = await cmd.Param("id", id).Exec();
