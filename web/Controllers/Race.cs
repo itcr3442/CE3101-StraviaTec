@@ -47,6 +47,8 @@ public class RaceController : ControllerBase
             PrivateGroups = new int[] { },
             Price = 69.42M,
             Categories = new Category[] { Category.Junior, Category.MasterC },
+            BankAccounts = new string[] { "" },
+            Sponsors = new int[] { },
             Status = RaceStatus.WaitingConfirmation,
         });
     }

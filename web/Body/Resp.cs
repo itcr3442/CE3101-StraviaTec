@@ -93,6 +93,10 @@ public record GetRace
     [Required]
     public Category[] Categories { get; set; } = null!;
     [Required]
+    public string[] BankAccounts { get; set; } = null!;
+    [Required]
+    public int[] Sponsors { get; set; } = null!;
+    [Required]
     public RaceStatus Status { get; set; }
 }
 

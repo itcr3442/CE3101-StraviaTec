@@ -92,6 +92,10 @@ public record NewRace
     public int[] PrivateGroups { get; set; } = null!;
     [Required]
     public Category[] Categories { get; set; } = null!;
+    [Required]
+    public string[] BankAccounts { get; set; } = null!;
+    [Required]
+    public int[] Sponsors { get; set; } = null!;
 }
 
 public record PatchRace
@@ -102,6 +106,8 @@ public record PatchRace
     public int[]? PrivateGroups { get; set; }
     public Category[]? Categories { get; set; }
     public decimal? Price { get; set; }
+    public string[]? BankAccounts { get; set; }
+    public int[]? Sponsors { get; set; }
 }
 
 public record NewChallenge
