@@ -21,6 +21,9 @@ public class ActivityController : ControllerBase
         _mongo = mongo;
     }
 
+    /// <summary>
+    /// Crea una nueva actividad.
+    /// </summary>
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -66,6 +69,9 @@ public class ActivityController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id }, new Resp.Ref(id));
     }
 
+    /// <summary>
+    /// Recibe un Actividad dependiendo del id dado.
+    /// </summary>
     [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetActivity))]
@@ -103,6 +109,9 @@ public class ActivityController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Elimina una actividad de la base de datos.
+    /// </summary>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

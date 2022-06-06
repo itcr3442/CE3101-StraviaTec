@@ -24,6 +24,9 @@ public class IdentityController : ControllerBase
 {
     public IdentityController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Hace login del usuario
+    /// </summary>
     [HttpPost("[action]")]
     [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -65,6 +68,9 @@ public class IdentityController : ControllerBase
         return Ok(new Resp.Identity { Id = row.id, Type = type });
     }
 
+    /// <summary>
+    /// Hace logout del usuario
+    /// </summary>
     [HttpPost("[action]")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Logout()
@@ -73,6 +79,9 @@ public class IdentityController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Cambia el password del usuario
+    /// </summary>
     [HttpPut("{id}/Password")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -133,6 +142,9 @@ public class UserController : ControllerBase
         _mongo = mongo;
     }
 
+    /// <summary>
+    /// Crea un user
+    /// </summary>
     [HttpPost]
     [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -179,6 +191,9 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id }, new Resp.Ref(id));
     }
 
+    /// <summary>
+    /// Obtiene un user según su Id
+    /// </summary>
     [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetUser))]
@@ -260,6 +275,9 @@ public class UserController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Cambia la info de un user según la id
+    /// </summary>
     [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -323,6 +341,9 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Elimina un user según su Id
+    /// </summary>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -377,6 +398,9 @@ public class PhotoController : ControllerBase
 {
     public PhotoController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene la foto de un usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Image.Jpeg)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -400,6 +424,9 @@ public class PhotoController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Mete la foto de un usuario
+    /// </summary>
     [HttpPut]
     [FileUpload(MediaTypeNames.Image.Jpeg)]
     [Consumes(MediaTypeNames.Image.Jpeg)]
@@ -432,6 +459,9 @@ public class PhotoController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Elimina la foto de un usuario
+    /// </summary>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

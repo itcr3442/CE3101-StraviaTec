@@ -18,6 +18,9 @@ public class GroupController : ControllerBase
 {
     public GroupController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Crea un nuevo grupo.
+    /// </summary>
     [HttpPost]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -56,6 +59,9 @@ public class GroupController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = id }, new Resp.Ref(id));
     }
 
+    /// <summary>
+    /// Modifica un grupo de la base de datos.
+    /// </summary>
     [HttpPatch("{id}")]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -106,6 +112,9 @@ public class GroupController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Obtiene un grupo de la base de datos.
+    /// </summary>
     [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetGroup))]
@@ -142,6 +151,9 @@ public class GroupController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Elimina un grupo de la base de datos.
+    /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -191,6 +203,9 @@ public class MembershipController : ControllerBase
 {
     public MembershipController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Ingresa un usuario en un grupo
+    /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -212,6 +227,9 @@ public class MembershipController : ControllerBase
         return CreatedAtAction(nameof(Delete), new { id = id });
     }
 
+    /// <summary>
+    /// Elimina un usuario de un grupo
+    /// </summary>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

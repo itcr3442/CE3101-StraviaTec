@@ -20,6 +20,9 @@ public class AvailableController : ControllerBase
 {
     public AvailableController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene las categorías del usuario que lo pide
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult> Categories()
     {
@@ -45,6 +48,9 @@ public class AvailableController : ControllerBase
         return Ok(new Category[] { ageCategory, Category.Elite });
     }
 
+    /// <summary>
+    /// Obtiene las carreras disponibles para el usuario
+    /// </summary>
     [HttpGet]
     public ActionResult Races(ActivityType type, Category category)
     {
@@ -74,6 +80,9 @@ public class AvailableController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene los retos disponibles para el usuario
+    /// </summary>
     [HttpGet]
     public ActionResult Challenges(ActivityType type)
     {
@@ -110,6 +119,9 @@ public class ProgressController : ControllerBase
 {
     public ProgressController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Agrega una actividad completada por el usuario a una carrera en la que está inscrito
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult> Races(int id, int activity)
     {
@@ -155,6 +167,9 @@ public class ProgressController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Agrega una actividad completada por el usuario a un reto en el que esté inscrito
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult> Challenges(int id, int activity)
     {

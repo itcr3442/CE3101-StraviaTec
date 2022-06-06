@@ -23,6 +23,9 @@ public class TrackController : ControllerBase
 {
     public TrackController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene el track px de una actividad según del id
+    /// </summary>
     [HttpGet]
     [ActionName("Activities")]
     [Produces(MediaTypeNames.Application.Xml)]
@@ -32,6 +35,9 @@ public class TrackController : ControllerBase
         await ReadTrack("SELECT track FROM activity_tracks WHERE activity=@id", id);
     }
 
+    /// <summary>
+    /// Ingresa un nuevo track gpx de una actividad según del id
+    /// </summary>
     [HttpPut]
     [ActionName("Activities")]
     [FileUpload(MediaTypeNames.Application.Xml)]
@@ -62,6 +68,9 @@ public class TrackController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene un nuevo track gpx de una carrera según del id
+    /// </summary>
     [HttpGet]
     [ActionName("Races")]
     [Produces(MediaTypeNames.Application.Xml)]
@@ -71,6 +80,9 @@ public class TrackController : ControllerBase
         await ReadTrack("SELECT track FROM race_tracks WHERE race=@id", id);
     }
 
+    /// <summary>
+    /// Ingresa un nuevo track gpx de una carrera según del id
+    /// </summary>
     [HttpPut]
     [ActionName("Races")]
     [Authorize(Policy = "Organizer")]

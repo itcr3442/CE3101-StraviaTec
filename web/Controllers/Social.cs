@@ -14,6 +14,9 @@ public class DashboardController : ControllerBase
 {
     public DashboardController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene el feed del usuario para la pantalla de inicio
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -43,6 +46,9 @@ public class FriendsController : ControllerBase
 {
     public FriendsController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Agrega un amigo a un usuario
+    /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -59,6 +65,9 @@ public class FriendsController : ControllerBase
         return CreatedAtAction(nameof(Follow), new { followeeId = followeeId });
     }
 
+    /// <summary>
+    /// Elimina a un amigo de un usuario
+    /// </summary>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
