@@ -130,7 +130,8 @@ public class ProgressController : ControllerBase
                 if (row == null)
                 {
                     return NotFound();
-                } else if (row.Value.activity != null)
+                }
+                else if (row.Value.activity != null)
                 {
                     return Conflict();
                 }
@@ -178,7 +179,8 @@ public class ProgressController : ControllerBase
             if (row == null)
             {
                 return NotFound();
-            } else if(row.Value.progress >= row.Value.goal)
+            }
+            else if (row.Value.progress >= row.Value.goal)
             {
                 return Conflict();
             }

@@ -184,7 +184,7 @@ public class ChallengeController : ControllerBase
             string name = req.Name ?? row.Value.name;
             DateTime start = req.Start ?? row.Value.start;
             DateTime end = req.End ?? row.Value.end;
-            string type = req.Type != null ? req.Type.ToString() : row.Value.type;
+            string? type = req.Type != null ? req.Type.ToString() : row.Value.type;
             decimal goal = req.Goal ?? row.Value.goal;
 
             query = @"
