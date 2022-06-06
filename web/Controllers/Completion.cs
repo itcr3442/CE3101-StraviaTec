@@ -168,11 +168,11 @@ public class ProgressController : ControllerBase
                 WHERE  challenge = @challenge AND athlete = @athlete
                 ";
 
-            (int goal, int progress, int lastSeq)? row;
+            (decimal goal, decimal progress, int lastSeq)? row;
             using (var cmd = txn.Cmd(query))
             {
                 cmd.Param("challenge", id).Param("athlete", self);
-                row = cmd.Row<(int, int, int)>();
+                row = cmd.Row<(decimal, decimal, int)>();
             }
 
             if (row == null)

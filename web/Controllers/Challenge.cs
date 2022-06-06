@@ -64,7 +64,7 @@ public class ChallengeController : ControllerBase
             txn.Commit();
         }
 
-        return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
+        return CreatedAtAction(nameof(Get), new { id = id }, new Resp.Ref(id));
     }
 
     [HttpGet("{id}")]
@@ -74,31 +74,40 @@ public class ChallengeController : ControllerBase
     public ActionResult Get(int id)
     {
         int[] privateGroups;
-        (string name, DateTime start, DateTime end, string type,
-         decimal goal, decimal? progress)? row;
+        decimal? progress;
+        (string name, DateTime start, DateTime end, string type, decimal goal)? row;
 
         using (var txn = _db.Txn())
         {
             string query = @"
-                SELECT challenges.name, start_time, end_time,
-                       activity_types.name, goal, progress
-                FROM   challenge_progress
-                JOIN   challenges
-                ON     challenge = id
+                SELECT challenges.name, start_time, end_time, activity_types.name, goal
+                FROM   challenges
                 JOIN   activity_types
                 ON     type = activity_types.id
+                WHERE  challenges.id = @challenge
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("challenge", id);
+                row = cmd.Row<(string, DateTime, DateTime, string, decimal)>();
+            }
+
+            if (row == null)
+            {
+                return NotFound();
+            }
+
+            query = @"
+                SELECT progress
+                FROM   challenge_progress
                 WHERE  challenge = @challenge AND athlete = @athlete
                 ";
 
             using (var cmd = txn.Cmd(query))
             {
                 cmd.Param("challenge", id).Param("athlete", this.LoginId());
-                row = cmd.Row<(string, DateTime, DateTime, string, int, int)>();
-            }
-
-            if (row == null)
-            {
-                return NotFound();
+                progress = cmd.Row<decimal>();
             }
 
             query = @"
@@ -119,7 +128,6 @@ public class ChallengeController : ControllerBase
         DateTime start = row.Value.start;
         DateTime end = row.Value.end;
         decimal goal = row.Value.goal;
-        decimal? progress = row.Value.progress;
 
         var status = progress != null
                    ? progress.Value >= goal
@@ -165,7 +173,7 @@ public class ChallengeController : ControllerBase
 
             using (var cmd = txn.Cmd(query))
             {
-                row = cmd.Param("challenge", id).Row<(string, DateTime, DateTime, string, int)>();
+                row = cmd.Param("challenge", id).Row<(string, DateTime, DateTime, string, decimal)>();
             }
 
             if (row == null)
@@ -181,7 +189,7 @@ public class ChallengeController : ControllerBase
 
             query = @"
                 UPDATE challenges
-                SET    name = @name, start = @start, end = @end,
+                SET    name = @name, start_time = @start, end_time = @end,
                        type = activity_types.id, goal = @goal
                 FROM   activity_types
                 WHERE  challenges.id = @challenge AND activity_types.name = @type
