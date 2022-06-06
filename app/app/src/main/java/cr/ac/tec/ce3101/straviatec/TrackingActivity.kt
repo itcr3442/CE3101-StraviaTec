@@ -255,7 +255,7 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
         val activity = Activity(
             DateTimeFormatter.ISO_INSTANT.format(startTime),
             DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
-            distance,
+            distance/1000,
             "Cycling",
             generateGPX("route", locations),
             (application as StraviaTECApp).session!!.getUser(),
