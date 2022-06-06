@@ -22,6 +22,9 @@ public class CommentsController : ControllerBase
         _mongo = mongo;
     }
 
+    /// <summary>
+    /// Crea un nuevo comentario
+    /// </summary>
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -52,6 +55,9 @@ public class CommentsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Obtiene un comentario de la base de datos
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.Comment[]))]

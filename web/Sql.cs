@@ -8,6 +8,10 @@ using Microsoft.Data.SqlClient;
 
 namespace web;
 
+/* Este módulo contiene interfaces dependency-injected para la manipulación
+ * cómoda de queries y transacciones SQL.
+ */
+
 public interface ISqlExec : IDisposable
 {
     SqlConnection Connection { get; }
@@ -22,12 +26,15 @@ public interface ISqlConn : ISqlExec
 
 public interface ISqlTxn : ISqlExec
 {
+    // Hace commit de una transacción
     void Commit();
 }
 
 public static class SqlOps
 {
+    // Inicia una transacción
     public static ISqlTxn Txn(this ISqlConn conn) => new SqlTxn(conn);
+    // Ejecuta un comando fuera de una transacción
     public static SqlCmd Cmd(this ISqlExec exec, string query) => new SqlCmd(query, exec);
 }
 
@@ -41,18 +48,21 @@ public class SqlCmd : IDisposable
 
     public void Dispose() => _cmd.Dispose();
 
+    // Define un parámetro de entrada en la query
     public SqlCmd Param(string name, object? val)
     {
         _cmd.Parameters.AddWithValue("@" + name, val ?? DBNull.Value);
         return this;
     }
 
+    // Define un parámetro de salida
     public SqlCmd Output(string name, SqlDbType type)
     {
         _cmd.Parameters.Add("@" + name, type).Direction = ParameterDirection.Output;
         return this;
     }
 
+    // Obtiene una única fila de respuesta de la base de datos
     public T? Row<T>() where T : struct
     {
         _exec.Bind(_cmd);
@@ -64,32 +74,40 @@ public class SqlCmd : IDisposable
         return null;
     }
 
+    // Obtiene un iterador sobre las filas de respuesta
     public IEnumerable<T> Rows<T>() where T : struct
     {
         _exec.Bind(_cmd);
         return new SqlRows<T>(_cmd.ExecuteReader());
     }
 
+    /* Obtiene un flujo eficiente de datos a partir de la
+	 * primera columna de la primera fila de la respuesta.
+	 */
     public SqlStream Stream()
     {
         _exec.Bind(_cmd);
         return new SqlStream(_cmd.ExecuteReader());
     }
 
+    // Obtiene una respuesta en forma XML
     public XmlReader Xml()
     {
         _exec.Bind(_cmd);
         return _cmd.ExecuteXmlReader();
     }
 
+    // Ejecuta la query y retorna la cantidad de filas afectadas
     public async Task<int> Exec()
     {
         _exec.Bind(_cmd);
         return await _cmd.ExecuteNonQueryAsync();
     }
 
+    // Obtiene el ID de inserción de una query INSERT
     public int InsertId() => Row<int>()!.Value;
 
+    // Ejecuta un procedimiento almacenado y devuelve parámtros de salida
     public async Task<SqlParameterCollection> StoredProcedure()
     {
         _cmd.CommandType = CommandType.StoredProcedure;
@@ -101,6 +119,7 @@ public class SqlCmd : IDisposable
     private SqlCommand _cmd;
 }
 
+// Iterador sobre filas de salida
 public class SqlRows<T> : IDisposable, IEnumerable<T>, IEnumerator<T> where T : struct
 {
     public void Dispose() => _reader.Dispose();

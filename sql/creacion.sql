@@ -1158,3 +1158,52 @@ AS BEGIN
       SELECT @age = @years;
   END;
 END;
+
+GO
+
+CREATE PROCEDURE delete_user
+  @id    int
+, @count int OUTPUT
+AS BEGIN
+  DELETE FROM photos WHERE user_id = @id;
+  DELETE FROM friends WHERE follower = @id OR followee = @id;
+  DELETE FROM race_participants WHERE athlete = @id;
+  DELETE FROM challenge_participants WHERE athlete = @id;
+  DELETE FROM receipts WHERE athlete = @id;
+  DELETE FROM group_members WHERE member = @id;
+
+  DELETE activity_tracks
+  FROM   activities
+  JOIN   activity_tracks
+  ON     activity = id
+  WHERE  athlete = @id;
+
+  DELETE challenge_activities
+  FROM   activities
+  JOIN   challenge_activities
+  ON     activity = id
+  WHERE  athlete = @id;
+
+  DELETE FROM activities WHERE athlete = @id;
+  SELECT @count = COUNT(id) FROM users WHERE id = @id;
+  DELETE FROM users WHERE id = @id;
+END;
+
+GO
+
+CREATE PROCEDURE unregister_challenge
+  @challenge int
+, @athlete   int
+, @count     int OUTPUT
+AS BEGIN
+  DELETE FROM challenge_participants
+  WHERE       challenge = @challenge AND athlete = @athlete;
+
+  SELECT @count = @@ROWCOUNT;
+
+  DELETE challenge_activities
+  FROM   challenge_activities
+  JOIN   activities
+  ON     activity = activities.id
+  WHERE  challenge = @challenge AND athlete = @athlete;
+END

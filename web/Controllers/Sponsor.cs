@@ -19,6 +19,9 @@ public class SponsorController : ControllerBase
 {
     public SponsorController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene un sponsor según su id
+    /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetSponsor))]
     public ActionResult Get(int id)
@@ -48,6 +51,9 @@ public class SponsorController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Obtiene el logo de un sponsor según su id
+    /// </summary>
     [HttpGet("Logo")]
     [Produces("image/png")]
     [ProducesResponseType(StatusCodes.Status200OK)]

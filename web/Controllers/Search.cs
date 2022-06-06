@@ -17,6 +17,9 @@ public class SearchController : ControllerBase
 {
     public SearchController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene los usuarios que hacen match con el query dado
+    /// </summary>
     [HttpGet]
     public ActionResult Users(string? query)
     {
@@ -51,6 +54,9 @@ public class SearchController : ControllerBase
         return Ok(matches.ToArray());
     }
 
+    /// <summary>
+    /// Obtiene los grupos que hacen match con el query dado
+    /// </summary>
     [HttpGet]
     public ActionResult Groups(string? query)
     {
@@ -67,6 +73,9 @@ public class SearchController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene los sponsors que hacen match con el query dado
+    /// </summary>
     [HttpGet]
     public ActionResult Sponsors(string? query)
     {
@@ -83,12 +92,18 @@ public class SearchController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene las carreras que hacen match con el query dado
+    /// </summary>
     [HttpGet]
     public ActionResult Races(string? query)
     {
         return RaceChallengeSearch("race", query);
     }
 
+    /// <summary>
+    /// Obtiene los retos que hacen match con el query dado
+    /// </summary>
     [HttpGet]
     public ActionResult Challenges(string? query)
     {

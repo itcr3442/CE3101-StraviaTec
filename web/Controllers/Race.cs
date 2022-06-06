@@ -17,6 +17,9 @@ public class RaceController : ControllerBase
 {
     public RaceController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Crea una nueva carrera
+    /// </summary>
     [HttpPost]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -106,6 +109,9 @@ public class RaceController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = id }, new Resp.Ref(id));
     }
 
+    /// <summary>
+    /// Obtiene una carrera de la base de datos
+    /// </summary>
     [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetRace))]
@@ -250,6 +256,9 @@ public class RaceController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene el leaderboard de una carrera
+    /// </summary>
     [HttpGet("{id}/Leaderboard")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.LeaderboardRow[]))]
@@ -279,6 +288,10 @@ public class RaceController : ControllerBase
         }
     }
 
+
+    /// <summary>
+    /// Obtiene los participantes de una carrera
+    /// </summary>
     [HttpGet("{id}/Participants")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.RaceParticipants[]))]
@@ -334,6 +347,9 @@ public class RaceController : ControllerBase
         return Ok(categories.ToArray());
     }
 
+    /// <summary>
+    /// Obtiene las posiciones de una carrera
+    /// </summary>
     [HttpGet("{id}/Positions")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.RacePositions[]))]
@@ -389,6 +405,9 @@ public class RaceController : ControllerBase
         return Ok(positions.ToArray());
     }
 
+    /// <summary>
+    /// Modifica la información de una carrera
+    /// </summary>
     [HttpPatch("{id}")]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -554,6 +573,10 @@ public class RaceController : ControllerBase
         return NoContent();
     }
 
+
+    /// <summary>
+    /// Elimina una carrera de la base de datos
+    /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

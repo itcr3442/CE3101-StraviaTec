@@ -14,6 +14,9 @@ public class ProfileController : ControllerBase
 {
     public ProfileController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene los stats del usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.HomeStats))]
@@ -70,6 +73,9 @@ public class ProfileController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Obtiene el feed del usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -90,6 +96,9 @@ public class ProfileController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene los grupos del usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -105,6 +114,9 @@ public class ProfileController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene las carreras del usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -127,6 +139,9 @@ public class ProfileController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene los retos del usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -151,6 +166,9 @@ public class ProfileController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene los followers del usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -166,6 +184,10 @@ public class ProfileController : ControllerBase
         }
     }
 
+
+    /// <summary>
+    /// Obtiene los id de los usuarios que sigue el usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]

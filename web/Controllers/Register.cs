@@ -1,10 +1,13 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Net.Mime;
 using web.Body.Common;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.Data.SqlClient;
 
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
@@ -17,6 +20,9 @@ public class RegistrationController : ControllerBase
 {
     public RegistrationController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Registra un usuario a una carrera
+    /// </summary>
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -63,6 +69,9 @@ public class RegistrationController : ControllerBase
         return CreatedAtAction(nameof(Races), new { id = id });
     }
 
+    /// <summary>
+    /// Elimina un usuario de una carrera
+    /// </summary>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,6 +108,9 @@ public class RegistrationController : ControllerBase
         return deleted > 0 ? NoContent() : NotFound();
     }
 
+    /// <summary>
+    /// Registra un usuario a un reto
+    /// </summary>
     [HttpPost]
     [ActionName("Challenges")] // Evita colisión de prototipos
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -119,6 +131,9 @@ public class RegistrationController : ControllerBase
         return CreatedAtAction("Challenges", new { id = id });
     }
 
+    /// <summary>
+    /// Elimina un usuario de un reto
+    /// </summary>
     [HttpDelete]
     [ActionName("Challenges")] // Evita colisión de prototipos
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -128,31 +143,16 @@ public class RegistrationController : ControllerBase
         int self = this.LoginId();
         using (var txn = _db.Txn())
         {
-            string query = @"
-                DELETE FROM challenge_participants
-                WHERE       challenge=@challenge AND athlete=@athlete
-                ";
-
-            using (var cmd = _db.Cmd(query))
+            int? count;
+            using (var cmd = txn.Cmd("unregister_challenge"))
             {
-                cmd.Param("challenge", id).Param("athlete", self);
-                if (await cmd.Exec() == 0)
-                {
-                    return NotFound();
-                }
+                cmd.Param("athlete", self).Param("challenge", id).Output("count", SqlDbType.Int);
+                count = (await cmd.StoredProcedure())["@count"].Value as int?;
             }
 
-            query = @"
-                DELETE challenge_activities
-                FROM   challenge_activities
-                JOIN   activities
-                ON     activity = activities.id
-                WHERE  challenge=@challenge AND athlete=@athlete
-                ";
-
-            using (var cmd = _db.Cmd(query))
+            if ((count ?? 0) == 0)
             {
-                await cmd.Param("challenge", id).Param("athlete", self).Exec();
+                return NotFound();
             }
 
             txn.Commit();
@@ -170,6 +170,9 @@ public class ReceiptController : ControllerBase
 {
     public ReceiptController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Ingresa un recibo pdf de un usuario a inscribirse a una carrera
+    /// </summary>
     [HttpPut]
     [FileUpload(MediaTypeNames.Application.Pdf)]
     [Consumes(MediaTypeNames.Application.Pdf)]
@@ -196,6 +199,9 @@ public class ReceiptController : ControllerBase
         return modified > 0 ? NoContent() : NotFound();
     }
 
+    /// <summary>
+    /// Obtiene la lista de recibos
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int[]))]
@@ -219,6 +225,9 @@ public class ReceiptController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Obtiene un recibo específico según la id
+    /// </summary>
     [HttpGet("{userId}")]
     [Produces(MediaTypeNames.Application.Pdf)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -260,6 +269,9 @@ public class ConfirmationController : ControllerBase
 {
     public ConfirmationController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Acepta un usaurio que se intentó registrar a una carrera
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult> Accept(int raceId, int userId)
     {
@@ -311,6 +323,9 @@ public class ConfirmationController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Denega a un usaurio que se intentó registrar a una carrera
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult> Reject(int raceId, int userId)
     {

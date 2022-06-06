@@ -24,6 +24,9 @@ public class IdentityController : ControllerBase
 {
     public IdentityController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Hace login del usuario
+    /// </summary>
     [HttpPost("[action]")]
     [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -65,6 +68,9 @@ public class IdentityController : ControllerBase
         return Ok(new Resp.Identity { Id = row.id, Type = type });
     }
 
+    /// <summary>
+    /// Hace logout del usuario
+    /// </summary>
     [HttpPost("[action]")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Logout()
@@ -73,6 +79,9 @@ public class IdentityController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Cambia el password del usuario
+    /// </summary>
     [HttpPut("{id}/Password")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -133,6 +142,9 @@ public class UserController : ControllerBase
         _mongo = mongo;
     }
 
+    /// <summary>
+    /// Crea un user
+    /// </summary>
     [HttpPost]
     [AllowAnonymous]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -179,6 +191,9 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id }, new Resp.Ref(id));
     }
 
+    /// <summary>
+    /// Obtiene un user según su Id
+    /// </summary>
     [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetUser))]
@@ -260,6 +275,9 @@ public class UserController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Cambia la info de un user según la id
+    /// </summary>
     [HttpPatch("{id}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -323,6 +341,9 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Elimina un user según su Id
+    /// </summary>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -334,65 +355,8 @@ public class UserController : ControllerBase
             return Forbid();
         }
 
-        int deleted;
         using (var txn = _db.Txn())
         {
-            using (var cmd = txn.Cmd("DELETE FROM photos WHERE user_id=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM friends WHERE follower=@id OR followee=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM race_participants WHERE athlete=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM challenge_participants WHERE athlete=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM receipts WHERE athlete=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM group_members WHERE member=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            string query = @"
-                DELETE activity_tracks
-                FROM   activities
-                JOIN   activity_tracks
-                ON     activity = id
-                WHERE  athlete = @id
-                ";
-
-            using (var cmd = txn.Cmd(query))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            query = @"
-                DELETE challenge_activities
-                FROM   activities
-                JOIN   challenge_activities
-                ON     activity = id
-                WHERE  athlete = @id
-                ";
-
-            using (var cmd = txn.Cmd(query))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
             var comments = _mongo.Collection<StoredComment>("comments");
             var filter = Builders<StoredComment>.Filter;
             comments.DeleteMany(filter.Eq(comment => comment.Author, id));
@@ -405,21 +369,23 @@ public class UserController : ControllerBase
                 }
             }
 
-            using (var cmd = txn.Cmd("DELETE FROM activities WHERE athlete=@id"))
+            int? count;
+            using (var cmd = txn.Cmd("delete_user"))
             {
-                await cmd.Param("id", self).Exec();
+                cmd.Param("id", self).Output("count", SqlDbType.Int);
+                count = (await cmd.StoredProcedure())["@count"].Value as int?;
             }
 
-            using (var cmd = txn.Cmd("DELETE FROM users WHERE id=@id"))
+            if ((count ?? 0) == 0)
             {
-                deleted = await cmd.Param("id", self).Exec();
+                return NotFound();
             }
 
             txn.Commit();
         }
 
         await HttpContext.SignOutAsync();
-        return deleted > 0 ? NoContent() : NotFound();
+        return NoContent();
     }
 
     private readonly ISqlConn _db;
@@ -432,6 +398,9 @@ public class PhotoController : ControllerBase
 {
     public PhotoController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Obtiene la foto de un usuario
+    /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Image.Jpeg)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -455,6 +424,9 @@ public class PhotoController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Mete la foto de un usuario
+    /// </summary>
     [HttpPut]
     [FileUpload(MediaTypeNames.Image.Jpeg)]
     [Consumes(MediaTypeNames.Image.Jpeg)]
@@ -487,6 +459,9 @@ public class PhotoController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Elimina la foto de un usuario
+    /// </summary>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

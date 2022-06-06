@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS unregister_challenge;
+DROP PROCEDURE IF EXISTS delete_user;
 DROP PROCEDURE IF EXISTS current_age;
 
 

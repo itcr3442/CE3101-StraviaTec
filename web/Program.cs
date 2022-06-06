@@ -9,6 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
+/* Punto de entrada principal del programa.
+ * Aquí se inicializan e inician servicios.
+ */
+
+using web.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,7 +31,7 @@ builder.Services.AddControllersWithViews(config =>
     .AddXmlSerializerFormatters();
 
 builder.Services.AddEndpointsApiExplorer()
-    .AddSwaggerGen(config => 
+    .AddSwaggerGen(config =>
     {
         config.OperationFilter<FileUploadOperationFilter>();
 
@@ -95,6 +101,7 @@ else
     app.UseHsts();
 }
 
+app.ConfigureExceptionHandler();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

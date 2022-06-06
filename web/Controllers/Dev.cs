@@ -12,6 +12,9 @@ namespace web.Controllers;
 [Route("Api/Dev")]
 public class DevelopmentController : ControllerBase
 {
+    /// <summary>
+    /// Permiten probar el cliente
+    /// </summary>
     [HttpGet, HttpPost, HttpPut, HttpDelete, HttpPatch, HttpHead, HttpOptions]
     [Route("Status/{code}")]
     public ActionResult Status(int code)

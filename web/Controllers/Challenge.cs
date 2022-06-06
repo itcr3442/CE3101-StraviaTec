@@ -18,6 +18,9 @@ public class ChallengeController : ControllerBase
 {
     public ChallengeController(ISqlConn db) => _db = db;
 
+    /// <summary>
+    /// Crea un nuevo reto.
+    /// </summary>
     [HttpPost]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -67,6 +70,9 @@ public class ChallengeController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = id }, new Resp.Ref(id));
     }
 
+    /// <summary>
+    /// Obtiene un reto de la base de datos segúnel id dado.
+    /// </summary>
     [HttpGet("{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetChallenge))]
@@ -149,6 +155,9 @@ public class ChallengeController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Modifica un Reto ya registrado en la base de datos
+    /// </summary>
     [HttpPatch("{id}")]
     [Authorize(Policy = "Organizer")]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -239,6 +248,9 @@ public class ChallengeController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Elimina un Reto ya registrado en la base de datos
+    /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Policy = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
