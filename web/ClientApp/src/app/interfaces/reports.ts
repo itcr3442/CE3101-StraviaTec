@@ -15,7 +15,7 @@ export interface ParticipantsResp {
 
 export interface Positions {
     category: RaceCategoryType,
-    activities: Activity[]
+    activities: { act: Activity, u: User }[]
 }
 export interface PositionsResp {
     category: RaceCategoryType,
