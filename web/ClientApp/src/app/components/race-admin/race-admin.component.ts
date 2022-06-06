@@ -81,11 +81,6 @@ export class RaceAdminComponent implements OnInit {
     return categoryList
   }
 
-  // isPrivate: boolean = false
-  // totalGroups: number = 1
-  selectedGroups: number[] = [];
-  totalGroups: number = 1
-
 
   activityTypes: (keyof typeof ActivityType)[] = [];
   // Para acceder el enum dentro de html
@@ -213,7 +208,6 @@ export class RaceAdminComponent implements OnInit {
 
     if (this.checkFormValidity()) {
 
-      // TODO: actually grab stuff from form
       let race: Race = {
         name: this.formName,
         day: (new Date(this.formDay)),
@@ -349,6 +343,9 @@ export class RaceAdminComponent implements OnInit {
   //   console.log("Private:", this.isPrivate)
   // }
 
+  selectedGroups: number[] = [];
+  totalGroups: number = 1
+
   groupCounter() {
     return new Array(this.totalGroups);
   }
@@ -369,5 +366,30 @@ export class RaceAdminComponent implements OnInit {
 
   unselectGroup(index: number) {
     this.selectedGroups.splice(index, 1, -1)
+  }
+
+  selectedSponsors: number[] = [];
+  totalSponsors: number = 1
+
+  sponsorCounter() {
+    return new Array(this.totalSponsors);
+  }
+
+  addSponsor() {
+    this.selectedSponsors.push(-1)
+    this.totalSponsors += 1
+  }
+
+  decreaseSponsor() {
+    this.selectedSponsors.pop()
+    this.totalSponsors -= 1
+  }
+
+  selectSponsor(event: { name: string, id: number }, index: number) {
+    this.selectedSponsors[index] = event.id
+  }
+
+  unselectSponsor(index: number) {
+    this.selectedSponsors.splice(index, 1, -1)
   }
 }

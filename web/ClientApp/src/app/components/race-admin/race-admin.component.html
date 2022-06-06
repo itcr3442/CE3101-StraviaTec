@@ -101,6 +101,34 @@
                         </div>
                     </div>
 
+                    <label for="sponsor-row-0">Patrocinadores</label>
+                    <div class="row mb-3 card" *ngFor='let in of sponsorCounter(); let i = index'>
+                        <div class="card-header">{{"Patrocinador #" + (i + 1)}}</div>
+                        <div id="sponsor-row-{{i}}" class="row card-body">
+                            <div class="col">
+                                <!-- <app-search-field #searchField searchFor="Groups" (selectEvent)="selectSponsor($event, i)"
+                                    (unselectEvent)="unselectSponsor(i)">
+                                </app-search-field> -->
+                            </div>
+                            <ng-container *ngIf="i == totalSponsors - 1">
+                                <div class="col-md-{{totalSponsors === 1 ? 2 : 3}}">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary"
+                                                (click)="addSponsor()">+</button>
+                                        </div>
+                                        <ng-container *ngIf="totalSponsors > 1">
+                                            <div class="col-md-6">
+                                                <button type="button" class="btn btn-danger"
+                                                    (click)="decreaseSponsor()">-</button>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+
                     <div class="mb-3 form-check">
                         <label class="form-check-label" for="privacyCheck">
                             Privado
@@ -114,8 +142,8 @@
                             <div class="card-header">{{"Grupo #" + (i + 1)}}</div>
                             <div id="group-row-{{i}}" class="row card-body">
                                 <div class="col">
-                                    <app-search-field searchFor="Groups" (selectEvent)="selectGroup($event, i)"
-                                        (unselectEvent)="unselectGroup(i)">
+                                    <app-search-field #searchField searchFor="Groups"
+                                        (selectEvent)="selectGroup($event, i)" (unselectEvent)="unselectGroup(i)">
                                     </app-search-field>
                                 </div>
                                 <ng-container *ngIf="i == totalGroups - 1">
@@ -139,7 +167,6 @@
                     </ng-container>
 
                     <!-- FALTA: sponsors -->
-
 
                     <ng-container *ngIf="this.message">
                         <p>

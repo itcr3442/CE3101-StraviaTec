@@ -17,7 +17,8 @@ export enum Searchables {
   Users,
   Races,
   Challenges,
-  Groups
+  Groups,
+  Sponsors,
 }
 
 declare type SearchablesType = keyof typeof Searchables
@@ -87,6 +88,9 @@ export class SearchFieldComponent implements OnInit {
       } case Searchables.Challenges: {
         return this.searchService.searchChallengesPage(query)
 
+      } case Searchables.Sponsors: {
+        return this.searchService.searchSponsorsPage(query)
+
       } default: {
         console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
         return {} as Observable<HttpResponse<number[]>>
@@ -116,7 +120,10 @@ export class SearchFieldComponent implements OnInit {
       } case Searchables.Challenges: {
         return (id: number) => this.authService.getChallenge(id)
       }
-      default: {
+      case Searchables.Sponsors: {
+        return (id: number) => this.authService.getSponsor(id)
+
+      } default: {
         console.error("Se entró a branch de if/else que no debería ser posible entrar en search() de search-field.component.ts")
         return (_: number) => { return of({ name: "" }) }
       }
