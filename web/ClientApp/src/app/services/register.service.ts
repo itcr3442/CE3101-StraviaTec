@@ -13,6 +13,7 @@ import { Id } from '../interfaces/id';
 import { ActivityType } from '../constants/activity.constants';
 import { Race } from '../interfaces/race';
 import { RaceCategory, RaceCategoryType } from '../constants/races.constants';
+import { Challenge } from '../interfaces/challenge';
 
 export enum gpxType {
   Race,
@@ -158,6 +159,22 @@ export class RegisterService {
   public delete_race(id: number): Observable<HttpResponse<null>> {
     return this.repositoryService.delete<null>(
       "Races/" + id)
+  }
+
+  public register_challenge(challenge: Challenge): Observable<HttpResponse<Id>> {
+    let new_challenge = {
+      name: challenge.name,
+      start: challenge.start.toISOString(),
+      end: challenge.end.toISOString(),
+      type: ActivityType[challenge.type],
+      goal: challenge.goal,
+      privateGroups: challenge.privateGroups
+    }
+
+    console.log("New challenge:", new_challenge)
+
+    return this.repositoryService.create<Id>(
+      "Challenges", new_challenge)
   }
 
 

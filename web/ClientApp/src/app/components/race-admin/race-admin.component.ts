@@ -220,7 +220,7 @@ export class RaceAdminComponent implements OnInit {
         name: this.formName,
         day: (new Date(this.formDay)),
         type: +this.formActivityType,
-        privateGroups: this.selectedGroups.filter((g: number) => { g !== -1 }),
+        privateGroups: this.selectedGroups.filter((g: number) => { return g !== -1 }),
         price: +this.formPrice,
         status: RaceStatus.NotRegistered, // field doesn't matter
         categories: this.selectedCategories

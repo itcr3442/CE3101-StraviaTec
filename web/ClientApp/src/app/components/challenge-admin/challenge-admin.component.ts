@@ -1,6 +1,9 @@
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivityType } from 'src/app/constants/activity.constants';
+import { Challenge } from 'src/app/interfaces/challenge';
+import { Id } from 'src/app/interfaces/id';
 import { FormattingService } from 'src/app/services/formatting.service';
 import { RegisterService } from 'src/app/services/register.service';
 
@@ -31,6 +34,18 @@ export class ChallengeAdminComponent implements OnInit {
   }
   get formName(): string {
     return this.registerForm.controls['name'].value
+  }
+  get formStart(): string {
+    return this.registerForm.controls['startDate'].value
+  }
+  get formEnd(): string {
+    return this.registerForm.controls['endDate'].value
+  }
+  get formActivity(): string {
+    return this.registerForm.controls['activityType'].value
+  }
+  get formKm(): string {
+    return this.registerForm.controls['kilometers'].value
   }
   get isPrivate(): boolean {
     return this.registerForm.controls['isPrivate'].value
@@ -104,7 +119,40 @@ export class ChallengeAdminComponent implements OnInit {
     this.message = ""
 
     if (this.checkFormValidity()) {
-      this.message = "yay!!"
+      let endDate = new Date(this.formEnd)
+      let challenge: Challenge = {
+        name: this.formName,
+        start: new Date(this.formStart),
+        end: new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59),
+        type: +this.formActivity,
+        goal: +this.formKm,
+        progress: 0,
+        remainingDays: 0,
+        privateGroups: this.selectedGroups.filter((g: number) => { return g !== -1 }),
+        status: 0
+      }
+
+      this.registerService.register_challenge(challenge).subscribe(
+        (postResp: HttpResponse<Id>) => {
+          if (postResp.body) {
+            this.registerService.resetForm(this.registerForm)
+            this.message = "El reto se ha registrado correctamente."
+          }
+          else {
+            this.warnMessage = "Lo sentimos, estamos experimentado problemas (falta de body en response).";
+          }
+
+        },
+        (err: HttpErrorResponse) => {
+          if (err.status == 400) {
+            this.warnMessage = "Bad Request 400: Por favor verifique que los datos ingresados son válidos.";
+
+          } else if (err.status == 404) {
+            console.log("404:", err)
+            this.warnMessage = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
+          }
+        }
+      )
     }
   }
 
