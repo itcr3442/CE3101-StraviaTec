@@ -177,6 +177,16 @@ export class RegisterService {
       "Challenges", new_challenge)
   }
 
+  public register_group(name: string, admin: number): Observable<HttpResponse<Id>> {
+    let new_group = {
+      name, admin
+    }
+
+    // console.log("New challenge:", new_challenge)
+
+    return this.repositoryService.create<Id>(
+      "Groups", new_group)
+  }
 
   public register_user_race(raceId: number, userCategory: string): Observable<HttpResponse<null>> {
     return this.repositoryService.create<null>("Races/" + raceId + "/Registration?category=" + userCategory, null)
