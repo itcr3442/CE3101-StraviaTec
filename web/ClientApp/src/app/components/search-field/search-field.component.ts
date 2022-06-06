@@ -212,6 +212,19 @@ export class SearchFieldComponent implements OnInit {
       })
   }
 
+  setValue(id: number) {
+    this.getFn(id).subscribe((getResp: NameHaver | null) => {
+      if (!!getResp) {
+        this.selectedId = id;
+        this.selectedName = getResp.name;
+        this.selected = true
+
+        let searchInput: HTMLInputElement = this.searchInput.nativeElement
+        searchInput.value = this.selectedName
+      }
+    })
+  }
+
   select(i: number) {
     this.selectedId = this.searchResultIds[i]
     this.selectedName = this.searchResultNames[i]
