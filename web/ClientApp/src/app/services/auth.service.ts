@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { User, UserResp, resp2user, UserStats } from '../interfaces/user';
 import { LeaderboardRow, Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge, resp2chall, RespChallenge } from '../interfaces/challenge';
+import { Sponsor } from '../interfaces/sponsor';
 import { GroupResp } from '../interfaces/group';
 import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
 import { CommentResp } from '../interfaces/comment';
@@ -148,6 +149,20 @@ export class AuthService {
         return null
       }
 
+    }
+    ))
+
+  }
+
+  public getSponsor(id: number): Observable<Sponsor | null> {
+    return this.repo.getData<Sponsor>(`Sponsors/${id}`).pipe(map((resp: HttpResponse<Sponsor>) => {
+      if (resp.body) {
+        return resp.body
+      }
+      else {
+        this.router.navigate(['/404'])
+        return null
+      }
     }
     ))
 

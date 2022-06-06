@@ -26,6 +26,11 @@ export class SearchService {
     return this.repo.getData<number[]>(searchUserUrl)
   }
 
+  public searchSponsorsPage(query: string): Observable<HttpResponse<number[]>> {
+    let searchUserUrl = "Sponsors/Search?query=" + query; //page=" + page + "&filterRegistered=" + filterRegistered + "&nameLike=" + nameLike;
+    return this.repo.getData<number[]>(searchUserUrl)
+  }
+
   public searchGroupsPage(query: string): Observable<HttpResponse<number[]>> {
     let searchUserUrl = "Groups/Search?query=" + query; // + "&query=" + page;
     return this.repo.getData<number[]>(searchUserUrl)
