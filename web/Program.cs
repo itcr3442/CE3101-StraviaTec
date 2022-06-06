@@ -26,6 +26,7 @@ builder.Services.AddEndpointsApiExplorer()
 
 builder.Services.AddSingleton<IConnectionStrings, ConnectionStrings>()
     .AddScoped<ISqlConn, SqlConn>()
+    .AddScoped<IMongoConn, MongoConn>()
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
