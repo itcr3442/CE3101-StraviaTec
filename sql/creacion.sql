@@ -1188,3 +1188,22 @@ AS BEGIN
   SELECT @count = COUNT(id) FROM users WHERE id = @id;
   DELETE FROM users WHERE id = @id;
 END;
+
+GO
+
+CREATE PROCEDURE unregister_challenge
+  @challenge int
+, @athlete   int
+, @count     int OUTPUT
+AS BEGIN
+  DELETE FROM challenge_participants
+  WHERE       challenge = @challenge AND athlete = @athlete;
+
+  SELECT @count = @@ROWCOUNT;
+
+  DELETE challenge_activities
+  FROM   challenge_activities
+  JOIN   activities
+  ON     activity = activities.id
+  WHERE  challenge = @challenge AND athlete = @athlete;
+END

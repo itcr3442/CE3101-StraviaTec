@@ -1,10 +1,13 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Net.Mime;
 using web.Body.Common;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.Data.SqlClient;
 
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
@@ -140,31 +143,16 @@ public class RegistrationController : ControllerBase
         int self = this.LoginId();
         using (var txn = _db.Txn())
         {
-            string query = @"
-                DELETE FROM challenge_participants
-                WHERE       challenge=@challenge AND athlete=@athlete
-                ";
-
-            using (var cmd = _db.Cmd(query))
+            int? count;
+            using (var cmd = txn.Cmd("unregister_challenge"))
             {
-                cmd.Param("challenge", id).Param("athlete", self);
-                if (await cmd.Exec() == 0)
-                {
-                    return NotFound();
-                }
+                cmd.Param("athlete", self).Param("challenge", id).Output("count", SqlDbType.Int);
+                count = (await cmd.StoredProcedure())["@count"].Value as int?;
             }
 
-            query = @"
-                DELETE challenge_activities
-                FROM   challenge_activities
-                JOIN   activities
-                ON     activity = activities.id
-                WHERE  challenge=@challenge AND athlete=@athlete
-                ";
-
-            using (var cmd = _db.Cmd(query))
+            if ((count ?? 0) == 0)
             {
-                await cmd.Param("challenge", id).Param("athlete", self).Exec();
+                return NotFound();
             }
 
             txn.Commit();

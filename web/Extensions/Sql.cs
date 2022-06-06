@@ -15,7 +15,8 @@ public static class ExceptionMiddlewareExtensions
     {
         app.UseExceptionHandler(appError =>
         {
-            appError.Run(context => {
+            appError.Run(context =>
+            {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/json";
 

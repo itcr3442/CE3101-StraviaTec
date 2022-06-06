@@ -11,14 +11,14 @@ namespace web;
  */
 public static class Authn
 {
-	// ID del usuario logueado
+    // ID del usuario logueado
     public static int LoginId(this ControllerBase controller)
     {
         var principal = controller.HttpContext.User as ClaimsPrincipal;
         return int.Parse(principal.FindFirst("id")!.Value);
     }
 
-	/* ID efectivo para un ID ede entrada, así como el ID del usuario logueado.
+    /* ID efectivo para un ID ede entrada, así como el ID del usuario logueado.
 	 * efectivo(id) = id si id != 0, de lo contrario es self.
 	 */
     public static (int effective, int self) OrSelf(this ControllerBase controller, int id)
@@ -27,14 +27,14 @@ public static class Authn
         return (id == 0 ? self : id, self);
     }
 
-	// Retorna self si id == self, de lo contrario null.
+    // Retorna self si id == self, de lo contrario null.
     public static int? RequireSelf(this ControllerBase controller, int id)
     {
         (int effective, int self) = controller.OrSelf(id);
         return effective == self ? self : null;
     }
 
-	// Retorna si el usuario actual es un organizador.
+    // Retorna si el usuario actual es un organizador.
     public static bool RequireOrganizer(this ControllerBase controller)
     {
         var claim = (controller.HttpContext.User as ClaimsPrincipal).FindFirst("type");

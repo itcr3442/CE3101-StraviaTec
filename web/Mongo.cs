@@ -19,7 +19,7 @@ public class MongoConn : IMongoConn
 {
     public MongoConn(IConnectionStrings strs) => _strs = strs;
 
-	// Obtiene una colección dentro de la DB "straviatec"
+    // Obtiene una colección dentro de la DB "straviatec"
     public IMongoCollection<T> Collection<T>(string name)
     {
         if (_db == null)
