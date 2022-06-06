@@ -1048,6 +1048,15 @@ CREATE VIEW race_positions AS
 
 GO
 
+CREATE VIEW last_challenge_updates AS
+  SELECT   challenge, athlete, MAX(end_time) AS latest_time
+  FROM     challenge_activities
+  JOIN     activities
+  ON       activity = id
+  GROUP BY challenge, athlete;
+
+GO
+
 CREATE FULLTEXT CATALOG search;
 CREATE UNIQUE INDEX idx_users_id ON users(id);
 CREATE UNIQUE INDEX idx_groups_id ON groups(id);
