@@ -295,6 +295,16 @@ public class ConfirmationController : ControllerBase
                 await cmd.Exec();
             }
 
+            query = @"
+                DELETE FROM receipts
+                WHERE race=@race AND athlete=@athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                await cmd.Param("race", raceId).Param("athlete", effective).Exec();
+            }
+
             txn.Commit();
         }
 
