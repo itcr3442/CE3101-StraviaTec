@@ -24,11 +24,44 @@ public class ChallengeController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Resp.Ref))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult New(Req.NewChallenge req)
+    public async Task<ActionResult> New(Req.NewChallenge req)
     {
-        if (Random.Shared.Next(2) == 0)
+        int id;
+        using (var txn = _db.Txn())
         {
-            return BadRequest();
+            string query = @"
+                INSERT INTO challenges(name, start_time, end_time, type, goal)
+                OUTPUT INSERTED.ID
+                SELECT @name, @start, @end, id, @goal
+                FROM   activity_types
+                WHERE  name = @type
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("name", req.Name)
+                   .Param("start", req.Start)
+                   .Param("end", req.End)
+                   .Param("type", req.Type.ToString())
+                   .Param("goal", req.Goal);
+
+                id = cmd.InsertId();
+            }
+
+            query = @"
+                INSERT INTO challenge_private_groups(challenges, group_id)
+                VALUES(@challenge, @group)
+                ";
+
+            foreach (int privateGroup in req.PrivateGroups)
+            {
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("challenge", id).Param("group", privateGroup).Exec();
+                }
+            }
+
+            txn.Commit();
         }
 
         return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
