@@ -610,7 +610,28 @@ compleja. Se puede notar que:
 
 ## Problemas conocidos
 
+Según las pruebas realizadas de los entregables, no se conocen defectos
+conocidos de las aplicaciones de software desarrolladas, o las bases de datos
+implementadas. 
+
 ## Problemas encontrados
+
+### No viabilidad de uso de SSIS en Azure
+
+En la especificación inicial del proyecto se solicitaba el uso de una
+característica de SQL Server denominada SSIS para migrar datos de una 
+hipotética versión beta de StraviaTEC. Parte de los requisitos del proyecto
+también era el desplegar la capa de servicios en la nube, lo que también 
+implicaba que la instancia de SQL Server se tendría en la nube. 
+
+Azure es el único proveedor que dispone de esta funcionalidad, sin embargo, el
+equipo se dió cuenta de que esta funcionalidad está condicionada a 
+características únicas de un plan empresarial de Azure, del cual los estudiantes 
+no disponen, y el costo no es accesible para ninguno de los grupos a los cuales
+se les asignó el proyecto. 
+
+Tras comunicar este problema al instructor del curso, se decide eliminar este 
+requisito del proyecto. 
 
 ## Conclusiones
 
