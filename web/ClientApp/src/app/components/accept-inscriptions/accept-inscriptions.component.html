@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row mb-3">
+        <h3>Solicitudes de inscripción</h3>
+    </div>
+    <div class="row-md-4">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Carrera</th>
+                        <th>Username</th>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Nacionalidad</th>
+                        <th>Edad</th>
+                        <th>Ver Factura</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pair of receipts_list; index as i">
+                        <td>{{pair.r.name}}</td>
+                        <td>{{pair.u.username}}</td>
+                        <td>{{pair.u.firstName}}</td>
+                        <td>{{pair.u.lastName}}</td>
+                        <td>{{pair.u.country.alpha2 + pair.u.country.flag}}</td>
+                        <td>{{pair.u.age}}</td>
+                        <td>
+                            <div><button type="button" class="btn btn-outline-success"
+                                    (click)="getReceipt(pair.raceId, pair.userId)">Descargar Factura</button></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
