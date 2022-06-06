@@ -25,30 +25,36 @@
 </ng-template>
 
 <ng-template #loggedBlock>
-  <ng-container *ngIf="this.role === this.RoleLevels.Athlete">
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/register=act']">Registrar actividad</a>
-    </li>
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/subscribe=race']">Carreras</a>
-    </li>
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/subscribe=challenge']">Retos</a>
-    </li>
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/subscribe=group']">Grupos</a>
-    </li>
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/subscriptions']">Inscripciones</a>
-    </li>
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/search']">Buscar usuarios</a>
-    </li>
-  </ng-container>
+  <li class="nav-item" [routerLinkActive]="['link-active']">
+    <a class="nav-link text-dark" [routerLink]="['/register=act']">Registrar actividad</a>
+  </li>
+  <li class="nav-item" [routerLinkActive]="['link-active']">
+    <a class="nav-link text-dark" [routerLink]="['/subscribe=race']">Carreras</a>
+  </li>
+  <li class="nav-item" [routerLinkActive]="['link-active']">
+    <a class="nav-link text-dark" [routerLink]="['/subscribe=challenge']">Retos</a>
+  </li>
+  <li class="nav-item" [routerLinkActive]="['link-active']">
+    <a class="nav-link text-dark" [routerLink]="['/subscribe=group']">Grupos</a>
+  </li>
+  <li class="nav-item" [routerLinkActive]="['link-active']">
+    <a class="nav-link text-dark" [routerLink]="['/subscriptions']">Inscripciones</a>
+  </li>
+  <li class="nav-item" [routerLinkActive]="['link-active']">
+    <a class="nav-link text-dark" [routerLink]="['/search']">Buscar usuarios</a>
+  </li>
 
   <ng-container *ngIf="this.role === this.RoleLevels.Organizer">
-    <li class="nav-item" [routerLinkActive]="['link-active']">
-      <a class="nav-link text-dark" [routerLink]="['/admin=race']">Carreras</a>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdownMenuLink" role="button"
+        data-bs-toggle="dropdown" aria-expanded="false">
+        Admin
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+        <li [routerLinkActive]="['link-active']">
+          <a class="dropdown-item text-dark" [routerLink]="['/admin=race']">Gestión Carreras</a>
+        </li>
+      </ul>
     </li>
   </ng-container>
 
