@@ -405,6 +405,11 @@ public class UserController : ControllerBase
                 }
             }
 
+            using (var cmd = txn.Cmd("DELETE FROM activities WHERE athlete=@id"))
+            {
+                await cmd.Param("id", self).Exec();
+            }
+
             using (var cmd = txn.Cmd("DELETE FROM users WHERE id=@id"))
             {
                 deleted = await cmd.Param("id", self).Exec();
