@@ -425,7 +425,7 @@ public class RaceController : ControllerBase
             decimal price = req.Price ?? row.Value.price;
 
             query = @"
-                UPDATE challenges
+                UPDATE races
                 SET    name = @name, on_date = @day, type = activity_types.id, price = @price
                 FROM   activity_types
                 WHERE  races.id = @race AND activity_types.name = @type
