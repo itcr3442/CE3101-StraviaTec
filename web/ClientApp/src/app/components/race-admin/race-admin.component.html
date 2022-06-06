@@ -76,7 +76,7 @@
                         <span class="input-group-text">CRC</span>
                     </div>
 
-                    <label for="bank-row-0">Cuentas de bancos</label>
+                    <label for="group-row-0">Cuentas de bancos</label>
                     <div class="row mb-3 card" *ngFor='let in of bankCounter() ;let i = index'>
                         <div class="card-header">{{"Cuenta Bancaria #" + (i + 1)}}</div>
                         <div id="bank-row-{{i}}" class="row card-body">
@@ -101,16 +101,46 @@
                         </div>
                     </div>
 
-                    <!-- FALTA: privacidad, grupos -->
-
-                    <!-- <div class="mb-3 form-check">
+                    <div class="mb-3 form-check">
                         <label class="form-check-label" for="privacyCheck">
                             Privado
                         </label>
                         <input class="form-check-input" formControlName="isPrivate" type="checkbox" value=""
                             (change)="onPrivacyChange($event)" id="privacyCheck">
+                    </div>
 
-                    </div> -->
+                    <ng-container *ngIf="isPrivate">
+                        <label for="group-row-0">Grupos Privados</label>
+                        <div class="row mb-3 card" *ngFor='let in of groupCounter(); let i = index'>
+                            <div class="card-header">{{"Grupo #" + (i + 1)}}</div>
+                            <div id="group-row-{{i}}" class="row card-body">
+                                <div class="col">
+                                    <app-search-field searchFor="Groups" [groupStatusFilter]="false"
+                                        (selectEvent)="selectGroup($event, i)" (unselectEvent)="unselectGroup(i)">
+                                    </app-search-field>
+                                </div>
+                                <ng-container *ngIf="i == totalGroups - 1">
+                                    <div class="col-md-{{totalGroups === 1 ? 2 : 3}}">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-6">
+                                                <button type="button" class="btn btn-primary"
+                                                    (click)="addgroup()">+</button>
+                                            </div>
+                                            <ng-container *ngIf="totalGroups > 1">
+                                                <div class="col-md-6">
+                                                    <button type="button" class="btn btn-danger"
+                                                        (click)="decreaseGroup()">-</button>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- FALTA: sponsors -->
+
 
                     <ng-container *ngIf="this.message">
                         <p>

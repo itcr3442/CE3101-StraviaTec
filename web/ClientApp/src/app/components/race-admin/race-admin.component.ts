@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivityType } from 'src/app/constants/activity.constants';
+import { ActivityType, ActivityTypeType } from 'src/app/constants/activity.constants';
 import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent } from 'leaflet';
 import * as L from 'leaflet-gpx';
 import { gpxType, RegisterService } from 'src/app/services/register.service';
@@ -9,6 +9,7 @@ import { Activity } from 'src/app/interfaces/activity';
 import { Id } from 'src/app/interfaces/id';
 import { Race } from 'src/app/interfaces/race';
 import { RaceCategory, RaceStatus } from 'src/app/constants/races.constants';
+import { SearchFieldComponent } from '../search-field/search-field.component';
 
 @Component({
   selector: 'app-race-admin',
@@ -35,6 +36,18 @@ export class RaceAdminComponent implements OnInit {
     price: new FormControl('', [Validators.required, Validators.pattern('[0-9]*\.?[0-9]+')])
   })
 
+  get formName(): string {
+    return this.registerForm.controls['name'].value
+  } get formDay(): string {
+    return this.registerForm.controls['day'].value
+  } get formActivityType(): string {
+    return this.registerForm.controls['activityType'].value
+  } get formPrivate(): boolean {
+    return this.registerForm.controls['private'].value
+  } get formPrice(): string {
+    return this.registerForm.controls['price'].value
+  }
+
   formTitle: string = "Registrar nueva carrera"
   message: string = "";
   warnMessage: string = "";
@@ -53,9 +66,25 @@ export class RaceAdminComponent implements OnInit {
 
   totalBanks: number = 1
   totalCategories: number = 1
+  get selectedCategories(): RaceCategory[] {
+    let categoryList: Array<RaceCategory> = []
+    for (let i = 0; i < this.totalCategories; i++) {
+
+      let categorySelect: HTMLSelectElement = document.getElementById('category-' + i) as HTMLSelectElement;
+      let selectedCategory: number = +categorySelect.options[categorySelect.selectedIndex].value;
+
+      categoryList.push(selectedCategory)
+    }
+    return categoryList
+  }
 
   isPrivate: boolean = false
-  totalGroups: number = 1
+  // totalGroups: number = 1
+  selectedGroups: number[] = [];
+  get totalGroups(): number {
+    return this.selectedGroups.length + 1
+  }
+
 
   activityTypes: (keyof typeof ActivityType)[] = [];
   // Para acceder el enum dentro de html
@@ -110,14 +139,36 @@ export class RaceAdminComponent implements OnInit {
 
       let categorySelect: HTMLSelectElement = document.getElementById('category-' + i) as HTMLSelectElement;
       let selectedCategory: number = +categorySelect.options[categorySelect.selectedIndex].value;
-      console.log("categories list:", categoryList)
-      console.log("selected category:", selectedCategory)
+      // console.log("categories list:", categoryList)
+      // console.log("selected category:", selectedCategory)
 
       if (categoryList.includes(selectedCategory)) {
         console.log("Repeat category:", selectedCategory)
         return false
       }
       categoryList.push(selectedCategory)
+    }
+    return true
+  }
+
+  checkGroupsValidity(): boolean {
+    let groupsList: Array<number> = []
+    for (let i = 0; i < this.totalGroups; i++) {
+
+      let selectedGroup = this.selectedGroups[i]
+
+      console.log("groups list:", groupsList)
+      console.log("selected group:", selectedGroup)
+
+      if (selectedGroup === -1) {
+        continue
+      }
+
+      if (groupsList.includes(selectedGroup)) {
+        console.log("Repeat group:", selectedGroup)
+        return false
+      }
+      groupsList.push(selectedGroup)
     }
     return true
   }
@@ -141,6 +192,10 @@ export class RaceAdminComponent implements OnInit {
       this.warnMessage = "No se pueden tener categorías repetidas."
       return false
     }
+    if (!this.checkGroupsValidity()) {
+      this.warnMessage = "No se pueden tener grupos repetidos."
+      return false
+    }
     // if (!this.checkBanksValidity()) {
     //   this.warnMessage = "Revise que los códigos IBAN ingresados sean todos válidos."
     //   return false
@@ -155,17 +210,17 @@ export class RaceAdminComponent implements OnInit {
 
       // TODO: actually grab stuff from form
       let race: Race = {
-        name: "a",
-        day: new Date(),
-        type: ActivityType.Cycling,
-        privateGroups: [],
-        price: 0,
+        name: this.formName,
+        day: (new Date(this.formDay)),
+        type: +this.formActivityType,
+        privateGroups: this.selectedGroups.filter((g: number) => { g !== -1 }),
+        price: +this.formPrice,
         status: RaceStatus.NotRegistered, // field doesn't matter
-        categories: []
+        categories: this.selectedCategories
       }
 
-      // console.log("Activity submitted:", activity)
-      return
+      console.log("Race submitted:", race)
+      // return
       this.registerService.register_race(race).subscribe(
         (postResp: HttpResponse<Id>) => {
           if (postResp.body) {
@@ -283,39 +338,30 @@ export class RaceAdminComponent implements OnInit {
     this.totalCategories -= 1
   }
 
-  // onPrivacyChange(event: Event) {
-  //   let target = event.target as HTMLInputElement
+  onPrivacyChange(event: Event) {
+    let target = event.target as HTMLInputElement
 
-  //   this.isPrivate = target.checked
+    this.isPrivate = target.checked
+    console.log("Private:", this.isPrivate)
+  }
 
-  //   let studentId = this.registerForm.get('studentId')
-  //   let university = this.registerForm.get('university')
+  groupCounter() {
+    return new Array(this.totalGroups);
+  }
 
-  //   if (this.isPrivate) {
-  //     studentId?.setValidators(Validators.required);
-  //     university?.setValidators(Validators.required);
+  addgroup() {
+    this.selectedGroups.push(-1)
+  }
 
-  //   }
-  //   else {
-  //     studentId?.setValidators(null);
-  //     university?.setValidators(null);
-  //   }
+  decreaseGroup() {
+    this.selectedGroups.pop()
+  }
 
-  //   studentId?.updateValueAndValidity();
-  //   university?.updateValueAndValidity();
-  // }
+  selectGroup(event: { name: string, id: number }, index: number) {
+    this.selectedGroups[index] = event.id
+  }
 
-  // groupCounter() {
-  //   return new Array(this.totalCategories);
-  // }
-
-  // addgroup() {
-  //   if (this.totalGroups === this.categoryTypes.length) return
-  //   this.totalGroups += 1
-  // }
-
-  // decreaseGroup() {
-  //   if (this.totalGroups === 1) return
-  //   this.totalGroups -= 1
-  // }
+  unselectGroup(index: number) {
+    this.selectedGroups[index] = -1
+  }
 }

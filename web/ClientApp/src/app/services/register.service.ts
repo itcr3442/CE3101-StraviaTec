@@ -89,9 +89,9 @@ export class RegisterService {
    * @param formGroup un formgroup a resetear
    */
   public resetForm = (formGroup: FormGroup) => {
-    // if (environment.production) {
-    Object.values(formGroup.controls).forEach((control) => control.reset())
-    // }
+    if (environment.production) {
+      Object.values(formGroup.controls).forEach((control) => control.reset())
+    }
 
   }
 
@@ -141,7 +141,7 @@ export class RegisterService {
 
     let new_race = {
       name: race.name,
-      day: race.day.toUTCString(),
+      day: race.day.toISOString(),
       type: ActivityType[race.type],
       price: race.price,
       privateGroups: race.privateGroups,
