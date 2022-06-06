@@ -110,4 +110,11 @@ export class UserSubscribedComponent implements OnInit {
     this.showContentFlag = false
     this.seachbarToggle  = true
   }
+
+  secondstoTime(secondsInput: number){
+    let hours = Math.floor(secondsInput / 3600)
+    let minutes = Math.floor(((secondsInput / 3600) - Math.floor((secondsInput / 3600))) * 60)
+    let seconds = Math.floor(((((secondsInput / 3600) - Math.floor((secondsInput / 3600))) * 60) - Math.floor((((secondsInput / 3600) - Math.floor((secondsInput / 3600))) * 60))) * 60)
+    return hours + ":" + minutes + ":" + seconds
+  }
 }
