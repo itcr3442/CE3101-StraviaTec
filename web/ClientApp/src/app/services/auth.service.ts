@@ -216,4 +216,12 @@ export class AuthService {
     return this.repo.getData<number[]>('Feed')
   }
 
+  public getReceipts(raceId: number): Observable<HttpResponse<number[]>> {
+    return this.repo.getData<number[]>(`Races/${raceId}/Receipts`)
+  }
+
+  public getReceipt(raceId: number, userId: number) {
+    return this.repo.getData<number[]>(`Races/${raceId}/Receipts/${userId}`, {})
+  }
+
 }

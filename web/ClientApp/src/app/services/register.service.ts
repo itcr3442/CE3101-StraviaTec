@@ -259,4 +259,12 @@ export class RegisterService {
     return this.repositoryService.create<null>(`Challenges/${challengeId}/Progress?activity=${activityId}`, {})
   }
 
+  public accept_inscription(raceId: number, userId: number) {
+    return this.repositoryService.create<null>(`Races/${raceId}/Receipts/${userId}/Accept`, {})
+  }
+
+  public deny_inscription(raceId: number, userId: number) {
+    return this.repositoryService.create<null>(`Races/${raceId}/Receipts/${userId}/Reject`, {})
+  }
+
 }

@@ -14,6 +14,7 @@
                         <th>Nacionalidad</th>
                         <th>Edad</th>
                         <th>Ver Factura</th>
+                        <th>Aceptar / Negar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,6 +28,12 @@
                         <td>
                             <div><button type="button" class="btn btn-outline-success"
                                     (click)="getReceipt(pair.raceId, pair.userId)">Descargar Factura</button></div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-success"
+                                (click)="accept(pair.raceId, pair.userId)">Aceptar</button>
+                            <button type="button" class="btn btn-outline-danger"
+                                (click)="deny(pair.raceId, pair.userId)">Negar</button>
                         </td>
                     </tr>
                 </tbody>
