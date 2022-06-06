@@ -6,7 +6,7 @@
 
         <div class="col-md-6 col-md-offset-3 loginBox">
             <div class="row">
-                <h3>Registro de Actividades</h3>
+                <h3>{{formTitle}}</h3>
             </div>
             <div class="row mb-5">
 
@@ -22,7 +22,7 @@
                         <label class="form-check-label" for="privacyCheck">
                             Admin del grupo
                         </label>
-                        <app-search-field searchFor="Users" (selectEvent)="selectAdmin($event)"
+                        <app-search-field #adminSearch searchFor="Users" (selectEvent)="selectAdmin($event)"
                             (unselectEvent)="unselectAdmin()">
                         </app-search-field>
                     </div>
@@ -37,8 +37,59 @@
                             {{this.warnMessage}}
                         </p>
                     </ng-container>
-                    <button type="submit" class="btn btn-primary">Registrar</button>
+                    <!-- <button type="submit" class="btn btn-primary">Registrar</button> -->
+                    <div class="row g-2">
+                        <button type="submit" class="btn btn-primary">{{this.editing? "Editar" : "Registrar"}}</button>
+
+                        <ng-container *ngIf="this.editing">
+                            <button class="btn btn-danger" type="reset" (click)="cancelForm()">
+                                Cancelar
+                            </button>
+                        </ng-container>
+                    </div>
                 </form>
+            </div>
+
+        </div>
+        <div class="col-md-6 col-md-offset-1">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <!-- <th>UUID</th> -->
+                            <th>Nombre</th>
+                            <th>Administrador</th>
+                            <th># de Miembros</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let group of group_list">
+                            <!-- <td>{{worker.id}}</td> -->
+                            <td>{{group.name}}</td>
+                            <td>{{group.admin.firstName +' ' +group.admin.lastName + ' (@'+ group.admin.username +')'}}
+                            </td>
+                            <td>{{group.members.length}}</td>
+
+                            <td>
+                                <div className="container">
+
+
+                                    <div className="d-grid gap-2 col-6 mx-auto">
+                                        <button type="button" class="btn btn-secondary"
+                                            (click)="activateEditing(group)">
+                                            Editar
+                                        </button>
+                                        <button type="button" class="btn btn-danger"
+                                            (click)="deleteGroupSubmit(group.id)">
+                                            Eliminar
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
         </div>

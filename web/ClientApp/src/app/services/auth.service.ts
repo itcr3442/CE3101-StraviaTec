@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { User, UserResp, resp2user, UserStats } from '../interfaces/user';
 import { LeaderboardRow, Race, RaceResp, resp2race } from '../interfaces/race';
 import { Challenge, resp2chall, RespChallenge } from '../interfaces/challenge';
-import { GroupResp} from '../interfaces/group';
+import { GroupResp } from '../interfaces/group';
 import { Activity, ActivityResp, resp2activity } from '../interfaces/activity';
 import { CommentResp } from '../interfaces/comment';
 

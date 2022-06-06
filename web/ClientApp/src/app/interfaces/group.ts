@@ -16,4 +16,9 @@ export interface GroupSearchDisplay {
     amMember: boolean,
 }
 
+export interface NullableGroup {
+    name: string | null,
+    admin: number | null,
+}
+
 

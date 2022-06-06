@@ -14,6 +14,7 @@ import { ActivityType } from '../constants/activity.constants';
 import { Race } from '../interfaces/race';
 import { RaceCategory, RaceCategoryType } from '../constants/races.constants';
 import { Challenge } from '../interfaces/challenge';
+import { NullableGroup } from '../interfaces/group';
 
 export enum gpxType {
   Race,
@@ -186,6 +187,18 @@ export class RegisterService {
 
     return this.repositoryService.create<Id>(
       "Groups", new_group)
+  }
+
+  public delete_group(id: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.delete<null>(
+      "Groups/" + id)
+  }
+
+  public edit_group(groupId: number, group: NullableGroup): Observable<HttpResponse<null>> {
+    console.log(`Editing group '${groupId}' with:`, group)
+    return this.repositoryService.edit<null>(
+      `Groups/${groupId}`, group)
+
   }
 
   public register_user_race(raceId: number, userCategory: string): Observable<HttpResponse<null>> {
