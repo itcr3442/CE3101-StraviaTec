@@ -37,6 +37,7 @@
                     <div class="table-responsive">
                         <table *ngFor="let section of this.participants" class="table table-striped">
                             <thead>
+                                <h2>{{section.category}}</h2>
                                 <tr>
                                     <th>Username</th>
                                     <th>Nombres</th>
@@ -50,7 +51,7 @@
                                     <td>{{participant.username}}</td>
                                     <td>{{participant.firstName}}</td>
                                     <td>{{participant.lastName}}</td>
-                                    <td>{{participant.country.alpha2 + participant.country.flag}}</td>
+                                    <td>{{participant.country.alpha2}}</td>
                                     <td>{{participant.age}}</td>
                                 </tr>
                             </tbody>
