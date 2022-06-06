@@ -81,7 +81,7 @@ export class AcceptInscriptionsComponent implements OnInit {
   accept(raceId: number, userId: number) {
     this.registerService.accept_inscription(raceId, userId).subscribe(
       (resp: HttpResponse<null>) => {
-        console.log("resp:", resp)
+        console.log("Se aceptó correctamente:", resp)
         this.refreshInscriptions()
       }
     )
