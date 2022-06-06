@@ -147,9 +147,88 @@ public class ChallengeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult Patch(int id, Req.PatchChallenge req)
+    public async Task<ActionResult> Patch(int id, Req.PatchChallenge req)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
+        using (var txn = _db.Txn())
+        {
+            (string name, DateTime start, DateTime end,
+             string type, decimal goal)? row;
+
+            string query = @"
+                SELECT challenges.name, start_time, end_time,
+                       activity_types.name, goal
+                FROM   challenges
+                JOIN   activity_types
+                ON     type = activity_types.id
+                WHERE  challenges.id = @challenge
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                row = cmd.Param("challenge", id).Row<(string, DateTime, DateTime, string, int)>();
+            }
+
+            if (row == null)
+            {
+                return NotFound();
+            }
+
+            string name = req.Name ?? row.Value.name;
+            DateTime start = req.Start ?? row.Value.start;
+            DateTime end = req.End ?? row.Value.end;
+            string type = req.Type != null ? req.Type.ToString() : row.Value.type;
+            decimal goal = req.Goal ?? row.Value.goal;
+
+            query = @"
+                UPDATE challenges
+                SET    name = @name, start = @start, end = @end,
+                       type = activity_types.id, goal = @goal
+                FROM   activity_types
+                WHERE  challenges.id = @challenge AND activity_types.name = @type
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("name", name)
+                   .Param("start", start)
+                   .Param("end", end)
+                   .Param("type", type)
+                   .Param("goal", goal)
+                   .Param("challenge", id);
+
+                await cmd.Exec();
+            }
+
+            if (req.PrivateGroups != null)
+            {
+                query = @"
+                    DELETE FROM challenge_private_groups
+                    WHERE       challenge=@challenge
+                    ";
+
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("challenge", id).Exec();
+                }
+
+                query = @"
+                    INSERT INTO challenge_private_groups(challenges, group_id)
+                    VALUES(@challenge, @group)
+                    ";
+
+                foreach (int privateGroup in req.PrivateGroups)
+                {
+                    using (var cmd = txn.Cmd(query))
+                    {
+                        await cmd.Param("challenge", id).Param("group", privateGroup).Exec();
+                    }
+                }
+            }
+
+            txn.Commit();
+        }
+
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
