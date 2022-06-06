@@ -107,20 +107,7 @@ export class UserChallengesComponent implements OnInit {
   }
 
   challTypeToString(challType: ActivityType){
-    switch (challType){
-      case ActivityType.Running:
-        return "Correr"
-      case ActivityType.Swimming:
-        return "Nadar"
-      case ActivityType.Cycling:
-        return "Ciclismo"
-      case ActivityType.Hiking:
-        return "Senderismo"
-      case ActivityType.Kayaking:
-        return "Kayak"
-      case ActivityType.Walking:
-        return "Caminata"
-    }
+    return ActivityType[challType]
   }
 
   isRegistered(chall:Challenge){
