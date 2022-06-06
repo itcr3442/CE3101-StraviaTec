@@ -60,8 +60,20 @@
         <li [routerLinkActive]="['link-active']">
           <a class="dropdown-item text-dark" [routerLink]="['/admin=group']">Gestión Grupos</a>
         </li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
         <li [routerLinkActive]="['link-active']">
           <a class="dropdown-item text-dark" [routerLink]="['/admin=inscriptions']">Aceptar Inscripcions</a>
+        </li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li [routerLinkActive]="['link-active']">
+          <a class="dropdown-item text-dark" [routerLink]="['/report=participants']">Reportes por participantes</a>
+        </li>
+        <li [routerLinkActive]="['link-active']">
+          <a class="dropdown-item text-dark" [routerLink]="['/report=position']">Reportes por posición</a>
         </li>
       </ul>
     </li>

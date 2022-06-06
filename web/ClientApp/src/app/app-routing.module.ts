@@ -23,6 +23,8 @@ import { RaceAdminComponent } from './components/race-admin/race-admin.component
 import { ChallengeAdminComponent } from './components/challenge-admin/challenge-admin.component';
 import { GroupsAdminComponent } from './components/groups-admin/groups-admin.component';
 import { AcceptInscriptionsComponent } from './components/accept-inscriptions/accept-inscriptions.component';
+import { ReportParticipantsComponent } from './components/report-participants/report-participants.component';
+import { ReportPositionComponent } from './components/report-position/report-position.component';
 // import { WorkerAdminComponent } from './components/worker-admin/worker-admin.component';
 
 
@@ -44,6 +46,8 @@ const routes: Routes = [
   { path: 'admin=challenge', component: ChallengeAdminComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
   { path: 'admin=group', component: GroupsAdminComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
   { path: 'admin=inscriptions', component: AcceptInscriptionsComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
+  { path: 'report=participants', component: ReportParticipantsComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
+  { path: 'report=position', component: ReportPositionComponent, canActivate: [AuthGuard], data: { roles: [RoleLevels.Organizer] } },
   { path: '', component: HomeComponent, pathMatch: 'full' },
 ];
 

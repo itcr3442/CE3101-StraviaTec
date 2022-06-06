@@ -34,6 +34,7 @@
     "country-flag-icons": "^1.5.2",
     "i18n-iso-countries": "^7.4.0",
     "jquery": "^3.5.1",
+    "jspdf": "^2.5.1",
     "leaflet": "^1.8.0",
     "leaflet-gpx": "^1.7.0",
     "oidc-client": "^1.11.5",

@@ -40,6 +40,8 @@ import { ResetPasswordFormComponent } from './components/reset-password-form/res
 import { ChallengeAdminComponent } from './components/challenge-admin/challenge-admin.component';
 import { GroupsAdminComponent } from './components/groups-admin/groups-admin.component';
 import { AcceptInscriptionsComponent } from './components/accept-inscriptions/accept-inscriptions.component';
+import { ReportParticipantsComponent } from './components/report-participants/report-participants.component';
+import { ReportPositionComponent } from './components/report-position/report-position.component';
 
 
 @NgModule({
@@ -69,6 +71,8 @@ import { AcceptInscriptionsComponent } from './components/accept-inscriptions/ac
     ChallengeAdminComponent,
     GroupsAdminComponent,
     AcceptInscriptionsComponent,
+    ReportParticipantsComponent,
+    ReportPositionComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
