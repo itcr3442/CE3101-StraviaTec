@@ -886,7 +886,7 @@ CREATE TABLE sponsors
   legal_rep  varchar(64) NOT NULL,
   legal_tel  varchar(32) NOT NULL,
 
-  CHECK(brand_name > 0),
+  CHECK(LEN(brand_name) > 0),
 );
 
 CREATE TABLE sponsor_logos
@@ -1053,6 +1053,7 @@ CREATE UNIQUE INDEX idx_users_id ON users(id);
 CREATE UNIQUE INDEX idx_groups_id ON groups(id);
 CREATE UNIQUE INDEX idx_races_id ON races(id);
 CREATE UNIQUE INDEX idx_challenges_id ON challenges(id);
+CREATE UNIQUE INDEX idx_sponsors_id ON sponsors(id);
 
 GO
 
@@ -1072,6 +1073,10 @@ CREATE FULLTEXT INDEX ON races
 CREATE FULLTEXT INDEX ON challenges
 ( name LANGUAGE 5130 -- es-CR
 ) KEY INDEX idx_challenges_id ON search;
+
+CREATE FULLTEXT INDEX ON sponsors
+( brand_name LANGUAGE 5130 -- es-CR
+) KEY INDEX idx_sponsors_id ON search;
 
 GO
 
