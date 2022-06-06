@@ -239,6 +239,7 @@ export class RaceAdminComponent implements OnInit {
             if (this.gpxFile !== null) {
               this.registerService.put_gpx(postResp.body.id, this.gpxFile, gpxType.Race).subscribe(
                 (gpxResp: HttpResponse<null>) => {
+                  window.location.reload()
                   console.log("PUT GPX resp:", gpxResp)
                 },
                 (err: HttpErrorResponse) => {
@@ -279,6 +280,8 @@ export class RaceAdminComponent implements OnInit {
           } else if (err.status == 404) {
             console.log("404:", err)
             this.warnMessage = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
+          } else {
+            this.warnMessage = "Lo sentimos, hubo un error registrando la carrera."
           }
         })
 

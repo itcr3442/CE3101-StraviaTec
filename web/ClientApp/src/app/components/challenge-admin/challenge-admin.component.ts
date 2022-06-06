@@ -137,6 +137,7 @@ export class ChallengeAdminComponent implements OnInit {
           if (postResp.body) {
             this.registerService.resetForm(this.registerForm)
             this.message = "El reto se ha registrado correctamente."
+            window.location.reload()
           }
           else {
             this.warnMessage = "Lo sentimos, estamos experimentado problemas (falta de body en response).";
@@ -150,6 +151,9 @@ export class ChallengeAdminComponent implements OnInit {
           } else if (err.status == 404) {
             console.log("404:", err)
             this.warnMessage = "Not Found 404: Estamos experimentando problemas, vuelva a intentar más tarde.";
+          }
+          else {
+            this.warnMessage = "Lo sentimos, hubo un error registrando el reto."
           }
         }
       )
