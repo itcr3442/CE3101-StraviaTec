@@ -1089,6 +1089,27 @@ CREATE FULLTEXT INDEX ON sponsors
 
 GO
 
+CREATE TRIGGER reject_receipts_for_registered_athletes
+ON     receipts
+FOR    INSERT
+AS BEGIN
+  SET NOCOUNT ON;
+
+  IF (
+    SELECT COUNT(*)
+    FROM   INSERTED
+    JOIN   race_participants
+    ON     INSERTED.race    = race_participants.race
+       AND INSERTED.athlete = race_participants.athlete
+  ) > 0
+  BEGIN
+    ROLLBACK;
+    RAISERROR('No se puede poner en lista de comprobación de pago a un atleta ya registrado', 16, 1);
+  END
+END;
+
+GO
+
 CREATE PROCEDURE current_age
   @id  int
 , @age int OUTPUT

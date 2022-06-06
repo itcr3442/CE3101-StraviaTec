@@ -1,6 +1,9 @@
 DROP PROCEDURE IF EXISTS current_age;
 
 
+DROP TRIGGER IF EXISTS reject_receipts_for_registered_athletes;
+
+
 IF EXISTS (SELECT 0 FROM  sys.fulltext_indexes 
                     WHERE object_id = object_id('dbo.sponsors'))
    DROP FULLTEXT INDEX ON sponsors;
