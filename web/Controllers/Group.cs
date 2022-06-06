@@ -83,7 +83,7 @@ public class GroupController : ControllerBase
 
                 string query = @"
                     DELETE FROM group_members
-                    WHERE       group_id=@id AND admin=@admin
+                    WHERE       group_id=@id AND member=@admin
                     ";
 
                 using (var cmd = txn.Cmd(query))
@@ -92,7 +92,7 @@ public class GroupController : ControllerBase
                 }
 
                 query = @"
-                    INSERT INTO group_members(group_id, admin)
+                    INSERT INTO group_members(group_id, member)
                     VALUES(@id, @admin)
                     ";
 
