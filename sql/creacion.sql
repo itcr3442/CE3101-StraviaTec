@@ -1110,6 +1110,26 @@ END;
 
 GO
 
+CREATE TRIGGER reject_activity_type_updates
+ON     activity_types
+FOR    UPDATE
+AS BEGIN
+  SET NOCOUNT ON;
+
+  IF (
+    SELECT COUNT(*)
+    FROM   INSERTED
+    JOIN   DELETED
+	ON     INSERTED.id = DELETED.id
+  ) > 0
+  BEGIN
+    ROLLBACK;
+    RAISERROR('Los nombres de tipos de actividad son inmutables', 16, 1);
+  END
+END;
+
+GO
+
 CREATE PROCEDURE current_age
   @id  int
 , @age int OUTPUT

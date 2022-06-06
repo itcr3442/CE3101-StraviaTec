@@ -1,6 +1,7 @@
 DROP PROCEDURE IF EXISTS current_age;
 
 
+DROP TRIGGER IF EXISTS reject_activity_type_updates;
 DROP TRIGGER IF EXISTS reject_receipts_for_registered_athletes;
 
 
