@@ -34,6 +34,7 @@ export class SearchFieldComponent implements OnInit {
   @Input() challStatusFilter: ChallengeStatusType | undefined = undefined
   @Input() groupStatusFilter: boolean | undefined = undefined;
   @Output() selectEvent = new EventEmitter<{ name: string, id: number }>();
+  @Output() unselectEvent = new EventEmitter<null>();
 
   searchable: Searchables;
   searchResultIds: Array<number> = []
@@ -225,6 +226,8 @@ export class SearchFieldComponent implements OnInit {
     this.selected = false
     this.selectedId = null
     this.selectedName = null
+
+    this.unselectEvent.emit(null)
   }
 
   get resultsAmount(): number {
