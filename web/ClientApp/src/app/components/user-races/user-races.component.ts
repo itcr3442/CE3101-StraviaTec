@@ -167,21 +167,8 @@ export class UserRacesComponent implements OnInit {
 
   }  
 
-  raceTypeToString(challType: ActivityType){
-    switch (challType){
-      case ActivityType.Running:
-        return "Correr"
-      case ActivityType.Swimming:
-        return "Nadar"
-      case ActivityType.Cycling:
-        return "Ciclismo"
-      case ActivityType.Hiking:
-        return "Senderismo"
-      case ActivityType.Kayaking:
-        return "Kayak"
-      case ActivityType.Walking:
-        return "Caminata"
-    }
+  raceTypeToString(raceType: ActivityType){
+    return ActivityType[raceType]
   }
 
 
