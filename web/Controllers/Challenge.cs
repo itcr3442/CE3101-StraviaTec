@@ -49,7 +49,7 @@ public class ChallengeController : ControllerBase
             }
 
             query = @"
-                INSERT INTO challenge_private_groups(challenges, group_id)
+                INSERT INTO challenge_private_groups(challenge, group_id)
                 VALUES(@challenge, @group)
                 ";
 
