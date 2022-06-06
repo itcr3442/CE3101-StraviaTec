@@ -116,7 +116,7 @@ public class RaceController : ControllerBase
         using (var txn = _db.Txn())
         {
             string query = @"
-                SELECT races.name, on_date, activity_types.name, price,
+                SELECT races.name, on_date, activity_types.name, price
                 FROM   races
                 JOIN   activity_types
                 ON     type = activity_types.id
