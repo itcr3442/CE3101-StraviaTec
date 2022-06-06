@@ -47,21 +47,14 @@ public class ChallengeController : ControllerBase
         using (var txn = _db.Txn())
         {
             string query = @"
-                SELECT     challenges.name, challenges.start_time, challenges.end_time,
-                           activity_types.name, goal, SUM(length)
-                FROM       challenge_activities
-                JOIN       activities
-                ON         activity = id
-                RIGHT JOIN challenge_participants
-                ON         activities.athlete = challenge_participants.athlete
-                JOIN       challenges
-                ON         challenge_participants.challenge = challenges.id
-                JOIN       activity_types
-                ON         challenges.type = activity_types.id
-                WHERE      challenge_participants.athlete = @athlete
-                GROUP BY   challenges.id, challenges.name, challenges.start_time,
-                           challenges.end_time, activity_types.name, goal, 
-                HAVING     challenges.id = @challenge
+                SELECT challenges.name, start_time, end_time,
+                       activity_types.name, goal, progress
+                FROM   challenge_progress
+                JOIN   challenges
+                ON     challenge = id
+                JOIN   activity_types
+                ON     type = activity_types.id
+                WHERE  challenge = @challenge AND athlete = @athlete
                 ";
 
             using (var cmd = txn.Cmd(query))
