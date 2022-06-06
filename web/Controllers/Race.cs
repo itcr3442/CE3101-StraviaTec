@@ -59,8 +59,8 @@ public class RaceController : ControllerBase
     {
         string query = @"
             SELECT   activity, duration, length
-            FROM     race_leaderboard
-            WHERE    race = @race AND activity IS NOT NULL
+            FROM     race_positions
+            WHERE    race = @race
             ORDER BY duration ASC
             ";
 
@@ -101,13 +101,53 @@ public class RaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Positions(int id)
     {
-        return Ok(new Resp.RacePositions[] { new Resp.RacePositions {
-                Category = Category.Sub23,
-                Activities = new int[] { 69, 420 }
-                }, new Resp.RacePositions {
-                Category = Category.Junior,
-                Activities = new int[] { 69420, 42069 },
-                }});
+        string query = @"
+            SELECT   name, activity
+            FROM     race_positions
+            JOIN     categories
+            ON       category = id
+            WHERE    race = @race
+            ORDER BY category ASC, duration ASC
+            ";
+
+        var positions = new List<Resp.RacePositions>();
+        Resp.RacePositions? last = null;
+        var activities = new List<int>();
+
+        using (var cmd = _db.Cmd(query))
+        {
+            var rows = cmd.Param("race", id).Rows<(string, int)>();
+            foreach ((string categoryName, int activity) row in rows)
+            {
+                Enum.TryParse(row.categoryName, out Category category);
+                if (last == null || last.Category != category)
+                {
+                    if (last != null)
+                    {
+                        last.Activities = activities.ToArray();
+                    }
+
+                    activities.Clear();
+
+                    last = new Resp.RacePositions
+                    {
+                        Category = category,
+                        Activities = new int[] { }
+                    };
+
+                    positions.Add(last);
+                }
+
+                activities.Add(row.activity);
+            }
+        }
+
+        if (last != null)
+        {
+            last.Activities = activities.ToArray();
+        }
+
+        return Ok(positions.ToArray());
     }
 
     [HttpPatch("{id}")]

@@ -1038,13 +1038,13 @@ CREATE VIEW challenge_progress AS
 
 GO
 
-CREATE VIEW race_leaderboard AS
-  SELECT    race, race_participants.athlete, category, activity, length,
-              CONVERT(decimal(18, 9), DATEDIFF(MILLISECOND, start_time, end_time)) / 1000
-              AS duration
-  FROM      race_participants
-  LEFT JOIN activities
-  ON        activity = id;
+CREATE VIEW race_positions AS
+  SELECT race, race_participants.athlete, category, activity, length,
+           CONVERT(decimal(18, 9), DATEDIFF(MILLISECOND, start_time, end_time)) / 1000
+           AS duration
+  FROM   race_participants
+  JOIN   activities
+  ON     activity = id;
 
 GO
 
