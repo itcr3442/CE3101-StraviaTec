@@ -51,6 +51,33 @@
                         <span class="input-group-text">km</span>
                     </div>
 
+                    <div class="mb-3 form-group">
+                        <label for="partOfSelect">Es parte de un reto o carrera?</label>
+                        <select id="partOfSelect" class="form-select" (change)="changePartOf($event)">
+                            <option [value]="PertainsTo.Not" selected>No</option>
+                            <option [value]="PertainsTo.Challenge">Reto</option>
+                            <option [value]="PertainsTo.Race">Carrera</option>
+                        </select>
+                    </div>
+                    <ng-container *ngIf="this.partOf === PertainsTo.Challenge">
+                        <div class="mb-3 form-group">
+                            <app-search-field searchFor="Challenges" challStatusFilter="Registered"
+                                (selectEvent)="selectEvent($event, 'Challenge')" (unselectEvent)="unselectEvent()">
+                            </app-search-field>
+                            <!-- (selectEvent)="selectGroup($event, i)" (unselectEvent)="unselectGroup(i)">
+                        </app-search-field> -->
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="this.partOf === PertainsTo.Race">
+                        <div class="mb-3 form-group">
+                            <app-search-field searchFor="Races" raceStatusFilter="Registered"
+                                (selectEvent)="selectEvent($event, 'Race')" (unselectEvent)="unselectEvent()">
+                            </app-search-field>
+                            <!-- (selectEvent)="selectGroup($event, i)" (unselectEvent)="unselectGroup(i)">
+                        </app-search-field> -->
+                        </div>
+                    </ng-container>
+
                     <ng-container *ngIf="this.message">
                         <p>
                             {{this.message}}

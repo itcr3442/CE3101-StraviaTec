@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ApplicationRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivityType } from 'src/app/constants/activity.constants';
 import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent } from 'leaflet';
@@ -8,13 +8,22 @@ import { gpxType, RegisterService } from 'src/app/services/register.service';
 import { Activity } from 'src/app/interfaces/activity';
 import { Id } from 'src/app/interfaces/id';
 import { FormattingService } from 'src/app/services/formatting.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { Race } from 'src/app/interfaces/race';
+import { Challenge } from 'src/app/interfaces/challenge';
+
+enum PertainsTo {
+  Not,
+  Challenge,
+  Race
+}
+
 
 @Component({
   selector: 'app-register-activity',
   templateUrl: './register-activity.component.html',
   styleUrls: ['./register-activity.component.css']
 })
-
 export class RegisterActivityComponent implements OnInit {
 
   // opciones para mapa inicial, no editar
@@ -25,7 +34,6 @@ export class RegisterActivityComponent implements OnInit {
     zoom: 15,
     center: latLng(9.855319, -83.910799)
   };
-
 
   registerForm = new FormGroup({
     startDate: new FormControl('', [Validators.required]),
@@ -55,7 +63,12 @@ export class RegisterActivityComponent implements OnInit {
     return ActivityType
   }
 
-  constructor(private registerService: RegisterService, private formatter: FormattingService) {
+  partOf: PertainsTo = PertainsTo.Not;
+  get PertainsTo(): typeof PertainsTo {
+    return PertainsTo
+  }
+
+  constructor(private registerService: RegisterService, private authService: AuthService, private formatter: FormattingService) {
     let today = new Date()
     this.maxDate = this.formatter.toLocalTimeStr(today)
     for (let a in ActivityType) {
@@ -111,7 +124,20 @@ export class RegisterActivityComponent implements OnInit {
       this.warnMessage = "Por favor ingrese un archivo '.gpx' válido."
       return false
     }
+    if (this.partOf !== PertainsTo.Not && this.selectedEvent === null) {
+      this.warnMessage = "Por favor escoja al reto/carrera al que pertenece esta actividad."
+      return false
+    }
     return true
+  }
+
+  deleteActivity(id: number) {
+    this.registerService.delete_activity(id).subscribe((deleteResp: HttpResponse<null>) => {
+      console.log("delete resp:", deleteResp),
+        (err: HttpErrorResponse) => {
+          console.log("Error deleting activity:", err)
+        }
+    })
   }
 
   onSubmit() {
@@ -153,12 +179,7 @@ export class RegisterActivityComponent implements OnInit {
 
                   //Delete previously posted activity
                   if (postResp.body)
-                    this.registerService.delete_activity(postResp.body.id).subscribe((deleteResp: HttpResponse<null>) => {
-                      console.log("delete resp:", deleteResp),
-                        (err: HttpErrorResponse) => {
-                          console.log("Error deleting activity without gpx:", err)
-                        }
-                    })
+                    this.deleteActivity(postResp.body.id)
 
                 }
               )
@@ -166,6 +187,32 @@ export class RegisterActivityComponent implements OnInit {
 
             if (this.gpxURL !== null) {
               URL.revokeObjectURL(this.gpxURL)
+            }
+
+            // Add to race/challenge
+            if (this.partOf !== PertainsTo.Not) {
+              switch (this.partOf) {
+                case PertainsTo.Challenge:
+                  this.registerService.challenge_progress(this.selectedEvent!, postResp.body.id).subscribe(
+                    (resp: HttpResponse<null>) => console.log("Activity part of challenge resp:", resp),
+                    (err: HttpErrorResponse) => {
+                      console.log("Error associating activity to challenge:", err)
+                      this.warnMessage = "Hubo un error asociando la actividad al reto por lo que será borrada."
+                      this.deleteActivity(postResp.body!.id)
+                    }
+                  )
+                  break;
+                case PertainsTo.Race:
+                  this.registerService.race_progress(this.selectedEvent!, postResp.body.id).subscribe(
+                    (resp: HttpResponse<null>) => console.log("Activity part of race resp:", resp),
+                    (err: HttpErrorResponse) => {
+                      console.log("Error associating activity to race:", err)
+                      this.warnMessage = "Hubo un error asociando la actividad a la carrera por lo que será borrada."
+                      this.deleteActivity(postResp.body!.id)
+                    }
+                  )
+                  break;
+              }
             }
           }
           else {
@@ -229,5 +276,44 @@ export class RegisterActivityComponent implements OnInit {
     }
   }
 
+  changePartOf(event: Event) {
+    let selectElement = event.target as HTMLSelectElement
+    this.partOf = +selectElement.value
+    if (this.partOf === PertainsTo.Not) {
+      this.registerForm.controls["activityType"].enable()
+    } else {
+      this.registerForm.controls["activityType"].disable()
+    }
+  }
+
+  selectedEvent: number | null = null
+  selectEvent(event: { name: string, id: number }, type: 'Race' | 'Challenge') {
+    switch (type) {
+      case 'Race':
+        this.authService.getRace(event.id).subscribe(
+          (resp: Race | null) => {
+            if (resp) {
+              this.registerForm.controls["activityType"].setValue(resp.type)
+              this.selectedEvent = event.id
+            }
+          }
+        )
+        break
+      case 'Challenge':
+        this.authService.getChallenge(event.id).subscribe(
+          (resp: Challenge | null) => {
+            if (resp) {
+              this.registerForm.controls["activityType"].setValue(resp.type)
+              this.selectedEvent = event.id
+            }
+          }
+        )
+        break
+    }
+  }
+
+  unselectEvent() {
+    this.selectedEvent = null
+  }
 
 }

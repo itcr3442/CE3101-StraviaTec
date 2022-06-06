@@ -217,4 +217,12 @@ export class RegisterService {
     return this.repositoryService.create<null>(`Activities/${activityId}/Comments`, { content: content })
   }
 
+  public race_progress(raceId: number, activityId: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.create<null>(`Races/${raceId}/Progress?activity=${activityId}`, {})
+  }
+
+  public challenge_progress(challengeId: number, activityId: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.create<null>(`Challenges/${challengeId}/Progress?activity=${activityId}`, {})
+  }
+
 }
