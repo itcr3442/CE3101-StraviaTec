@@ -138,17 +138,12 @@ public class ProfileController : ControllerBase
         string query = @"
             SELECT    challenge
             FROM      challenge_participants
-            LEFT JOIN
-            (
-              SELECT   athlete, MAX(end_time) AS latest_time
-              FROM     challenge_activities
-              JOIN     activities
-              ON       activity = id
-              GROUP BY athlete
-            ) AS latest
-            ON       latest.athlete = challenge_participants.athlete
-            WHERE    latest.athlete = @id
-            ORDER BY CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END DESC, latest_time DESC";
+            LEFT JOIN last_challenge_updates AS latest
+            ON        latest.athlete = challenge_participants.athlete
+                  AND latest.challenge = challenge_participants.challenge
+            WHERE     latest.athlete = @id
+            ORDER BY  CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END DESC, latest_time DESC
+            ";
 
         using (var cmd = _db.Cmd(query))
         {
