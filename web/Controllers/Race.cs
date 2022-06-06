@@ -23,14 +23,87 @@ public class RaceController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Resp.Ref))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult New(Req.NewRace req)
+    public async Task<ActionResult> New(Req.NewRace req)
     {
-        if (Random.Shared.Next(2) == 0)
+        int id;
+        using (var txn = _db.Txn())
         {
-            return BadRequest();
+            string query = @"
+                INSERT INTO races(name, on_date, type, price)
+                OUTPUT INSERTED.ID
+                SELECT @name, @day, id, @price
+                FROM   activity_types
+                WHERE  name = @type
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("name", req.Name)
+                   .Param("day", req.Day)
+                   .Param("type", req.Type.ToString())
+                   .Param("price", req.Price);
+
+                id = cmd.InsertId();
+            }
+
+            query = @"
+                INSERT INTO race_private_groups(race, group_id)
+                VALUES(@race, @group)
+                ";
+
+            foreach (int privateGroup in req.PrivateGroups)
+            {
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("race", id).Param("group", privateGroup).Exec();
+                }
+            }
+
+            query = @"
+                INSERT INTO bank_accounts(race, iban)
+                VALUES(@race, @iban)
+                ";
+
+            foreach (string iban in req.BankAccounts)
+            {
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("race", id).Param("iban", iban).Exec();
+                }
+            }
+
+            query = @"
+                INSERT INTO race_categories(race, category)
+                SELECT @race, id
+                FROM   categories
+                WHERE  name = @category
+                ";
+
+            foreach (Category category in req.Categories)
+            {
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("race", id).Param("category", category.ToString()).Exec();
+                }
+            }
+
+            query = @"
+                INSERT INTO race_sponsors(race, sponsor)
+                VALUES(@race, @sponsor)
+                ";
+
+            foreach (int sponsor in req.Sponsors)
+            {
+                using (var cmd = txn.Cmd(query))
+                {
+                    await cmd.Param("race", id).Param("sponsor", sponsor).Exec();
+                }
+            }
+
+            txn.Commit();
         }
 
-        return CreatedAtAction(nameof(Get), new { id = 69 }, new Resp.Ref(69));
+        return CreatedAtAction(nameof(Get), new { id = id }, new Resp.Ref(id));
     }
 
     [HttpGet("{id}")]
