@@ -563,27 +563,32 @@ public class RaceController : ControllerBase
         int deleted;
         using (var txn = _db.Txn())
         {
-            using (var cmd = _db.Cmd("DELETE FROM race_tracks WHERE race=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM race_tracks WHERE race=@id"))
             {
                 deleted = await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM race_categories WHERE race=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM race_categories WHERE race=@id"))
             {
                 deleted = await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM race_private_groups WHERE race=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM race_private_groups WHERE race=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM race_participants WHERE race=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM race_participants WHERE race=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM races WHERE id=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM race_sponsors WHERE race=@id"))
+            {
+                await cmd.Param("id", id).Exec();
+            }
+
+            using (var cmd = txn.Cmd("DELETE FROM races WHERE id=@id"))
             {
                 deleted = await cmd.Param("id", id).Exec();
             }
