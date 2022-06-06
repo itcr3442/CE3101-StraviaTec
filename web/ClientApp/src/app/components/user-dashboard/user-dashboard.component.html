@@ -37,14 +37,7 @@
 
                             </div>
                         </div>
-                        <!-- <ng-container *ngIf="!!this.userStats.latestActivity">
-                            <div *ngIf="!!this.lastActivity; else loadingSpinner" class="card-body">
 
-                                <label for="latestActivity">Última actividad:</label>
-                                <p id="latestActivity">{{this.lastActivity.type}}</p>
-
-                            </div>
-                        </ng-container> -->
                     </div>
                 </div>
 
@@ -52,6 +45,8 @@
                     <div *ngIf="!!this.lastActivity; else loadingSpinner" class="card mb-4">
                         <div class="row card-body text-center">
                             <h4 class=" card-title">Última actividad:</h4>
+                            <small>{{this.lastActivity.start.toLocaleString()}}</small>
+
                         </div>
                         <div class="row align-items-center card-body">
                             <div class=" row">
@@ -132,6 +127,7 @@
                                     <div class="col-8">
                                         <h5>{{ua.user.firstName + ' ' + ua.user.lastName}}</h5>
                                         <p>{{ua.user.country.flag}}</p>
+                                        <small>{{ua.activity.start.toLocaleString()}}</small>
                                     </div>
                                     <div class="col d-flex justify-content-end" style="margin-top: 10px;">
                                         <a class="comment" type="button" data-bs-toggle="modal"
@@ -199,6 +195,8 @@
                                     <div class="row">
                                         <div class="col-8">
                                             <h4 class="card-title">{{this.activityTypes[a.activity.type]}}</h4>
+                                            <small>{{a.activity.start.toLocaleString()}}</small>
+
                                         </div>
                                         <div class="col" style="margin-left: 30px;">
                                             <a class="comment" type="button" data-bs-toggle="modal"
