@@ -112,20 +112,19 @@ public class GroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
-        int admin;
+        (string name, int admin)? row;
         int[] members;
 
         using (var txn = _db.Txn())
         {
-            using (var cmd = txn.Cmd("SELECT admin FROM groups WHERE id=@id"))
+            using (var cmd = txn.Cmd("SELECT name, admin FROM groups WHERE id=@id"))
             {
-                int? row = cmd.Param("id", id).Row<int>();
-                if (row == null)
-                {
-                    return NotFound();
-                }
+                row = cmd.Param("id", id).Row<(string, int)>();
+            }
 
-                admin = row.Value;
+            if (row == null)
+            {
+                return NotFound();
             }
 
             using (var cmd = txn.Cmd("SELECT member FROM group_members WHERE group_id=@id"))
@@ -136,7 +135,8 @@ public class GroupController : ControllerBase
 
         return Ok(new Resp.GetGroup
         {
-            Admin = admin,
+            Name = row.Value.name,
+            Admin = row.Value.admin,
             Members = members,
             AmMember = members.Contains(this.LoginId()),
         });
