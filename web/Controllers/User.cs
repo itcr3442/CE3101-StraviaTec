@@ -334,65 +334,8 @@ public class UserController : ControllerBase
             return Forbid();
         }
 
-        int deleted;
         using (var txn = _db.Txn())
         {
-            using (var cmd = txn.Cmd("DELETE FROM photos WHERE user_id=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM friends WHERE follower=@id OR followee=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM race_participants WHERE athlete=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM challenge_participants WHERE athlete=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM receipts WHERE athlete=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            using (var cmd = txn.Cmd("DELETE FROM group_members WHERE member=@id"))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            string query = @"
-                DELETE activity_tracks
-                FROM   activities
-                JOIN   activity_tracks
-                ON     activity = id
-                WHERE  athlete = @id
-                ";
-
-            using (var cmd = txn.Cmd(query))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
-            query = @"
-                DELETE challenge_activities
-                FROM   activities
-                JOIN   challenge_activities
-                ON     activity = id
-                WHERE  athlete = @id
-                ";
-
-            using (var cmd = txn.Cmd(query))
-            {
-                await cmd.Param("id", self).Exec();
-            }
-
             var comments = _mongo.Collection<StoredComment>("comments");
             var filter = Builders<StoredComment>.Filter;
             comments.DeleteMany(filter.Eq(comment => comment.Author, id));
@@ -405,21 +348,23 @@ public class UserController : ControllerBase
                 }
             }
 
-            using (var cmd = txn.Cmd("DELETE FROM activities WHERE athlete=@id"))
+            int? count;
+            using (var cmd = txn.Cmd("delete_user"))
             {
-                await cmd.Param("id", self).Exec();
+                cmd.Param("id", self).Output("count", SqlDbType.Int);
+                count = (await cmd.StoredProcedure())["@count"].Value as int?;
             }
 
-            using (var cmd = txn.Cmd("DELETE FROM users WHERE id=@id"))
+            if ((count ?? 0) == 0)
             {
-                deleted = await cmd.Param("id", self).Exec();
+                return NotFound();
             }
 
             txn.Commit();
         }
 
         await HttpContext.SignOutAsync();
-        return deleted > 0 ? NoContent() : NotFound();
+        return NoContent();
     }
 
     private readonly ISqlConn _db;
