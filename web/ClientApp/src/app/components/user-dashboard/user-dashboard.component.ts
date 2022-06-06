@@ -216,7 +216,12 @@ export class UserDashboardComponent implements OnInit {
       this.registerService.post_comment(this.commentsActId, input.value).subscribe(
         (_: HttpResponse<null>) => {
           // console.log("post comment resp:", resp)
-          this.appRef.tick()
+          if (this.commentsActId)
+            this.loadComments(this.commentsActId)
+
+          let commentInput: HTMLInputElement = document.getElementById('new-comment-input') as HTMLInputElement
+          commentInput.value = ''
+          // this.appRef.tick()
         }
       )
   }
