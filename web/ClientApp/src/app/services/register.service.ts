@@ -13,7 +13,7 @@ import { Id } from '../interfaces/id';
 import { ActivityType } from '../constants/activity.constants';
 import { Race } from '../interfaces/race';
 import { RaceCategory, RaceCategoryType } from '../constants/races.constants';
-import { Challenge } from '../interfaces/challenge';
+import { Challenge, NullableChallenge } from '../interfaces/challenge';
 import { NullableGroup } from '../interfaces/group';
 
 export enum gpxType {
@@ -91,9 +91,9 @@ export class RegisterService {
    * @param formGroup un formgroup a resetear
    */
   public resetForm = (formGroup: FormGroup) => {
-    if (environment.production) {
-      Object.values(formGroup.controls).forEach((control) => control.reset())
-    }
+    // if (environment.production) {
+    Object.values(formGroup.controls).forEach((control) => control.reset())
+    // }
 
   }
 
@@ -176,6 +176,18 @@ export class RegisterService {
 
     return this.repositoryService.create<Id>(
       "Challenges", new_challenge)
+  }
+
+  public delete_challenge(id: number): Observable<HttpResponse<null>> {
+    return this.repositoryService.delete<null>(
+      "Challenges/" + id)
+  }
+
+  public edit_challenge(challengeId: number, challenge: NullableChallenge): Observable<HttpResponse<null>> {
+    console.log(`Editing challenge '${challengeId}' with:`, challenge)
+    return this.repositoryService.edit<null>(
+      `Challenges/${challengeId}`, challenge)
+
   }
 
   public register_group(name: string, admin: number): Observable<HttpResponse<Id>> {

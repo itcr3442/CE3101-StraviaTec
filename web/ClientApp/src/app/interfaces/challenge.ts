@@ -15,6 +15,15 @@ export interface Challenge {
     status: ChallengeStatus
 }
 
+export interface NullableChallenge {
+    name: string | null,
+    start: string | null,
+    end: string | null,
+    type: ActivityTypeType | null,
+    goal: number | null,
+    privateGroups: number[] | null,
+}
+
 export interface RespChallenge {
     name: string,
     start: string,

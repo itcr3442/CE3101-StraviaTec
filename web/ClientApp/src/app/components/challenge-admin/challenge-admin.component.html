@@ -6,7 +6,7 @@
 
         <div class="col-md-6 col-md-offset-3 loginBox">
             <div class="row">
-                <h3>Registro de Actividades</h3>
+                <h3>{{formTitle}}</h3>
             </div>
             <div class="row mb-5">
 
@@ -59,7 +59,7 @@
                             <div class="card-header">{{"Grupo #" + (i + 1)}}</div>
                             <div id="group-row-{{i}}" class="row card-body">
                                 <div class="col">
-                                    <app-search-field searchFor="Groups" [groupStatusFilter]="false"
+                                    <app-search-field #searchField searchFor="Groups"
                                         (selectEvent)="selectGroup($event, i)" (unselectEvent)="unselectGroup(i)">
                                     </app-search-field>
                                 </div>
@@ -93,8 +93,61 @@
                             {{this.warnMessage}}
                         </p>
                     </ng-container>
-                    <button type="submit" class="btn btn-primary">Registrar</button>
+                    <div class="row g-2">
+                        <button type="submit" class="btn btn-primary">{{this.editing? "Editar" : "Registrar"}}</button>
+
+                        <ng-container *ngIf="this.editing">
+                            <button class="btn btn-danger" type="reset" (click)="cancelForm()">
+                                Cancelar
+                            </button>
+                        </ng-container>
+                    </div>
                 </form>
+            </div>
+
+        </div>
+        <div class="col-md-6 col-md-offset-1">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <!-- <th>UUID</th> -->
+                            <th>Nombre</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Actividad</th>
+                            <th>Objetivo</th>
+                            <th># de Grupos Privados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let challenge of challenge_list">
+                            <td>{{challenge.c.name}}</td>
+                            <td>{{challenge.c.start.toLocaleString()}}</td>
+                            <td>{{challenge.c.end.toLocaleString()}}</td>
+                            <td>{{activityTypeEnum[challenge.c.type]}}</td>
+                            <td>{{challenge.c.goal}}</td>
+                            <td>{{challenge.c.privateGroups.length}}</td>
+                            <td>
+                                <div className="container">
+
+
+                                    <div className="d-grid gap-2 col-6 mx-auto">
+                                        <button type="button" class="btn btn-secondary"
+                                            (click)="activateEditing(challenge.id, challenge.c)">
+                                            Editar
+                                        </button>
+                                        <button type="button" class="btn btn-danger"
+                                            (click)="deleteChallengeSubmit(challenge.id)">
+                                            Eliminar
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
         </div>
