@@ -86,13 +86,53 @@ public class RaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Participants(int id)
     {
-        return Ok(new Resp.RaceParticipants[] { new Resp.RaceParticipants {
-                Category = Category.MasterC,
-                Participants = new int[] { 69, 420 }
-                }, new Resp.RaceParticipants {
-                Category = Category.Elite,
-                Participants = new int[] { 69420, 42069 }
-                }});
+        string query = @"
+            SELECT   name, athlete
+            FROM     race_participants
+            JOIN     categories
+            ON       category = id
+            WHERE    race = @race
+            ORDER BY category ASC, athlete ASC
+            ";
+
+        var categories = new List<Resp.RaceParticipants>();
+        Resp.RaceParticipants? last = null;
+        var participants = new List<int>();
+
+        using (var cmd = _db.Cmd(query))
+        {
+            var rows = cmd.Param("race", id).Rows<(string, int)>();
+            foreach ((string categoryName, int athlete) row in rows)
+            {
+                Enum.TryParse(row.categoryName, out Category category);
+                if (last == null || last.Category != category)
+                {
+                    if (last != null)
+                    {
+                        last.Participants = participants.ToArray();
+                    }
+
+                    participants.Clear();
+
+                    last = new Resp.RaceParticipants
+                    {
+                        Category = category,
+                        Participants = new int[] { }
+                    };
+
+                    categories.Add(last);
+                }
+
+                participants.Add(row.athlete);
+            }
+        }
+
+        if (last != null)
+        {
+            last.Participants = participants.ToArray();
+        }
+
+        return Ok(categories.ToArray());
     }
 
     [HttpGet("{id}/Positions")]
