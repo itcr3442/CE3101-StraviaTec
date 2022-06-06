@@ -34,10 +34,10 @@ export interface RaceResp {
     type: ActivityTypeType,
     privateGroups: number[],
     price: number,
-    status: RaceStatusType,
     categories: RaceCategoryType[],
     bankAccounts: string[],
-    sponsors: number[]
+    sponsors: number[],
+    status: RaceStatusType,
 }
 
 export interface LeaderboardRow {
@@ -61,10 +61,10 @@ export function resp2race(raceResp: RaceResp): Race {
         type,
         privateGroups: raceResp.privateGroups,
         price: raceResp.price,
-        status,
         categories,
         bankAccounts: raceResp.bankAccounts,
-        sponsors: raceResp.sponsors
+        sponsors: raceResp.sponsors,
+        status
     }
 }
 
@@ -87,5 +87,26 @@ export function getUserCategory(userAge: number | null): string {
         }
     }
     return "Elite"
+}
+
+export function getUserCategoryType(userAge: number | null): RaceCategory {
+    if (userAge) {
+        if (userAge < 15) {
+            return RaceCategory.Junior
+        } else if ((15 <= userAge) && (userAge <= 23)) {
+            return RaceCategory.Sub23
+        } else if ((24 <= userAge) && (userAge <= 30)) {
+            return RaceCategory.Open
+        } else if ((31 <= userAge) && (userAge <= 40)) {
+            return RaceCategory.MasterA
+        } else if ((41 <= userAge) && (userAge <= 50)) {
+            return RaceCategory.MasterB
+        } else if ((51 <= userAge)) {
+            return RaceCategory.MasterC
+        } else {
+            return RaceCategory.Elite
+        }
+    }
+    return RaceCategory.Elite
 }
 
