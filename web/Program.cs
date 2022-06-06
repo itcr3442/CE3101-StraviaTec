@@ -1,6 +1,9 @@
 using web;
+
 using System.Net;
+using System.Reflection;
 using System.Text.Json.Serialization;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -22,7 +25,13 @@ builder.Services.AddControllersWithViews(config =>
     .AddXmlSerializerFormatters();
 
 builder.Services.AddEndpointsApiExplorer()
-    .AddSwaggerGen(config => config.OperationFilter<FileUploadOperationFilter>());
+    .AddSwaggerGen(config => 
+    {
+        config.OperationFilter<FileUploadOperationFilter>();
+
+        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        config.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    });
 
 builder.Services.AddSingleton<IConnectionStrings, ConnectionStrings>()
     .AddScoped<ISqlConn, SqlConn>()
