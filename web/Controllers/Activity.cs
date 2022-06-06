@@ -4,6 +4,8 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using web.Body.Common;
 
+using MongoDB.Driver;
+
 using Req = web.Body.Req;
 using Resp = web.Body.Resp;
 
@@ -13,7 +15,11 @@ namespace web.Controllers;
 [Route("Api/Activities")]
 public class ActivityController : ControllerBase
 {
-    public ActivityController(ISqlConn db) => _db = db;
+    public ActivityController(ISqlConn db, IMongoConn mongo)
+    {
+        _db = db;
+        _mongo = mongo;
+    }
 
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -138,11 +144,15 @@ public class ActivityController : ControllerBase
                 await cmd.Param("id", id).Exec();
             }
 
+            var filter = Builders<StoredComment>.Filter.Eq(comment => comment.Activity, id);
+            _mongo.Collection<StoredComment>("comments").DeleteMany(filter);
+
             txn.Commit();
         }
 
         return NoContent();
     }
 
-    private ISqlConn _db;
+    private readonly ISqlConn _db;
+    private readonly IMongoConn _mongo;
 }
