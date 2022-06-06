@@ -100,8 +100,8 @@ export class ChallengeAdminComponent implements OnInit, AfterViewChecked {
       }
       groupsList.push(selectedGroup)
     }
-    console.log("groupsList:", groupsList)
-    console.log("privacy:", this.isPrivate)
+    // console.log("groupsList:", groupsList)
+    // console.log("privacy:", this.isPrivate)
     if (groupsList.length === 0 && this.isPrivate) {
       this.warnMessage = "Si desea que el evento sea privado debe seleccionar por lo menos un grupo."
       return false

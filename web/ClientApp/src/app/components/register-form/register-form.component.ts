@@ -114,6 +114,7 @@ export class RegisterFormComponent implements OnInit {
         (resp: HttpResponse<Id>) => {
           console.log(resp)
           this.registerService.resetForm(this.registerForm)
+          this.successMsgOn = true
 
           //can't submit image to server atm porque endpoint requiere autenticación
           // if (this.imageFile) {
