@@ -26,21 +26,32 @@ public static class ExceptionMiddlewareExtensions
                         throw contextFeature.Error;
                     }
 
-                    Console.WriteLine("===============");
-                    Console.WriteLine(sqlExc.Number);
-                    Console.WriteLine("===============");
-
+                    HttpStatusCode status;
                     switch (sqlExc.Number)
                     {
                         case 547:
-                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            status = HttpStatusCode.BadRequest;
+                            break;
+
+                        case 2627:
+                            status = HttpStatusCode.Conflict;
                             break;
 
                         default:
+                            Console.WriteLine("===============");
+                            Console.WriteLine("===============");
+                            Console.WriteLine("===============");
+                            Console.WriteLine($"Unhandled SQL Server #{sqlExc.Number}");
+                            Console.WriteLine("===============");
+                            Console.WriteLine("===============");
+                            Console.WriteLine("===============");
+
                             throw contextFeature.Error;
                     }
 
                     Console.WriteLine(sqlExc.ToString());
+                    Console.WriteLine($"SQL Server #{sqlExc.Number} is ${status}");
+                    context.Response.StatusCode = (int)status;
                 }
 
                 return Task.CompletedTask;
