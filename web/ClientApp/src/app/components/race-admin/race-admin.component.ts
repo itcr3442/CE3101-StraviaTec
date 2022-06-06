@@ -84,9 +84,7 @@ export class RaceAdminComponent implements OnInit {
   // isPrivate: boolean = false
   // totalGroups: number = 1
   selectedGroups: number[] = [];
-  get totalGroups(): number {
-    return this.selectedGroups.length + 1
-  }
+  totalGroups: number = 1
 
 
   activityTypes: (keyof typeof ActivityType)[] = [];
@@ -357,10 +355,12 @@ export class RaceAdminComponent implements OnInit {
 
   addgroup() {
     this.selectedGroups.push(-1)
+    this.totalGroups += 1
   }
 
   decreaseGroup() {
     this.selectedGroups.pop()
+    this.totalGroups -= 1
   }
 
   selectGroup(event: { name: string, id: number }, index: number) {
@@ -368,6 +368,6 @@ export class RaceAdminComponent implements OnInit {
   }
 
   unselectGroup(index: number) {
-    this.selectedGroups[index] = -1
+    this.selectedGroups.splice(index, 1, -1)
   }
 }

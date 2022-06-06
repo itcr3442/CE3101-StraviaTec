@@ -114,8 +114,8 @@
                             <div class="card-header">{{"Grupo #" + (i + 1)}}</div>
                             <div id="group-row-{{i}}" class="row card-body">
                                 <div class="col">
-                                    <app-search-field searchFor="Groups" [groupStatusFilter]="false"
-                                        (selectEvent)="selectGroup($event, i)" (unselectEvent)="unselectGroup(i)">
+                                    <app-search-field searchFor="Groups" (selectEvent)="selectGroup($event, i)"
+                                        (unselectEvent)="unselectGroup(i)">
                                     </app-search-field>
                                 </div>
                                 <ng-container *ngIf="i == totalGroups - 1">
