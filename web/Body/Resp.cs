@@ -143,3 +143,14 @@ public record RacePositions
     [Required]
     public int[] Activities { get; set; } = null!;
 }
+
+public record GetSponsor
+{
+    [Required]
+    public string Name { get; set; } = null!;
+    [Required]
+    public string LegalRep { get; set; } = null!;
+    [Required]
+    public string LegalTel { get; set; } = null!;
+}
+

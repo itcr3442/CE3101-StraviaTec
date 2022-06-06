@@ -13,16 +13,45 @@ using Resp = web.Body.Resp;
 namespace web.Controllers;
 
 [ApiController]
-[Route("Api/Sponsors/{id}/Logo")]
-public class LogoController : ControllerBase
+[Route("Api/Sponsors/{id}")]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+public class SponsorController : ControllerBase
 {
-    public LogoController(ISqlConn db) => _db = db;
+    public SponsorController(ISqlConn db) => _db = db;
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Resp.GetSponsor))]
+    public ActionResult Get(int id)
+    {
+        string query = @"
+			SELECT brand_name, legal_rep, legal_tel
+			FROM   sponsors
+			WHERE  id = @sponsor
+			";
+
+        (string brandName, string legalRep, string legalTel)? row;
+        using (var cmd = _db.Cmd(query))
+        {
+            row = cmd.Param("sponsor", id).Row<(string, string, string)>();
+        }
+
+        if (row == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(new Resp.GetSponsor
+        {
+            Name = row.Value.brandName,
+            LegalRep = row.Value.legalRep,
+            LegalTel = row.Value.legalTel,
+        });
+    }
+
+    [HttpGet("Logo")]
     [Produces("image/png")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult Get(int id)
+    public ActionResult Logo(int id)
     {
         using (var cmd = _db.Cmd("SELECT logo FROM sponsor_logos WHERE sponsor=@sponsor"))
         {
