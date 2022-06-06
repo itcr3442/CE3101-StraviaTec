@@ -1023,6 +1023,21 @@ CREATE INDEX idx_challenge_activities ON challenge_activities(challenge);
 
 GO
 
+CREATE VIEW challenge_progress AS
+  SELECT     challenge_participants.challenge,
+             challenge_participants.athlete,
+             COALESCE(SUM(length), 0) AS progress,
+             COALESCE(MAX(seq_no), -1) AS last_seq
+  FROM       challenge_activities
+  JOIN       activities
+  ON         activity = id
+  RIGHT JOIN challenge_participants
+  ON         activities.athlete = challenge_participants.athlete
+  GROUP BY   challenge_participants.challenge,
+             challenge_participants.athlete;
+
+GO
+
 CREATE FULLTEXT CATALOG search;
 CREATE UNIQUE INDEX idx_users_id ON users(id);
 CREATE UNIQUE INDEX idx_groups_id ON groups(id);

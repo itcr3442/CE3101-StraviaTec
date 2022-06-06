@@ -40,17 +40,71 @@ public class ChallengeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
+        int[] privateGroups;
+        (string name, DateTime start, DateTime end, string type,
+         decimal goal, decimal? progress)? row;
+
+        using (var txn = _db.Txn())
+        {
+            string query = @"
+                SELECT challenges.name, start_time, end_time,
+                       activity_types.name, goal, progress
+                FROM   challenge_progress
+                JOIN   challenges
+                ON     challenge = id
+                JOIN   activity_types
+                ON     type = activity_types.id
+                WHERE  challenge = @challenge AND athlete = @athlete
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("challenge", id).Param("athlete", this.LoginId());
+                row = cmd.Row<(string, DateTime, DateTime, string, int, int)>();
+            }
+
+            if (row == null)
+            {
+                return NotFound();
+            }
+
+            query = @"
+                SELECT   group_id
+                FROM     challenge_private_groups
+                WHERE    challenge=@challenge
+                ORDER BY group_id
+                ";
+
+            using (var cmd = txn.Cmd(query))
+            {
+                privateGroups = cmd.Param("challenge", id).Rows<int>().ToArray();
+            }
+        }
+
+        Enum.TryParse(row.Value.type, out ActivityType type);
+
+        DateTime start = row.Value.start;
+        DateTime end = row.Value.end;
+        decimal goal = row.Value.goal;
+        decimal? progress = row.Value.progress;
+
+        var status = progress != null
+                   ? progress.Value >= goal
+                   ? ChallengeStatus.Completed
+                   : ChallengeStatus.Registered
+                   : ChallengeStatus.NotRegistered;
+
         return Ok(new Resp.GetChallenge
         {
-            Name = "no ser puto",
-            Start = DateTime.Today,
-            End = DateTime.Today.AddDays(69),
-            Type = ActivityType.Kayaking,
-            Goal = 420.420M,
-            Progress = 69.69M,
-            RemainingDays = 4,
-            PrivateGroups = new int[] { },
-            Status = ChallengeStatus.Registered,
+            Name = row.Value.name,
+            Start = start,
+            End = end,
+            Type = type,
+            Goal = goal,
+            Progress = progress ?? 0M,
+            RemainingDays = (int)Math.Max(0, Math.Ceiling((end - DateTime.Now).TotalDays)),
+            PrivateGroups = privateGroups,
+            Status = status,
         });
     }
 

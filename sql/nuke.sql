@@ -39,6 +39,9 @@ DROP INDEX IF EXISTS idx_challenge_participants   ON challenge_participants;
 DROP INDEX IF EXISTS idx_challenge_activities     ON challenge_activities;
 
 
+DROP VIEW IF EXISTS challenge_progress;
+
+
 DROP TABLE IF EXISTS challenge_activities;
 DROP TABLE IF EXISTS challenge_participants;
 DROP TABLE IF EXISTS challenge_private_groups;

@@ -78,22 +78,17 @@ public class AvailableController : ControllerBase
     public ActionResult Challenges(ActivityType type)
     {
         string query = @"
-            SELECT     challenges.id
-            FROM       challenge_activities
-            JOIN       activities
-            ON         activity = id
-            RIGHT JOIN challenge_participants
-            ON         activities.athlete = challenge_participants.athlete
-            JOIN       challenges
-            ON         challenge_participants.challenge = challenges.id
-            JOIN       activity_types
-            ON         challenges.type = activity_types.id
-            WHERE      activity_types.name = @type
-                   AND challenge_participants.athlete = @athlete
-                   AND challenges.start_time < GETDATE()
-                   AND challenges.end_time > GETDATE()
-            GROUP BY   challenges.id, challenges.goal
-            HAVING     SUM(length) IS NULL OR SUM(length) < goal
+            SELECT challenge
+            FROM   challenge_progress
+            JOIN   challenges
+            ON     challenge = id
+            JOIN   activity_types
+            ON     challenges.type = activity_types.id
+            WHERE  activity_types.name = @type
+               AND athlete = @athlete
+               AND start_time < GETDATE()
+               AND end_time > GETDATE()
+               AND progress < goal
             ";
 
         using (var cmd = _db.Cmd(query))
@@ -166,30 +161,24 @@ public class ProgressController : ControllerBase
         using (var txn = _db.Txn())
         {
             string query = @"
-                SELECT     goal, SUM(length), MAX(seq_no)
-                FROM       challenge_activities
-                JOIN       activities
-                ON         activity = id
-                RIGHT JOIN challenge_participants
-                ON         activities.athlete = challenge_participants.athlete
-                JOIN       challenges
-                ON         challenge_participants.challenge = challenges.id
-                WHERE      challenge_participants.athlete = @athlete
-                GROUP BY   challenges.id, goal
-                HAVING     challenges.id = @challenge
+                SELECT goal, progress, last_seq
+                FROM   challenge_progress
+                JOIN   challenges
+                ON     challenge = id
+                WHERE  challenge = @challenge AND athlete = @athlete
                 ";
 
-            (int goal, int? progress, int? seqNo)? row;
+            (int goal, int progress, int lastSeq)? row;
             using (var cmd = txn.Cmd(query))
             {
                 cmd.Param("challenge", id).Param("athlete", self);
-                row = cmd.Row<(int, int?, int?)>();
+                row = cmd.Row<(int, int, int)>();
             }
 
             if (row == null)
             {
                 return NotFound();
-            } else if((row.Value.progress ?? 0) >= row.Value.goal)
+            } else if(row.Value.progress >= row.Value.goal)
             {
                 return Conflict();
             }
@@ -203,7 +192,7 @@ public class ProgressController : ControllerBase
             {
                 cmd.Param("challenge", id)
                    .Param("activity", activity)
-                   .Param("seq", (row.Value.seqNo ?? -1) + 1);
+                   .Param("seq", row.Value.lastSeq + 1);
 
                 await cmd.Exec();
             }
