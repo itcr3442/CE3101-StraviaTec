@@ -15,16 +15,40 @@ namespace web.Controllers;
 [Route("Api/Activities/{activityId}/Comments")]
 public class CommentsController : ControllerBase
 {
-    public CommentsController(IMongoConn mongo) => _mongo = mongo;
+    public CommentsController(ISqlConn sql, IMongoConn mongo)
+    {
+        _sql = sql;
+        _mongo = mongo;
+    }
 
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult Comment(int activityId, Req.NewComment req)
     {
-        return Random.Shared.Next(2) == 0 ? NoContent() : BadRequest();
+        // Previene inconsistencias
+        using (var txn = _sql.Txn())
+        {
+            using (var cmd = txn.Cmd("SELECT id FROM activities WHERE id=@id"))
+            {
+                if (cmd.Param("id", activityId).Row<int>() == null)
+                {
+                    return NotFound();
+                }
+            }
+
+            _mongo.Collection<StoredComment>("comments")
+                  .InsertOne(new StoredComment
+                  {
+                      Activity = activityId,
+                      Author = this.LoginId(),
+                      Time = DateTime.Now,
+                      Content = req.Content,
+                  });
+        }
+
+        return NoContent();
     }
 
     [HttpGet]
@@ -51,6 +75,7 @@ public class CommentsController : ControllerBase
         }
     }
 
+    private readonly ISqlConn _sql;
     private readonly IMongoConn _mongo;
 }
 
