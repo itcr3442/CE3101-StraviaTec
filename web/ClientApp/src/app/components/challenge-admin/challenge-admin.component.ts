@@ -266,6 +266,7 @@ export class ChallengeAdminComponent implements OnInit, AfterViewChecked {
   deleteChallengeSubmit(id: number) {
     const userResponse = window.confirm('Seguro que desea eliminar el reto?')
     if (userResponse) {
+      this.cancelForm()
       this.registerService.delete_challenge(id).subscribe(res => {
         console.log("Reto eliminado:", res)
         this.refreshChallenges()

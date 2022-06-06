@@ -542,6 +542,7 @@ export class RaceAdminComponent implements OnInit {
   deleteRaceSubmit(id: number) {
     const userResponse = window.confirm('Seguro que desea eliminar la carrera?')
     if (userResponse) {
+      this.cancelForm()
       this.registerService.delete_race(id).subscribe(res => {
         console.log("Carrera eliminada:", res)
         this.refreshRaces()
