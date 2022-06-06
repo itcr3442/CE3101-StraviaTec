@@ -285,26 +285,28 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div *ngFor="let c of comments; index as i" class="card mb-4">
-                    <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
+                <ng-container *ngIf="!this.loadingComments; else loadingSpinner">
+                    <div *ngFor="let c of comments; index as i" class="card mb-4">
+                        <!-- <img src="..." class="card-img-top sticky-top mt-4" alt="..."> -->
 
-                    <div class="card-body row">
-                        <div class="col-md-3">
-                            <!-- Remplazar src con dirección de imagen de cada usuario cuando GET funcione -->
-                            <img src="{{this.baseURL +'Api/Users/' +  c.userId + '/Photo'}}" class="profile-image"
-                                height=100 alt="profile picture"
-                                onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
+                        <div class="card-body row">
+                            <div class="col-md-3">
+                                <!-- Remplazar src con dirección de imagen de cada usuario cuando GET funcione -->
+                                <img src="{{this.baseURL +'Api/Users/' +  c.userId + '/Photo'}}" class="profile-image"
+                                    height=100 alt="profile picture"
+                                    onerror="this.onerror=null; this.src='/assets/empty_pfp.jpg'">
 
-                        </div>
+                            </div>
 
-                        <div class="col-md-9">
+                            <div class="col-md-9">
 
-                            <h5>{{c.comment.user.firstName + ' ' + c.comment.user.lastName}}</h5>
-                            <small>{{c.comment.time.toLocaleString()}}</small>
-                            <p>{{c.comment.content}}</p>
+                                <h5>{{c.comment.user.firstName + ' ' + c.comment.user.lastName}}</h5>
+                                <small>{{c.comment.time.toLocaleString()}}</small>
+                                <p>{{c.comment.content}}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </ng-container>
                 <div class="mb-3 form-group">
                     <label for="new-comment">Dejar comentario:</label>
                     <div id="new-comment" class="input-group mb-3">

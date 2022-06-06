@@ -66,6 +66,7 @@ export class UserDashboardComponent implements OnInit {
   // activityCommments: 
   comments: Array<{ comment: Comment, userId: number }> = []
   commentsActId: number | null = null
+  loadingComments: boolean = false
 
 
   constructor(private authService: AuthService, private registerService: RegisterService, private formatter: FormattingService, private appRef: ApplicationRef, @Inject('BASE_URL') baseUrl: string) {
@@ -229,19 +230,26 @@ export class UserDashboardComponent implements OnInit {
   loadComments(actId: number) {
     this.comments = []
     this.commentsActId = actId
+    this.loadingComments = true
     this.authService.getComments(actId).subscribe(
       (commentsResp: HttpResponse<CommentResp[]>) => {
         if (commentsResp.body) {
-          commentsResp.body.forEach((commentResp: CommentResp, index: number) => {
-            let time = new Date(commentResp.time)
-            // this.comments.splice(index, 0, { comment: { user: this.userInfo!, time, content: commentResp.content }, userId: commentResp.user })
-            this.authService.getUser(commentResp.user).subscribe(
-              (user: User | null) => {
-                if (!!user) {
-                  this.comments.splice(index, 0, { comment: { user, time, content: commentResp.content }, userId: commentResp.user })
-                }
-              })
-          });
+          if (commentsResp.body.length > 0) {
+            commentsResp.body.forEach((commentResp: CommentResp, index: number) => {
+              let time = new Date(commentResp.time)
+              // this.comments.splice(index, 0, { comment: { user: this.userInfo!, time, content: commentResp.content }, userId: commentResp.user })
+              this.authService.getUser(commentResp.user).subscribe(
+                (user: User | null) => {
+                  if (!!user) {
+                    this.loadingComments = false
+                    this.comments.splice(index, 0, { comment: { user, time, content: commentResp.content }, userId: commentResp.user })
+                  }
+                })
+            });
+          }
+          else {
+            this.loadingComments = false
+          }
         }
       },
       (err: HttpErrorResponse) => console.log("Error in loadComments():", err)
