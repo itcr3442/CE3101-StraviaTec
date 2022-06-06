@@ -248,22 +248,22 @@ public class ChallengeController : ControllerBase
         int deleted;
         using (var txn = _db.Txn())
         {
-            using (var cmd = _db.Cmd("DELETE FROM challenge_activities WHERE challenge=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM challenge_activities WHERE challenge=@id"))
             {
                 deleted = await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM challenge_private_groups WHERE challenge=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM challenge_private_groups WHERE challenge=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM challenge_participants WHERE challenge=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM challenge_participants WHERE challenge=@id"))
             {
                 await cmd.Param("id", id).Exec();
             }
 
-            using (var cmd = _db.Cmd("DELETE FROM challenges WHERE id=@id"))
+            using (var cmd = txn.Cmd("DELETE FROM challenges WHERE id=@id"))
             {
                 deleted = await cmd.Param("id", id).Exec();
             }
