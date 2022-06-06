@@ -246,7 +246,6 @@ export class ChallengeAdminComponent implements OnInit, AfterViewChecked {
     this.totalGroups = this.selectedGroups.length || 1
   }
 
-  // ngDoChe
   ngAfterViewChecked() {
     // console.log("fieldsList:", this.fieldsList.length)
     if (this.editingSetup) {
