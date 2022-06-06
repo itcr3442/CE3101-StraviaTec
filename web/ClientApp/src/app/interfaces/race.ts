@@ -24,6 +24,12 @@ export interface RaceResp {
     categories: RaceCategoryType[]
 }
 
+export interface LeaderboardRow {
+    activity: number,
+    seconds: number,
+    length: number
+}
+
 export function resp2race(raceResp: RaceResp): Race {
     let day = new Date(raceResp.day)
     let type: ActivityType = ActivityType[raceResp.type]
