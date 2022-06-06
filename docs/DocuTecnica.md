@@ -112,6 +112,7 @@ algún momento valores nulos:
 1. `challenge_group`: FKs a `challenge` y `group`.
 1. `challenge_participant`: FKs a `challenge` y `athlete`.
 1. `challenge_activity`: FKs a `challenge` y `activity`.
+1. `challenge_sponsor`: FKs a `challenge` y `sponsor`.
 
 ### Mapeo de tipos de asociaciones binarias N:M
 
@@ -119,9 +120,6 @@ Estas relaciones de mapean a relaciones de referencias cruzadas.
 
 1. `friendship`: Se mapea a una relación `friend` que contiene un atributo 
    `follower` y otro `followee` que referencian al atributo `id` de `user`. 
-1. `receipt`: Se mapea a una relación `receipt` que contiene el atributo de la 
-   relación `receipt_file` bajo el nombre de `receipt` y FKs que apuntan a las 
-   PKs de `race` y `user`.
 1. `comments`: Se mapea a una relación `comment` con FKs que referencias a las 
    PKs de `activity` y `user`.
 
@@ -129,13 +127,30 @@ Estas relaciones de mapean a relaciones de referencias cruzadas.
 
 No se tienen atributos multivaluados para mapear. 
 
-### Relación ternaria (caso especial)
+### Relaciones no binarias (casos especiales)
 
-La relación `race_participant` relaciona  `race`,  `user` y `activity`, sin 
-embargo, la relación con la última entidad tiene una funcionalidad de registro 
-de completitud, pero no es tan relevante para lo que esta relación expresa. Se 
-mapea esta relación a una relación cruzada de las 3 entidades, donde la PK de la
-relación es una combinación entre la referencia a `race` y a `user`.
+Se mapea a una relación `receipt` que contiene el atributo de la relación 
+`receipt_file` bajo el nombre de `receipt` y FKs que apuntan a las 
+PKs de `race` y `user`. Se tiene además una FK a una entidad `category`. 
+La relación es realmente más similar a una relación 1:N, `category` juega un 
+papel más similar a un atributo. 
+
+La relación `race_participant` relaciona  `race`,  `user`, `category` y 
+`activity`, sin embargo, la relación con la última entidad tiene una 
+funcionalidad de registro de completitud, pero no es tan relevante para lo que 
+esta relación expresa. El caso de `category` es similar, pues si bien se ve como
+una entidad, tiene una funcionalidad más similar a un atributo que se abstrae en
+entidad para evitar redundancia. Se mapea esta relación a una relación cruzada 
+de las 4 entidades, donde la PK de la relación es una combinación entre la 
+referencia a `race` y a `user`.
+
+En el diagrama de modelo conceptual se puede notar que los enlaces de las 
+relaciones anteriores con la entidad category tienen una cardinalidad que
+depende de otra cardinalidad. Esto es una expresión no estándar, pero se utiliza
+para comunicar el hecho de que la cantidad de entidades conectadas a dicha
+relación es función de la cardinalidad con otra entidad. Esto hace más claro
+que el comportamiento de esta entidad es más como una atributo que una entidad
+en sí. 
 
 ## Estructuras de datos desarrolladas(Tablas)
 
@@ -404,10 +419,12 @@ CREATE TABLE race_participants
 (
   race     int NOT NULL REFERENCES races(id),
   athlete  int NOT NULL REFERENCES users(id),
+  category int NOT NULL REFERENCES categories(id),
   activity int     NULL REFERENCES activities(id),
 
   PRIMARY KEY(race, athlete),
 );
+
 ```
 
 ### Tabla de relación `race_sponsor`
@@ -433,12 +450,14 @@ las referencias al usuario y carrera en cuestión.
 ```SQL
 CREATE TABLE receipts
 (
-  race    int            NOT NULL REFERENCES races(id),
-  athlete int            NOT NULL REFERENCES users(id),
-  receipt varbinary(max) NOT NULL,
+  race     int            NOT NULL REFERENCES races(id),
+  athlete  int            NOT NULL REFERENCES users(id),
+  category int            NOT NULL REFERENCES categories(id),
+  receipt  varbinary(max)     NULL,
 
   PRIMARY KEY(race, athlete),
 );
+
 ```
 
 ### Tabla de relación `bank_account`
