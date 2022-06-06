@@ -106,9 +106,9 @@
                         <div class="card-header">{{"Patrocinador #" + (i + 1)}}</div>
                         <div id="sponsor-row-{{i}}" class="row card-body">
                             <div class="col">
-                                <!-- <app-search-field #searchField searchFor="Groups" (selectEvent)="selectSponsor($event, i)"
-                                    (unselectEvent)="unselectSponsor(i)">
-                                </app-search-field> -->
+                                <app-search-field #sponsorSearchField searchFor="Sponsors"
+                                    (selectEvent)="selectSponsor($event, i)" (unselectEvent)="unselectSponsor(i)">
+                                </app-search-field>
                             </div>
                             <ng-container *ngIf="i == totalSponsors - 1">
                                 <div class="col-md-{{totalSponsors === 1 ? 2 : 3}}">
@@ -142,7 +142,7 @@
                             <div class="card-header">{{"Grupo #" + (i + 1)}}</div>
                             <div id="group-row-{{i}}" class="row card-body">
                                 <div class="col">
-                                    <app-search-field #searchField searchFor="Groups"
+                                    <app-search-field #groupSearchField searchFor="Groups"
                                         (selectEvent)="selectGroup($event, i)" (unselectEvent)="unselectGroup(i)">
                                     </app-search-field>
                                 </div>
@@ -184,11 +184,58 @@
             </div>
 
         </div>
-        <div id="mapDiv" class="col-md-6">
-            <div id="gpx-map" style="height: 600px;" leaflet [leafletOptions]="options" [leafletLayers]="gpxLayer"
-                (leafletMapReady)="onMapReady($event)">>
+        <div class="col-md-6 col-md-offset-1">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <!-- <th>UUID</th> -->
+                            <th>Nombre</th>
+                            <th>Fecha</th>
+                            <th>Actividad</th>
+                            <th>Precio</th>
+                            <th>Categoría Disponibles</th>
+                            <th># de Grupos Privados</th>
+                            <th># de Patrocinadores</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let race of race_list">
+                            <td>{{race.r.name}}</td>
+                            <td>{{race.r.day.toLocaleString()}}</td>
+                            <td>{{activityTypeEnum[race.r.type]}}</td>
+                            <td>{{race.r.price}}</td>
+                            <td>{{race.r.categories.join(', ')}}</td>
+                            <td>{{race.r.privateGroups.length}}</td>
+                            <td>{{race.r.sponsors.length}}</td>
+                            <td>
+                                <div className="container">
+
+
+                                    <div className="d-grid gap-2 col-6 mx-auto">
+                                        <button type="button" class="btn btn-secondary"
+                                            (click)="activateEditing(race.id, race.r)">
+                                            Editar
+                                        </button>
+                                        <button type="button" class="btn btn-danger"
+                                            (click)="deleteRaceSubmit(race.id)">
+                                            Eliminar
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
         </div>
 
+    </div>
+    <div id="mapDiv" class="col-md-6">
+        <div id="gpx-map" style="height: 600px;" leaflet [leafletOptions]="options" [leafletLayers]="gpxLayer"
+            (leafletMapReady)="onMapReady($event)">>
+        </div>
     </div>
 </div>

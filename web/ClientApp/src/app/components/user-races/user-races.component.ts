@@ -97,19 +97,22 @@ export class UserRacesComponent implements OnInit {
     }
     */
     this.races_id_list = [1]
-    this.races_page = [{  
+    this.races_page = [{
       name: "-",
       day: new Date(),
       type: ActivityType.Cycling,
       privateGroups: [1],
       price: 69420,
       status: RaceStatus.WaitingConfirmation,
-      categories: [RaceCategory.Elite]}];
+      categories: [RaceCategory.Elite],
+      sponsors: [],
+      bankAccounts: []
+    }];
 
     console.log("races:", this.races_page)
   }
 
-  onRegister(raceId: number){
+  onRegister(raceId: number) {
     this.modalRaceId = raceId
     this.pdfFile = null
     console.log("currentRaceID:", this.modalRaceId)
@@ -117,27 +120,28 @@ export class UserRacesComponent implements OnInit {
 
   onConfirmRegister() {
     this.modalMessage = ""
-    if (this.pdfFile !== null){
-        this.authService.getUser(0)
+    if (this.pdfFile !== null) {
+      this.authService.getUser(0)
         .subscribe((user: User | null) => {
-        if (user) {
-          this.registerService.register_user_race(this.modalRaceId,getUserCategory(user.age))
-          .subscribe((res: HttpResponse<null>) => {
-            console.log("registerUserToRaceResp:", res)
+          if (user) {
+            this.registerService.register_user_race(this.modalRaceId, getUserCategory(user.age))
+              .subscribe((res: HttpResponse<null>) => {
+                console.log("registerUserToRaceResp:", res)
 
-            this.registerService.register_race_receipt(this.modalRaceId,this.pdfFile)
-            .subscribe((res2: HttpResponse<null>) =>{
-              this.hideModal()
-              this.message = "Se ha inscrito correctamente a la carrera deseada"
-            })
-            
-          })
-        }},
-        (error: 409) => {
-          console.log("Conflict error:", error)
-          this.hideModal()
-          this.message = "No es posible inscribirse a esta carrera ya que no se cumplen con los requisitos de edad."
-        }
+                this.registerService.register_race_receipt(this.modalRaceId, this.pdfFile)
+                  .subscribe((res2: HttpResponse<null>) => {
+                    this.hideModal()
+                    this.message = "Se ha inscrito correctamente a la carrera deseada"
+                  })
+
+              })
+          }
+        },
+          (error: 409) => {
+            console.log("Conflict error:", error)
+            this.hideModal()
+            this.message = "No es posible inscribirse a esta carrera ya que no se cumplen con los requisitos de edad."
+          }
         )
     } else {
       this.modalMessage = "Ingrese un archivo pdf válido."
@@ -158,16 +162,16 @@ export class UserRacesComponent implements OnInit {
     this.pdfFile = files[0]
   }
 
-  isRegistered(raceStatus: RaceStatus){
-    if (raceStatus == RaceStatus.NotRegistered){
+  isRegistered(raceStatus: RaceStatus) {
+    if (raceStatus == RaceStatus.NotRegistered) {
       return false
     } else {
       return true
     }
 
-  }  
+  }
 
-  raceTypeToString(raceType: ActivityType){
+  raceTypeToString(raceType: ActivityType) {
     return ActivityType[raceType]
   }
 

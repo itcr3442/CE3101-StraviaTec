@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivityType, ActivityTypeType } from 'src/app/constants/activity.constants';
 import { latLng, Layer, tileLayer, Map as LeafMap, LayerEvent } from 'leaflet';
@@ -11,6 +11,8 @@ import { Race } from 'src/app/interfaces/race';
 import { RaceCategory, RaceStatus } from 'src/app/constants/races.constants';
 import { SearchFieldComponent } from '../search-field/search-field.component';
 import { FormattingService } from 'src/app/services/formatting.service';
+import { SearchService } from 'src/app/services/search.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-race-admin',
@@ -51,7 +53,6 @@ export class RaceAdminComponent implements OnInit {
     return this.registerForm.controls['isPrivate'].value
   }
 
-  formTitle: string = "Registrar nueva carrera"
   message: string = "";
   warnMessage: string = "";
   maxDate: string;
@@ -94,7 +95,7 @@ export class RaceAdminComponent implements OnInit {
     return RaceCategory
   }
 
-  constructor(private registerService: RegisterService, private formatter: FormattingService) {
+  constructor(private registerService: RegisterService, private authService: AuthService, private formatter: FormattingService, private searchService: SearchService) {
     let today = new Date()
     this.minDate = this.formatter.toDateStr(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0))
     this.maxDate = this.formatter.toDateStr(new Date(today.getFullYear() + 5, today.getMonth(), today.getDate() + 1, 0, 0, 0))
@@ -153,9 +154,6 @@ export class RaceAdminComponent implements OnInit {
 
       let selectedGroup = this.selectedGroups[i]
 
-      // console.log("groups list:", groupsList)
-      // console.log("selected group:", selectedGroup)
-
       if (selectedGroup === -1) {
         continue
       }
@@ -169,6 +167,30 @@ export class RaceAdminComponent implements OnInit {
     }
     if (groupsList.length === 0 && this.isPrivate) {
       this.warnMessage = "Si desea que el evento sea privado debe seleccionar por lo menos un grupo."
+      return false
+    }
+    return true
+  }
+
+  checkSponsorsValidity(): boolean {
+    let sponsorsList: Array<number> = []
+    for (let i = 0; i < this.selectedSponsors.length; i++) {
+
+      let selectedSponsor = this.selectedSponsors[i]
+
+      if (selectedSponsor === -1) {
+        continue
+      }
+
+      if (sponsorsList.includes(selectedSponsor)) {
+        console.log("Repeat sponsor:", selectedSponsor)
+        this.warnMessage = "No se pueden tener grupos repetidos."
+        return false
+      }
+      sponsorsList.push(selectedSponsor)
+    }
+    if (sponsorsList.length === 0) {
+      this.warnMessage = "Seleccione al menos un patrocinador."
       return false
     }
     return true
@@ -196,6 +218,9 @@ export class RaceAdminComponent implements OnInit {
     if (!this.checkGroupsValidity()) {
       return false
     }
+    if (!this.checkSponsorsValidity()) {
+      return false
+    }
     // if (!this.checkBanksValidity()) {
     //   this.warnMessage = "Revise que los códigos IBAN ingresados sean todos válidos."
     //   return false
@@ -215,7 +240,9 @@ export class RaceAdminComponent implements OnInit {
         privateGroups: this.selectedGroups.filter((g: number) => { return g !== -1 }),
         price: +this.formPrice,
         status: RaceStatus.NotRegistered, // field doesn't matter
-        categories: this.selectedCategories
+        categories: this.selectedCategories,
+        sponsors: this.selectedSponsors.filter((g: number) => { return g !== -1 }),
+        bankAccounts: []
       }
 
       console.log("Race submitted:", race)
@@ -392,4 +419,79 @@ export class RaceAdminComponent implements OnInit {
   unselectSponsor(index: number) {
     this.selectedSponsors.splice(index, 1, -1)
   }
+
+  formTitle: string = registerTitle;
+  race_list: { r: Race, id: number }[] = []
+  current_race: number | null = null
+  editing: boolean = false
+  editingSetup: boolean = false
+
+  activateEditing(raceId: number, race: Race) {
+    this.formTitle = editTitle
+    this.editing = true
+    this.editingSetup = true
+    this.current_race = raceId
+
+    this.registerService.resetForm(this.registerForm)
+
+    this.registerForm.controls['name'].setValue(race.name)
+    this.registerForm.controls['day'].setValue(this.formatter.toDateStr(race.day))
+    this.registerForm.controls['activityType'].setValue(race.type)
+    this.registerForm.controls['isPrivate'].setValue(race.privateGroups.length > 0)
+    this.registerForm.controls['price'].setValue(race.price)
+    this.selectedGroups = race.privateGroups
+    this.totalGroups = this.selectedGroups.length || 1
+    this.selectedSponsors = race.sponsors;
+    this.totalSponsors = this.selectedSponsors.length || 1
+  }
+
+  @ViewChildren('groupSearchField') groupFieldsList!: QueryList<SearchFieldComponent>
+  @ViewChildren('sponsorSearchField') sponsorFieldsList!: QueryList<SearchFieldComponent>
+
+  ngAfterViewChecked() {
+    // console.log("fieldsList:", this.fieldsList.length)
+    if (this.editingSetup) {
+      this.sponsorFieldsList.forEach((searchField: SearchFieldComponent, i: number) => { searchField.setValue(this.selectedSponsors[i]) });
+      this.groupFieldsList.forEach((searchField: SearchFieldComponent, i: number) => { searchField.setValue(this.selectedGroups[i]) });
+      this.editingSetup = false
+    }
+  }
+
+  cancelForm() {
+    this.registerService.resetForm(this.registerForm)
+    this.editing = false
+    this.formTitle = registerTitle
+    this.current_race = null
+    this.selectedGroups = []
+    this.selectedSponsors = []
+  }
+
+  deleteRaceSubmit(id: number) {
+    const userResponse = window.confirm('Seguro que desea eliminar la carrera?')
+    if (userResponse) {
+      this.registerService.delete_race(id).subscribe(res => {
+        console.log("Carrera eliminada:", res)
+        this.refreshRaces()
+      })
+    }
+  }
+
+  refreshRaces() {
+    this.searchService.searchRacesPage('').subscribe((res: HttpResponse<number[]>) => {
+      if (res.body) {
+        this.race_list = []
+        res.body.forEach((raceId: number, index: number) => {
+          this.authService.getRace(raceId).subscribe((raceResp: Race | null) => {
+            if (!!raceResp) {
+              this.race_list.splice(index, 0, { r: raceResp, id: raceId })
+            }
+          })
+        })
+      }
+    }
+    )
+  }
 }
+
+const registerTitle = "Registro de Carreras"
+const editTitle = "Editando carrera existente"
