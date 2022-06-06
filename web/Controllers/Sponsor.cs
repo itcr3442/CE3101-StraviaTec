@@ -24,10 +24,10 @@ public class SponsorController : ControllerBase
     public ActionResult Get(int id)
     {
         string query = @"
-			SELECT brand_name, legal_rep, legal_tel
-			FROM   sponsors
-			WHERE  id = @sponsor
-			";
+            SELECT brand_name, legal_rep, legal_tel
+            FROM   sponsors
+            WHERE  id = @sponsor
+            ";
 
         (string brandName, string legalRep, string legalTel)? row;
         using (var cmd = _db.Cmd(query))

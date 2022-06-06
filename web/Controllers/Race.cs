@@ -39,18 +39,142 @@ public class RaceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Get(int id)
     {
-        return Ok(new Resp.GetRace
+        int self = this.LoginId();
+        using (var txn = _db.Txn())
         {
-            Name = "proyecto",
-            Day = DateTime.Today,
-            Type = ActivityType.Cycling,
-            PrivateGroups = new int[] { },
-            Price = 69.42M,
-            Categories = new Category[] { Category.Junior, Category.MasterC },
-            BankAccounts = new string[] { "" },
-            Sponsors = new int[] { },
-            Status = RaceStatus.WaitingConfirmation,
-        });
+            string query = @"
+                SELECT races.name, on_date, activity_types.name, price,
+                FROM   races
+                JOIN   activity_types
+                ON     type = activity_types.id
+                WHERE  races.id = @race
+                ";
+
+            (string name, DateTime day, string type, decimal price)? row;
+            using (var cmd = txn.Cmd(query))
+            {
+                row = cmd.Param("race", id).Row<(string, DateTime, string, decimal)>();
+            }
+
+            if (row == null)
+            {
+                return NotFound();
+            }
+
+            query = @"
+                SELECT   name, 0
+                FROM     race_categories
+                JOIN     categories
+                ON       category = id
+                WHERE    race = @race
+                ORDER BY category
+                ";
+
+            Category[] categories;
+            using (var cmd = txn.Cmd(query))
+            {
+                categories = cmd.Param("race", id)
+                                .Rows<(string name, int)>()
+                                .Select(row =>
+                                {
+                                    Enum.TryParse(row.name, out Category category);
+                                    return category;
+                                })
+                                .ToArray();
+            }
+
+            query = @"
+                SELECT   group_id
+                FROM     race_private_groups
+                WHERE    race = @race
+                ORDER BY group_id
+                ";
+
+            int[] privateGroups;
+            using (var cmd = txn.Cmd(query))
+            {
+                privateGroups = cmd.Param("race", id).Rows<int>().ToArray();
+            }
+
+            query = @"
+                SELECT   iban, 0
+                FROM     bank_accounts
+                WHERE    race = @race
+                ORDER BY iban
+                ";
+
+            string[] bankAccounts;
+            using (var cmd = txn.Cmd(query))
+            {
+                bankAccounts = cmd.Param("race", id)
+                                  .Rows<(string account, int)>()
+                                  .Select(row => row.account)
+                                  .ToArray();
+            }
+
+            query = @"
+                SELECT   sponsor
+                FROM     race_sponsors
+                WHERE    race = @race
+                ORDER BY sponsor
+                ";
+
+            int[] sponsors;
+            using (var cmd = txn.Cmd(query))
+            {
+                sponsors = cmd.Param("race", id).Rows<int>().ToArray();
+            }
+
+            query = @"
+                SELECT activity, 1
+                FROM   race_participants
+                WHERE  race = @race AND athlete = @athlete
+                ";
+
+            RaceStatus? status = null;
+            using (var cmd = txn.Cmd(query))
+            {
+                cmd.Param("race", id).Param("athlete", self);
+
+                var statusRow = cmd.Row<(int? activity, int)>();
+                if (statusRow != null)
+                {
+                    status = statusRow.Value.activity != null
+                           ? RaceStatus.Completed : RaceStatus.Registered;
+                }
+            }
+
+            if (status == null)
+            {
+                query = @"
+                    SELECT COUNT(receipt)
+                    FROM   race_receipts
+                    WHERE  race = @race AND athlete = @athlete
+                    ";
+
+                int count;
+                using (var cmd = txn.Cmd(query))
+                {
+                    count = cmd.Param("race", id).Param("athlete", self).Row<int>() ?? 0;
+                }
+
+                status = count > 0 ? RaceStatus.WaitingConfirmation : RaceStatus.NotRegistered;
+            }
+
+            Enum.TryParse(row.Value.type, out ActivityType type);
+            return Ok(new Resp.GetRace
+            {
+                Name = row.Value.name,
+                Day = row.Value.day,
+                Type = type,
+                Price = row.Value.price,
+                Categories = categories,
+                PrivateGroups = privateGroups,
+                BankAccounts = bankAccounts,
+                Sponsors = sponsors,
+                Status = status.Value,
+            });
+        }
     }
 
     [HttpGet("{id}/Leaderboard")]
