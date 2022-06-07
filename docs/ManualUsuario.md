@@ -33,7 +33,9 @@ linestretch: 1.5
 
 # Servicio Web 
 
-
+Se adjunta un documenta por aparte con la documentación de la api del servicio 
+REST. Esta también es visible desde la instancia de swagger que se puede lanzar
+antes de realizar un despliegue.
 
 # App Web
 
@@ -147,13 +149,13 @@ En el lado derecho de esta pantalla se puede ver la lista de grupos junto con  s
 
 Estando ingresado al sistema como un organizador, se podrá hacer click en el menú de dropdown que se llama "Admin" en el NavBar, y de ahí se selecciona la opción de "Reportes por Participante". Una vez ingresada a la página, se puede obsrevar la tabla donde se muestra cada carrera con su respectiva información y con un botón para la generación de los reportes, los cuales estarán ordenados según el nombre y la categoría de los usuarios.
 
-![Pantalla de Reportes por Participante](imgs/Web16.jpg){height=50%}
+![Pantalla de Reportes por Participante](imgs/Web16.png){height=50%}
 
 ### Reporte de Posiciones de Carrera
 
 Estando ingresado al sistema como un organizador, se podrá hacer click en el menú de dropdown que se llama "Admin" en el NavBar, y de ahí se selecciona la opción de "Reportes por Posición". Una vez ingresada a la página, se puede obsrevar la tabla donde se muestra cada carrera con su respectiva información y con un botón para la generación de los reportes, los cuales van a estar ordenados según el tiempo/posición y la categoría correspondiente.
 
-![Pantalla de Reportes por Posición](imgs/Web17.jpg){height=50%}
+![Pantalla de Reportes por Posición](imgs/Web17.png){height=50%}
 
 # App Móvil
 
