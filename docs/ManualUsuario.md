@@ -31,10 +31,6 @@ linestretch: 1.5
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
-# Servicio Web 
-
-
-
 # App Web
 
 ## Vista Deportista
